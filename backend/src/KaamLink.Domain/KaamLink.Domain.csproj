@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Domain layer: pure business entities, value objects and domain constants.
+    NO framework/package dependencies — this project must remain dependency-free.
+  -->
+  <PropertyGroup>
+    <RootNamespace>KaamLink.Domain</RootNamespace>
+  </PropertyGroup>
+
+</Project>

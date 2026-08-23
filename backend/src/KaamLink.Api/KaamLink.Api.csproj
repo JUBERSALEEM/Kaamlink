@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <!--
+    Api host: composition root (Program.cs), controllers, middleware, JWT plumbing.
+    Business rules live in Application/Domain; persistence in Infrastructure.
+    IdentityModel assemblies (token creation/validation) arrive via the JwtBearer
+    package — pin explicitly if the shared band ever diverges.
+  -->
+  <PropertyGroup>
+    <RootNamespace>KaamLink.Api</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\KaamLink.Application\KaamLink.Application.csproj" />
+    <ProjectReference Include="..\KaamLink.Domain\KaamLink.Domain.csproj" />
+    <ProjectReference Include="..\KaamLink.Infrastructure\KaamLink.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>

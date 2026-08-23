@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Infrastructure layer: EF Core persistence (PostgreSQL via Npgsql), repository
+    and service implementations for the ports defined in Application.
+    ILogger/IOptions abstractions arrive transitively via EF Core; the only web-
+    framework concern (health checks) is deliberately registered in the Api host.
+  -->
+  <PropertyGroup>
+    <RootNamespace>KaamLink.Infrastructure</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\KaamLink.Application\KaamLink.Application.csproj" />
+    <ProjectReference Include="..\KaamLink.Domain\KaamLink.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.0" />
+  </ItemGroup>
+
+</Project>

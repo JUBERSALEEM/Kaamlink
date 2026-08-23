@@ -1,0 +1,38 @@
+@host = http://localhost:8080
+@phone = +971501234567
+
+### Liveness / readiness
+GET {{host}}/health/live
+
+###
+GET {{host}}/health/ready
+
+### 1) Request OTP (dev: code appears in API logs — Otp:Provider=log)
+POST {{host}}/api/v1/auth/otp/request
+Content-Type: application/json
+
+{ "phone": "{{phone}}" }
+
+### 2) Verify OTP (paste the code from the API logs) → token pair
+# @name verify
+POST {{host}}/api/v1/auth/otp/verify
+Content-Type: application/json
+
+{ "phone": "{{phone}}", "code": "000000" }
+
+### 3) Authorized probe
+GET {{host}}/api/v1/auth/me
+Authorization: Bearer {{verify.response.body.accessToken}}
+
+### 4) Rotate tokens
+POST {{host}}/api/v1/auth/token/refresh
+Content-Type: application/json
+
+{ "refreshToken": "{{verify.response.body.refreshToken}}" }
+
+### 5) Logout (revokes the given refresh token)
+POST {{host}}/api/v1/auth/logout
+Authorization: Bearer {{verify.response.body.accessToken}}
+Content-Type: application/json
+
+{ "refreshToken": "{{verify.response.body.refreshToken}}" }

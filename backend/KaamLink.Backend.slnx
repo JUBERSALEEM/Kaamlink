@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="src/KaamLink.Api/KaamLink.Api.csproj" />
+  <Project Path="src/KaamLink.Application/KaamLink.Application.csproj" />
+  <Project Path="src/KaamLink.Domain/KaamLink.Domain.csproj" />
+  <Project Path="src/KaamLink.Infrastructure/KaamLink.Infrastructure.csproj" />
+  <Project Path="tests/KaamLink.UnitTests/KaamLink.UnitTests.csproj" />
+  <Project Path="tests/KaamLink.IntegrationTests/KaamLink.IntegrationTests.csproj" />
+</Solution>

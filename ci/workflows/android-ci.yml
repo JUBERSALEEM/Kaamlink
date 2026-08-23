@@ -1,0 +1,67 @@
+name: android-ci
+
+on:
+  push:
+    paths:
+      - "KaamLink.csproj"
+      - "KaamLink.slnx"
+      - "App.xaml"
+      - "App.xaml.cs"
+      - "AppShell.xaml"
+      - "AppShell.xaml.cs"
+      - "GlobalUsings.cs"
+      - "MauiProgram.cs"
+      - "Core/**"
+      - "Features/**"
+      - "Platforms/**"
+      - "Resources/**"
+      - ".github/workflows/android-ci.yml"
+  pull_request:
+    paths:
+      - "KaamLink.csproj"
+      - "Core/**"
+      - "Features/**"
+      - "Platforms/**"
+      - "Resources/**"
+      - ".github/workflows/android-ci.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: android-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17 (Android SDK requirement)
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Install MAUI Android workload
+        run: dotnet workload install maui-android
+
+      - name: Restore
+        run: dotnet restore KaamLink.csproj
+
+      - name: Build app (net10.0-android, Release)
+        run: >-
+          dotnet build KaamLink.csproj
+          -f net10.0-android
+          -c Release
+          --no-restore
+          -p:AcceptAndroidSDKLicenses=true

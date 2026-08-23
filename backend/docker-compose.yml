@@ -1,0 +1,46 @@
+# Local full-stack development: API + PostgreSQL.
+# Usage:  cp .env.example .env   (adjust if you like — defaults are dev-only placeholders)
+#         docker compose up --build
+#
+# The inline defaults below are development-only conveniences; Production startup
+# guards reject them (see StartupGuards.ValidateEnvironment).
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: kaamlink-postgres
+    environment:
+      POSTGRES_USER: kaamlink
+      POSTGRES_PASSWORD: kaamlink
+      POSTGRES_DB: kaamlink
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kaamlink -d kaamlink"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kaamlink-api
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Postgres: "Host=postgres;Port=5432;Database=kaamlink;Username=kaamlink;Password=kaamlink"
+      Auth__Jwt__SigningKey: ${JWT_SIGNING_KEY:-dev-only-signing-key-0123456789abcdef}
+      Auth__Jwt__AccessTokenMinutes: "15"
+      Auth__Jwt__RefreshTokenDays: "30"
+      Otp__Provider: log
+      Otp__HashingKey: ${OTP_HASHING_KEY:-dev-only-hashing-key-0123}
+    ports:
+      - "8080:8080"
+
+volumes:
+  postgres-data:

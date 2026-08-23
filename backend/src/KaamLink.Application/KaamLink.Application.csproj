@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Application layer: use cases (AuthService), ports (interfaces), DTOs and options.
+    Depends on Domain only. No EF Core, no ASP.NET — stays provider-agnostic (§35).
+  -->
+  <PropertyGroup>
+    <RootNamespace>KaamLink.Application</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\KaamLink.Domain\KaamLink.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- DI abstractions only — the concrete container lives in the Api host. -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
+  </ItemGroup>
+
+</Project>

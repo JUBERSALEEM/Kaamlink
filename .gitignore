@@ -380,3 +380,7 @@ appsettings.*.local.json
 
 # Android local config (SDK paths are machine-specific)
 **/Platforms/Android/local.properties
+
+# Backend local config (never commit real connection strings/keys)
+appsettings.local.json
+backend/.env
