@@ -36,7 +36,9 @@ public sealed class KaamLinkApiFactory : WebApplicationFactory<Program>, IAsyncL
                 ["Otp:Provider"] = "log",
                 // Tests exercise the HTTP rate limiter separately; the domain resend
                 // cooldown (60s) would only add wall-clock sleeps here.
-                ["Otp:ResendCooldownSeconds"] = "0"
+                ["Otp:ResendCooldownSeconds"] = "0",
+                // Admin-lite (Phase 03): this phone registers as platform admin.
+                ["Admin:BootstrapPhones:0"] = AdminPhone.Number
             }));
 
         builder.ConfigureServices(services =>

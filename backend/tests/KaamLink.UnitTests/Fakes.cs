@@ -38,6 +38,14 @@ internal static class AuthServiceHarness
             RefreshTokenDays = 30
         };
 
+        public AdminOptions AdminOptions { get; } = new() { BootstrapPhones = ["+971500000000"] };
+
+        public InMemoryWorkerProfileRepository WorkerProfiles { get; } = new();
+
+        public InMemoryCompanyRepository Companies { get; } = new();
+
+        public InMemorySkillCatalogRepository SkillCatalog { get; } = new();
+
         public AuthService CreateService() => new(
             Users,
             OtpChallenges,
@@ -48,7 +56,10 @@ internal static class AuthServiceHarness
             Audit,
             OtpOptions,
             JwtOptions,
-            Time);
+            Time,
+            AdminOptions,
+            WorkerProfiles,
+            Companies);
 
         /// <summary>Requests an OTP and returns the code the sender captured.</summary>
         public async Task<string> RequestOtpAndCaptureCodeAsync(string phone)
@@ -194,3 +205,124 @@ internal sealed class FixedTimeProvider : TimeProvider
 
     public void Set(DateTimeOffset value) => UtcNow = value;
 }
+
+// ---- Phase 03 fakes ----
+
+internal sealed class InMemoryWorkerProfileRepository : IWorkerProfileRepository
+{
+    public List<KaamLink.Domain.Workers.WorkerProfile> Store { get; } = [];
+    public List<KaamLink.Domain.Workers.WorkerSkill> Skills { get; } = [];
+
+    public Task<KaamLink.Domain.Workers.WorkerProfile?> FindByUserIdAsync(Guid userId, CancellationToken ct = default) =>
+        Task.FromResult(Store.FirstOrDefault(w => w.UserId == userId));
+
+    public Task AddAsync(KaamLink.Domain.Workers.WorkerProfile profile, CancellationToken ct = default)
+    {
+        Store.Add(profile);
+        return Task.CompletedTask;
+    }
+
+    public Task ReplaceSkillsAsync(
+        Guid workerProfileId, IReadOnlyList<KaamLink.Domain.Workers.WorkerSkill> skills, CancellationToken ct = default)
+    {
+        Skills.RemoveAll(s => s.WorkerProfileId == workerProfileId);
+        Skills.AddRange(skills);
+        return Task.CompletedTask;
+    }
+
+    public Task<IReadOnlyList<KaamLink.Domain.Workers.WorkerSkill>> ListSkillsAsync(
+        Guid workerProfileId, CancellationToken ct = default) =>
+        Task.FromResult<IReadOnlyList<KaamLink.Domain.Workers.WorkerSkill>>(
+            Skills.Where(s => s.WorkerProfileId == workerProfileId).ToList());
+}
+
+internal sealed class InMemoryCompanyRepository : ICompanyRepository
+{
+    public List<KaamLink.Domain.Companies.Company> Companies { get; } = [];
+    public List<KaamLink.Domain.Companies.CompanyMember> Members { get; } = [];
+
+    public Task AddCompanyAsync(KaamLink.Domain.Companies.Company company, CancellationToken ct = default)
+    {
+        Companies.Add(company);
+        return Task.CompletedTask;
+    }
+
+    public Task AddMemberAsync(KaamLink.Domain.Companies.CompanyMember member, CancellationToken ct = default)
+    {
+        Members.Add(member);
+        return Task.CompletedTask;
+    }
+
+    public Task<KaamLink.Domain.Companies.Company?> FindByIdAsync(Guid companyId, CancellationToken ct = default) =>
+        Task.FromResult(Companies.FirstOrDefault(c => c.Id == companyId));
+
+    public Task<IReadOnlyList<KaamLink.Domain.Companies.CompanyMember>> FindMembershipsByUserIdAsync(
+        Guid userId, CancellationToken ct = default)
+    {
+        // Mimic EF Include(m => m.Company): return members with the nav populated.
+        var result = Members
+            .Where(m => m.UserId == userId)
+            .Select(m => KaamLink.Domain.Companies.CompanyMember.Create(
+                m.CompanyId,
+                m.UserId,
+                m.Role,
+                m.CreatedAt,
+                Companies.Single(c => c.Id == m.CompanyId)))
+            .ToList();
+
+        return Task.FromResult<IReadOnlyList<KaamLink.Domain.Companies.CompanyMember>>(result);
+    }
+
+    public Task<KaamLink.Domain.Companies.CompanyMember?> FindMembershipAsync(
+        Guid companyId, Guid userId, CancellationToken ct = default) =>
+        Task.FromResult(Members.FirstOrDefault(m => m.CompanyId == companyId && m.UserId == userId));
+
+    public Task<IReadOnlyList<KaamLink.Domain.Companies.Company>> ListPendingReviewAsync(CancellationToken ct = default) =>
+        Task.FromResult<IReadOnlyList<KaamLink.Domain.Companies.Company>>(
+            Companies
+                .Where(c => c.VerificationState == KaamLink.Domain.Companies.CompanyVerificationState.Pending)
+                .OrderBy(c => c.CreatedAt)
+                .ToList());
+
+    public Task<int> CountOwnedCompaniesAsync(Guid userId, CancellationToken ct = default) =>
+        Task.FromResult(Members.Count(
+            m => m.UserId == userId && m.Role == KaamLink.Domain.Companies.CompanyRole.Owner));
+}
+
+internal sealed class InMemorySkillCatalogRepository : ISkillCatalogRepository
+{
+    public List<KaamLink.Domain.Skills.SkillCategory> Categories { get; } = [];
+
+    public List<KaamLink.Domain.Skills.Skill> Skills { get; } = [];
+
+    /// <summary>
+    /// Seeds a minimal catalog mirroring the real seed names, so tests can assert
+    /// localization (e.g. فني ألمنيوم) without depending on fixed production GUIDs.
+    /// </summary>
+    public void SeedTestCatalog(Guid aluminiumSkillId, Guid welderSkillId, Guid categoryId)
+    {
+        var category = KaamLink.Domain.Skills.SkillCategory.Create(
+            categoryId, "Fabrication & Welding", "التصنيع واللحام", 1);
+        var aluminium = KaamLink.Domain.Skills.Skill.Create(
+            aluminiumSkillId, categoryId, "Aluminium Fabricator", "فني ألمنيوم", false, 1);
+        var welder = KaamLink.Domain.Skills.Skill.Create(
+            welderSkillId, categoryId, "Welder", "لحّام", false, 2);
+        category.Skills.Add(aluminium);
+        category.Skills.Add(welder);
+        Categories.Add(category);
+        Skills.Add(aluminium);
+        Skills.Add(welder);
+    }
+
+    public Task<IReadOnlyList<KaamLink.Domain.Skills.SkillCategory>> ListCategoriesWithSkillsAsync(
+        CancellationToken ct = default) =>
+        Task.FromResult<IReadOnlyList<KaamLink.Domain.Skills.SkillCategory>>(
+            Categories.OrderBy(c => c.SortOrder).ToList());
+
+    public Task<KaamLink.Domain.Skills.Skill?> FindSkillAsync(Guid skillId, CancellationToken ct = default) =>
+        Task.FromResult(Skills.FirstOrDefault(s => s.Id == skillId));
+
+    public Task<bool> SkillExistsAsync(Guid skillId, CancellationToken ct = default) =>
+        Task.FromResult(Skills.Any(s => s.Id == skillId));
+}
+

@@ -14,4 +14,10 @@ public static class AuditActions
     public const string TokenReuseDetected = "auth.token_reuse_detected";
     public const string TokenRevoked = "auth.token_revoked";
     public const string ForeignTokenRevokeAttempt = "auth.token_foreign_revoke_attempt";
+
+    public const string WorkerProfileUpdated = "worker.profile_updated";
+    public const string WorkerSkillsUpdated = "worker.skills_updated";
+    public const string CompanyRegistered = "company.registered";
+    public const string CompanyVerified = "company.verified";
+    public const string CompanyRejected = "company.rejected";
 }

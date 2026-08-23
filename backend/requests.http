@@ -36,3 +36,58 @@ Authorization: Bearer {{verify.response.body.accessToken}}
 Content-Type: application/json
 
 { "refreshToken": "{{verify.response.body.refreshToken}}" }
+
+// ---------------------------------------------------------------- Phase 03
+
+### Seeded occupation catalog (bilingual)
+GET {{host}}/api/v1/skills/catalog
+Authorization: Bearer {{verify.response.body.accessToken}}
+
+### Worker onboarding — step 1: basics (primarySkillId from the catalog)
+PUT {{host}}/api/v1/workers/me
+Authorization: Bearer {{verify.response.body.accessToken}}
+Content-Type: application/json
+
+{ "displayName": "Ahmed Ali", "primarySkillId": "bad55086-6583-4178-9d7c-47f476917eec", "emirate": "Sharjah" }
+
+### Worker onboarding — step 2: self-declared skills (full replacement)
+PUT {{host}}/api/v1/workers/me/skills
+Authorization: Bearer {{verify.response.body.accessToken}}
+Content-Type: application/json
+
+{ "skills": [ { "skillId": "bad55086-6583-4178-9d7c-47f476917eec", "yearsExperience": 6 } ] }
+
+### Worker onboarding — step 3: availability + salary + about
+PUT {{host}}/api/v1/workers/me
+Authorization: Bearer {{verify.response.body.accessToken}}
+Content-Type: application/json
+
+{ "availability": "Immediately", "expectedSalaryMinAed": 2500, "expectedSalaryMaxAed": 3500, "about": "Fabrication specialist" }
+
+### Worker profile (completeness + onboarding state, computed server-side)
+GET {{host}}/api/v1/workers/me
+Authorization: Bearer {{verify.response.body.accessToken}}
+
+### Employer onboarding — register a company (starts Pending review)
+# @name company
+POST {{host}}/api/v1/companies
+Authorization: Bearer {{verify.response.body.accessToken}}
+Content-Type: application/json
+
+{ "name": "Gulf Fabrication LLC", "category": "Workshop", "emirate": "Sharjah", "area": "Industrial Area 12", "tradeLicenseNumber": "CN-1234567" }
+
+### Employer's own companies (membership-scoped)
+GET {{host}}/api/v1/companies/mine
+Authorization: Bearer {{verify.response.body.accessToken}}
+
+### ADMIN: pending review queue — requires a platform_admin token
+### (Development bootstrap: register with +971500000000, see appsettings.Development.json)
+GET {{host}}/api/v1/admin/companies/pending
+Authorization: Bearer {{verify.response.body.accessToken}}
+
+### ADMIN: approve a company → Verified (use {"approve":false,"reason":"…"} to reject)
+POST {{host}}/api/v1/admin/companies/{{company.response.body.id}}/review
+Authorization: Bearer {{verify.response.body.accessToken}}
+Content-Type: application/json
+
+{ "approve": true }

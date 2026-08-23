@@ -1,8 +1,9 @@
 # KaamLink Backend
 
 ASP.NET Core 10 modular monolith behind versioned REST (`/api/v1/**`) — see
-`docs/phase-01-report.md` §E and ADR 0002. Phase 02 scope: identity + phone-OTP
-authentication + authorization framework + audit log + rate limiting + CI.
+`docs/phase-01-report.md` §E and ADR 0002. Phases so far: **02** identity + phone-OTP
+auth + authorization framework + audit log + rate limiting + CI; **03** worker profiles
+(Skill Passport), company onboarding + admin verification-lite, seeded occupation catalog.
 
 ## Layout
 
@@ -28,9 +29,39 @@ POST /api/v1/auth/otp/request   { phone }                    → 6-digit code (r
 POST /api/v1/auth/otp/verify    { phone, code }              → token pair (registers on first login)
 POST /api/v1/auth/token/refresh { refreshToken }             → rotated pair; reuse revokes the family
 POST /api/v1/auth/logout        { refreshToken }  (Bearer)   → revokes that refresh token
-GET  /api/v1/auth/me                              (Bearer)   → current identity
+GET  /api/v1/auth/me                              (Bearer)   → identity + worker progress + memberships
 GET  /health/live | /health/ready                            → probes
 ```
+
+## Profiles, companies & admin-lite (Phase 03)
+
+```
+GET  /api/v1/skills/catalog                       (Bearer)   → seeded bilingual occupation catalog
+GET  /api/v1/workers/me                           (Bearer)   → own profile (404 worker.profile_not_found if none)
+PUT  /api/v1/workers/me              { patch }    (Bearer)   → progressive onboarding patch (creates on first call)
+PUT  /api/v1/workers/me/skills       { skills[] } (Bearer)   → full replacement of self-declared skills
+POST /api/v1/companies               { … }        (Bearer)   → register company (starts Pending; caller = Owner)
+GET  /api/v1/companies/mine                       (Bearer)   → own memberships (membership-scoped)
+GET  /api/v1/admin/companies/pending              (Bearer+)  → review queue — PlatformAdmin policy
+POST /api/v1/admin/companies/{id}/review { approve, reason? }(Bearer+) → Verified / Rejected(+reason)
+```
+
+- **Skill Passport (V1):** skills are *self-declared* by the worker with years of experience;
+  `verificationState` starts at `SelfDeclared` and can later be raised by employer feedback
+  or paid practical assessments (Phase 05+) — never by the worker, never implied in UI (§50).
+- **Completeness/onboarding:** computed + persisted server-side on every patch
+  (name 20 + primary skill 20 + emirate 15 + availability 15 + any skill 15 + salary pair 10
+  + about 5 = 100). Clients render the stored value; they never define "complete" locally.
+- **Company verification:** new companies are `Pending`. Only platform admins
+  (`platform_admin=true` JWT claim, `PlatformAdmin` policy) can review; rejection requires a
+  reason; nothing is ever presented as "verified" without a review record (§16, §50).
+- **Catalog:** 6 categories / 20 curated UAE-practical occupations, seeded idempotently with
+  fixed GUIDs (bilingual EN/AR). `requiresCertification` is set only for *Light Vehicle Driver*
+  (unambiguous licence); everything else stays false pending professional legal review —
+  we do not invent UAE legal requirements (§1/§L).
+- **Admin bootstrap (dev):** phones in `Admin:BootstrapPhones` get `IsPlatformAdmin=true`
+  **at registration only**. Dev default: `+971500000000` (appsettings.Development.json).
+  Production grants admin access via a controlled operational procedure, not config edits.
 
 - Access token: JWT (HMAC-SHA256), 15 min. Claims: `sub`, `phone`, `platform_admin`, `jti`.
 - Refresh token: opaque, 30 days, **rotated on every use**; only SHA-256 hashes are stored;
@@ -48,6 +79,7 @@ GET  /health/live | /health/ready                            → probes
 | `Otp__HashingKey` | env | Required, min 16 chars. |
 | `Otp__Provider` | env | `log` (dev sandbox) — **forbidden in Production** by startup guards. |
 | `Database__ApplyMigrationsOnStartup` | env/appsettings | Default: true in Development/Staging, false in Production. |
+| `Admin__BootstrapPhones__0` | env/appsettings | Dev-only platform-admin registration phone(s). Never rely on this in Production. |
 | `ASPNETCORE_ENVIRONMENT` | env | `Development` / `Staging` / `Production`. |
 
 Machine-local overrides: `backend/src/KaamLink.Api/appsettings.local.json` (gitignored)

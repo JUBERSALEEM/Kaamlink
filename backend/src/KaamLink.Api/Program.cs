@@ -13,9 +13,11 @@ builder.Configuration.AddJsonFile("appsettings.local.json", optional: true, relo
 // Options: bind + validate up-front so misconfiguration fails at startup, not at first request.
 var jwtOptions = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>() ?? new JwtOptions();
 var otpOptions = builder.Configuration.GetSection(OtpOptions.SectionName).Get<OtpOptions>() ?? new OtpOptions();
+var adminOptions = builder.Configuration.GetSection(AdminOptions.SectionName).Get<AdminOptions>() ?? new AdminOptions();
 StartupGuards.ValidateOptions(jwtOptions, otpOptions);
 builder.Services.AddSingleton(jwtOptions);
 builder.Services.AddSingleton(otpOptions);
+builder.Services.AddSingleton(adminOptions);
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
@@ -58,6 +60,7 @@ app.MapHealthChecks("/health/ready", new HealthCheckOptions
 }).AllowAnonymous();
 
 await StartupTasks.ApplyMigrationsOnStartupAsync(app);
+await StartupTasks.EnsureReferenceDataSeededAsync(app);
 
 app.Run();
 

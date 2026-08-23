@@ -71,6 +71,110 @@ namespace KaamLink.Infrastructure.Persistence.Migrations
                     b.ToTable("audit_logs");
                 });
 
+            modelBuilder.Entity("KaamLink.Domain.Companies.Company", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Area")
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("area");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)")
+                        .HasColumnName("category");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Emirate")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("emirate");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("character varying(160)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("TradeLicenseNumber")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("trade_license_number");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("VerificationReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("verification_reason");
+
+                    b.Property<string>("VerificationState")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("verification_state");
+
+                    b.Property<DateTimeOffset?>("VerifiedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("verified_at");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TradeLicenseNumber")
+                        .IsUnique()
+                        .HasDatabaseName("ux_companies_trade_license_number")
+                        .HasFilter("trade_license_number IS NOT NULL");
+
+                    b.HasIndex("VerificationState")
+                        .HasDatabaseName("ix_companies_verification_state");
+
+                    b.ToTable("companies");
+                });
+
+            modelBuilder.Entity("KaamLink.Domain.Companies.CompanyMember", b =>
+                {
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("company_id");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("role");
+
+                    b.HasKey("CompanyId", "UserId");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_company_members_user_id");
+
+                    b.ToTable("company_members");
+                });
+
             modelBuilder.Entity("KaamLink.Domain.Identity.OtpChallenge", b =>
                 {
                     b.Property<Guid>("Id")
@@ -209,6 +313,199 @@ namespace KaamLink.Infrastructure.Persistence.Migrations
                     b.ToTable("users");
                 });
 
+            modelBuilder.Entity("KaamLink.Domain.Skills.Skill", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("category_id");
+
+                    b.Property<string>("NameAr")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("character varying(160)")
+                        .HasColumnName("name_ar");
+
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("name_en");
+
+                    b.Property<bool>("RequiresCertification")
+                        .HasColumnType("boolean")
+                        .HasColumnName("requires_certification");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer")
+                        .HasColumnName("sort_order");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId")
+                        .HasDatabaseName("ix_skills_category_id");
+
+                    b.ToTable("skills");
+                });
+
+            modelBuilder.Entity("KaamLink.Domain.Skills.SkillCategory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("NameAr")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("character varying(160)")
+                        .HasColumnName("name_ar");
+
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)")
+                        .HasColumnName("name_en");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer")
+                        .HasColumnName("sort_order");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("skill_categories");
+                });
+
+            modelBuilder.Entity("KaamLink.Domain.Workers.WorkerProfile", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("About")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("about");
+
+                    b.Property<string>("Area")
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("area");
+
+                    b.Property<string>("Availability")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("availability");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("display_name");
+
+                    b.Property<string>("Emirate")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("emirate");
+
+                    b.Property<int?>("ExpectedSalaryMaxAed")
+                        .HasColumnType("integer")
+                        .HasColumnName("expected_salary_max_aed");
+
+                    b.Property<int?>("ExpectedSalaryMinAed")
+                        .HasColumnType("integer")
+                        .HasColumnName("expected_salary_min_aed");
+
+                    b.Property<bool>("OnboardingComplete")
+                        .HasColumnType("boolean")
+                        .HasColumnName("onboarding_complete");
+
+                    b.Property<Guid?>("PrimarySkillId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("primary_skill_id");
+
+                    b.Property<int>("ProfileCompletenessPct")
+                        .HasColumnType("integer")
+                        .HasColumnName("profile_completeness_pct");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PrimarySkillId")
+                        .HasDatabaseName("ix_worker_profiles_primary_skill_id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasDatabaseName("ux_worker_profiles_user_id");
+
+                    b.ToTable("worker_profiles");
+                });
+
+            modelBuilder.Entity("KaamLink.Domain.Workers.WorkerSkill", b =>
+                {
+                    b.Property<Guid>("WorkerProfileId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("worker_profile_id");
+
+                    b.Property<Guid>("SkillId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("skill_id");
+
+                    b.Property<bool>("IsPrimary")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_primary");
+
+                    b.Property<string>("VerificationState")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("verification_state");
+
+                    b.Property<int>("YearsExperience")
+                        .HasColumnType("integer")
+                        .HasColumnName("years_experience");
+
+                    b.HasKey("WorkerProfileId", "SkillId");
+
+                    b.HasIndex("SkillId")
+                        .HasDatabaseName("ix_worker_skills_skill_id");
+
+                    b.ToTable("worker_skills");
+                });
+
+            modelBuilder.Entity("KaamLink.Domain.Companies.CompanyMember", b =>
+                {
+                    b.HasOne("KaamLink.Domain.Companies.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KaamLink.Domain.Identity.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+                });
+
             modelBuilder.Entity("KaamLink.Domain.Identity.RefreshToken", b =>
                 {
                     b.HasOne("KaamLink.Domain.Identity.User", "User")
@@ -218,6 +515,55 @@ namespace KaamLink.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("KaamLink.Domain.Skills.Skill", b =>
+                {
+                    b.HasOne("KaamLink.Domain.Skills.SkillCategory", "Category")
+                        .WithMany("Skills")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("KaamLink.Domain.Skills.SkillCategory", b =>
+                {
+                    b.Navigation("Skills");
+                });
+
+            modelBuilder.Entity("KaamLink.Domain.Workers.WorkerProfile", b =>
+                {
+                    b.HasOne("KaamLink.Domain.Skills.Skill", null)
+                        .WithMany()
+                        .HasForeignKey("PrimarySkillId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("KaamLink.Domain.Identity.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("KaamLink.Domain.Workers.WorkerSkill", b =>
+                {
+                    b.HasOne("KaamLink.Domain.Skills.Skill", "Skill")
+                        .WithMany()
+                        .HasForeignKey("SkillId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("KaamLink.Domain.Workers.WorkerProfile", "Profile")
+                        .WithMany("Skills")
+                        .HasForeignKey("WorkerProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Profile");
+
+                    b.Navigation("Skill");
                 });
 #pragma warning restore 612, 618
         }

@@ -25,7 +25,10 @@ public sealed class AuthService(
     IAuditService audit,
     OtpOptions otpOptions,
     JwtOptions jwtOptions,
-    TimeProvider timeProvider) : IAuthService
+    TimeProvider timeProvider,
+    AdminOptions adminOptions,
+    IWorkerProfileRepository workerProfiles,
+    ICompanyRepository companies) : IAuthService
 {
     public async Task<RequestOtpResponse> RequestOtpAsync(RequestOtpRequest request, CancellationToken ct = default)
     {
@@ -110,7 +113,11 @@ public sealed class AuthService(
         var isNewUser = user is null;
         if (isNewUser)
         {
-            user = User.Register(phone.Value, isPlatformAdmin: false, now);
+            // Platform-admin bootstrap applies at registration only (see AdminOptions).
+            var isBootstrapAdmin = adminOptions.BootstrapPhones.Contains(
+                phone.Value, StringComparer.Ordinal);
+
+            user = User.Register(phone.Value, isPlatformAdmin: isBootstrapAdmin, now);
             await users.AddAsync(user, ct);
         }
 
@@ -135,7 +142,9 @@ public sealed class AuthService(
             actorUserId: user.Id,
             ct: ct);
 
-        return tokens.Response;
+        // Full summary (worker progress + memberships) so clients can route
+        // straight to onboarding or dashboard after login.
+        return tokens.Response with { User = await BuildSummaryAsync(user, ct) };
     }
 
     public async Task<AuthTokensResponse> RefreshAsync(RefreshTokenRequest request, CancellationToken ct = default)
@@ -191,7 +200,9 @@ public sealed class AuthService(
             actorUserId: user.Id,
             ct: ct);
 
-        return tokens.Response;
+        // Same contract as verify: clients route from this summary (worker progress,
+        // memberships) after a silent refresh — never return a degraded identity.
+        return tokens.Response with { User = await BuildSummaryAsync(user, ct) };
     }
 
     public async Task LogoutAsync(Guid userId, LogoutRequest request, CancellationToken ct = default)
@@ -233,10 +244,37 @@ public sealed class AuthService(
         var user = await users.FindByIdAsync(userId, ct)
             ?? throw AppException.Unauthorized("auth.user_not_found", "Account no longer exists.");
         RejectUnavailableAccount(user);
-        return UserSummary.From(user);
+
+        var worker = await BuildWorkerInfoAsync(userId, ct);
+        var memberships = await BuildMembershipsAsync(userId, ct);
+
+        return UserSummary.From(user, worker, memberships);
     }
 
     // ---- internals ----
+
+    private async Task<UserSummary> BuildSummaryAsync(User user, CancellationToken ct) =>
+        UserSummary.From(
+            user,
+            await BuildWorkerInfoAsync(user.Id, ct),
+            await BuildMembershipsAsync(user.Id, ct));
+
+    private async Task<MeWorkerInfo> BuildWorkerInfoAsync(Guid userId, CancellationToken ct)
+    {
+        var profile = await workerProfiles.FindByUserIdAsync(userId, ct);
+        return profile is null
+            ? MeWorkerInfo.None
+            : new MeWorkerInfo(true, profile.OnboardingComplete, profile.ProfileCompletenessPct);
+    }
+
+    private async Task<IReadOnlyList<MeCompanyMembership>> BuildMembershipsAsync(Guid userId, CancellationToken ct) =>
+        (await companies.FindMembershipsByUserIdAsync(userId, ct))
+            .Select(m => new MeCompanyMembership(
+                m.CompanyId,
+                m.Company.Name,
+                m.Role.ToString(),
+                m.Company.VerificationState.ToString()))
+            .ToList();
 
     private static PhoneNumber ParsePhone(string raw) =>
         PhoneNumber.TryParse(raw, out var phone)

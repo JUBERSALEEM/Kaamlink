@@ -1,8 +1,11 @@
 using KaamLink.Application.Abstractions;
 using KaamLink.Application.Options;
 using KaamLink.Infrastructure.Auditing;
+using KaamLink.Infrastructure.Companies;
 using KaamLink.Infrastructure.Identity;
 using KaamLink.Infrastructure.Persistence;
+using KaamLink.Infrastructure.Skills;
+using KaamLink.Infrastructure.Workers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,6 +30,10 @@ public static class DependencyInjection
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IAuditService, AuditService>();
+
+        services.AddScoped<IWorkerProfileRepository, WorkerProfileRepository>();
+        services.AddScoped<ICompanyRepository, CompanyRepository>();
+        services.AddScoped<ISkillCatalogRepository, SkillCatalogRepository>();
 
         // OTP provider selection behind the port (§35). "log" is the development
         // sandbox; Production startup guards reject it until a real provider is wired.

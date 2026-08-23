@@ -37,7 +37,9 @@ public sealed record UserSummary(
     string? PreferredLocale,
     string Status,
     bool IsPlatformAdmin,
-    DateTimeOffset CreatedAt)
+    DateTimeOffset CreatedAt,
+    MeWorkerInfo Worker,
+    IReadOnlyList<MeCompanyMembership> Memberships)
 {
     public static UserSummary From(User user) => new(
         user.Id,
@@ -46,8 +48,33 @@ public sealed record UserSummary(
         user.PreferredLocale,
         user.Status.ToString(),
         user.IsPlatformAdmin,
-        user.CreatedAt);
+        user.CreatedAt,
+        MeWorkerInfo.None,
+        []);
+
+    public static UserSummary From(
+        User user,
+        MeWorkerInfo worker,
+        IReadOnlyList<MeCompanyMembership> memberships) => new(
+        user.Id,
+        user.PhoneNumber,
+        user.DisplayName,
+        user.PreferredLocale,
+        user.Status.ToString(),
+        user.IsPlatformAdmin,
+        user.CreatedAt,
+        worker,
+        memberships);
 }
+
+/// <summary>Worker-profile presence/progress shown to the app for role gating.</summary>
+public sealed record MeWorkerInfo(bool HasProfile, bool OnboardingComplete, int ProfileCompletenessPct)
+{
+    public static readonly MeWorkerInfo None = new(false, false, 0);
+}
+
+/// <summary>A company the caller belongs to, with their role around it.</summary>
+public sealed record MeCompanyMembership(Guid CompanyId, string Name, string Role, string VerificationState);
 
 public sealed record AuthTokensResponse(
     string TokenType,
