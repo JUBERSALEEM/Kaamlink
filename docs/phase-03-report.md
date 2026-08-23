@@ -93,12 +93,12 @@ product owner asked).
   `10.0.2.2`/`localhost` (dev machine, incl. `adb reverse`); TLS required everywhere
   else. Release API URL intentionally unset until environments exist (Phase 06).
 
-## 3. Testing delivered (35 backend tests total)
+## 3. Testing delivered (50 backend tests total)
 
 | Suite | Count | Highlights |
 |---|---|---|
-| Unit (fakes, no DB) | 24 | `WorkerProfileServiceTests` (6): progressive onboarding reaching exactly 100 → complete; partial patches never wipe earlier steps; unknown skill / salary cross-validation / invalid enums → stable codes; honest 404. `CompanyServiceTests` (6): pending + owner on create; approve → verified (+audit); rejection requires reason; double review rejected; queue is pending-only oldest-first; 4th owned company rejected |
-| Integration (WebApplicationFactory + Testcontainers PostgreSQL) | 11 | `OnboardingFlowTests` (new, 6): **worker E2E over HTTP** (catalog → 55% → 70% → 100%, `/me` reflects completion; skills all `SelfDeclared`); catalog requires auth + seeds intact (only driver needs certification); employer E2E (create → Pending → admin queue → approve → Verified, `/me` memberships drive app gating); rejection reason visible to employer + queue drains; **non-admin → 403 on both admin endpoints**; membership/profile scoping (outsider sees nothing; fresh user gets 404 not a blank 200). Phase-02 `AuthFlowTests` (5) untouched and extended by the factory's admin bootstrap override |
+| Unit (fakes, no DB) | 35 (12 new) | **New:** `WorkerProfileServiceTests` (6): progressive onboarding reaching exactly 100 → complete; partial patches never wipe earlier steps; unknown skill / salary cross-validation / invalid enums → stable codes; honest 404. `CompanyServiceTests` (6): pending + owner on create; approve → verified (+audit); rejection requires reason; double review rejected; queue is pending-only oldest-first; 4th owned company rejected. Phase-02 suites (23) untouched |
+| Integration (WebApplicationFactory + Testcontainers PostgreSQL) | 15 (6 new) | **New `OnboardingFlowTests` (6):** worker E2E over HTTP (catalog → 55% → 70% → 100%, `/me` reflects completion; skills all `SelfDeclared`); catalog requires auth + seeds intact (only the driver needs certification); employer E2E (create → Pending → admin queue → approve → Verified, `/me` memberships drive app gating); rejection reason visible to employer + queue drains; **non-admin → 403 on both admin endpoints**; membership/profile scoping. Phase-02 `AuthFlowTests` (9) untouched; the factory now also pins the admin bootstrap phone |
 
 `run: cd backend && dotnet test` (integration tests self-provision a PostgreSQL container).
 
@@ -122,6 +122,9 @@ product owner asked).
     have misrouted the app after silent token refresh).
 - ✅ Test doubles mirror real implementations (`InMemorySkillCatalogRepository`,
   `SeedTestCatalog` mirrors seed names incl. Arabic).
+- ✅ Committed locally on `arena/01a02fc9-kaamlink` (3 commits: backend / Android /
+  docs). **Push is currently blocked by an expired sandbox GitHub token — the repo's
+  GitHub connection needs a reconnect (then `git push origin arena/01a02fc9-kaamlink`).**
 - ⚠️ CI workflow files remain at `ci/workflows/` — pushing real GitHub workflows
   needs the `workflows` permission; activation is one command (`ci/README.md`).
 
