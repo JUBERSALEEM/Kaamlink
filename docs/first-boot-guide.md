@@ -141,9 +141,26 @@ the reason is then visible to the employer.
 | "No connection. Check your network…" on Send code | Backend not running → `docker compose up`; on a physical phone you forgot `adb reverse tcp:8080 tcp:8080` |
 | Cleartext HTTP blocked | You're on a Release build (not supported yet) — build Debug |
 | No OTP code arrives | By design: read it from the API logs (sandbox SMS) |
+| **`NU1101/NU1102` "Unable to find package …" on many/all packages** | Wrong/incomplete NuGet sources or SDK — diagnose below (§6a) |
+| `NETSDK1045` / "The current .NET SDK does not support targeting .NET 10.0" | SDK too old — install the **.NET 10 SDK** (the repo's `global.json` will now say exactly this) |
+| `Microsoft.Maui.Controls` not found / `maui-android` workload errors | Workload missing — `dotnet workload install maui-android` (repair: `dotnet workload repair`) |
 | App restores to sign-in after a phone restart | Keystore session lost/unavailable → sign in again (refresh token rotation is server-side and correct) |
 | `docker compose up` port conflict 5432/8080 | Stop the local Postgres/other service on those ports or remap in compose |
 | Emulator can't build: missing SDK | `dotnet build` first run downloads Android SDK bits — accept licenses when prompted |
+
+### 6a. "Package/repository could not be found" diagnostics (in order)
+
+1. **SDK check** — `dotnet --list-sdks` must show a `10.0.x` entry. No 10.x → install
+   the .NET 10 SDK, then re-run. (Without it you get dozens of misleading errors.)
+2. **Feed check** — `dotnet nuget list source` must include
+   `https://api.nuget.org/v3/index.json`. The repo ships its own `NuGet.config` so
+   this should be automatic; if your company PC forces an internal mirror, restore
+   must go through that mirror instead (admin help needed).
+3. **Workload check** — `dotnet workload list` must list `maui-android`.
+   If it errors or it's missing: `dotnet workload install maui-android`.
+4. **Clean retry** — `dotnet restore KaamLink.csproj --no-cache`.
+5. If it still fails, copy the **first 5 error lines verbatim** and report them —
+   guesses at this point waste your time and mine.
 
 ## 7. Run the test suites (backend)
 

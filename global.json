@@ -1,0 +1,9 @@
+{
+  // Repo-wide SDK gate: .slnx + net10.0-android require .NET 10. rollForward lets
+  // newer feature bands (10.0.2xx+) build; older SDKs fail fast with a CLEAR
+  // message instead of a wall of confusing restore/targeting errors.
+  "sdk": {
+    "version": "10.0.100",
+    "rollForward": "latestFeature"
+  }
+}
