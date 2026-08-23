@@ -1,6 +1,3 @@
-global using Fonts;
-global using KaamLink.Data;
-global using KaamLink.PageModels;
-global using KaamLink.Pages;
-global using KaamLink.Services;
-global using KaamLink.Utilities;
+global using CommunityToolkit.Mvvm.ComponentModel;
+global using CommunityToolkit.Mvvm.Input;
+global using KaamLink.Core.Navigation;

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:KaamLink.Features.Onboarding"
+             xmlns:strings="clr-namespace:KaamLink.Resources.Strings"
+             x:Class="KaamLink.Features.Onboarding.RoleSelectionPage"
+             x:DataType="vm:RoleSelectionViewModel"
+             Title="{x:Static strings:AppStrings.AppName}"
+             Shell.NavBarIsVisible="False">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24"
+                             Spacing="24"
+                             VerticalOptions="Center">
+
+            <!-- Brand header -->
+            <VerticalStackLayout Spacing="8">
+                <Label SemanticProperties.HeadingLevel="Level1"
+                       Style="{StaticResource Title1}"
+                       Text="{x:Static strings:AppStrings.AppName}"
+                       TextColor="{StaticResource Primary}" />
+                <Label Style="{StaticResource BodySecondary}"
+                       Text="{x:Static strings:AppStrings.AppTagline}" />
+            </VerticalStackLayout>
+
+            <!-- Role prompt -->
+            <VerticalStackLayout Padding="0,8,0,0" Spacing="4">
+                <Label SemanticProperties.HeadingLevel="Level2"
+                       Style="{StaticResource Title2}"
+                       Text="{x:Static strings:AppStrings.RoleSelectionTitle}" />
+                <Label Style="{StaticResource BodySecondary}"
+                       Text="{x:Static strings:AppStrings.RoleSelectionSubtitle}" />
+            </VerticalStackLayout>
+
+            <!-- Worker card -->
+            <Border Style="{StaticResource Card}">
+                <Grid ColumnDefinitions="Auto,*"
+                      ColumnSpacing="16">
+                    <Label Grid.Column="0"
+                           FontSize="40"
+                           SemanticProperties.Description="{x:Static strings:AppStrings.RoleWorkerTitle}"
+                           Text="👷"
+                           VerticalOptions="Center" />
+                    <VerticalStackLayout Grid.Column="1" Spacing="8">
+                        <Label Style="{StaticResource SectionTitle}"
+                               Text="{x:Static strings:AppStrings.RoleWorkerTitle}" />
+                        <Label Style="{StaticResource BodySecondary}"
+                               Text="{x:Static strings:AppStrings.RoleWorkerDescription}" />
+                        <Button Command="{Binding NavigateToWorkerCommand}"
+                                SemanticProperties.Description="{x:Static strings:AppStrings.WorkerCta}"
+                                Text="{x:Static strings:AppStrings.WorkerCta}" />
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
+
+            <!-- Employer card -->
+            <Border Style="{StaticResource Card}">
+                <Grid ColumnDefinitions="Auto,*"
+                      ColumnSpacing="16">
+                    <Label Grid.Column="0"
+                           FontSize="40"
+                           SemanticProperties.Description="{x:Static strings:AppStrings.RoleEmployerTitle}"
+                           Text="🏭"
+                           VerticalOptions="Center" />
+                    <VerticalStackLayout Grid.Column="1" Spacing="8">
+                        <Label Style="{StaticResource SectionTitle}"
+                               Text="{x:Static strings:AppStrings.RoleEmployerTitle}" />
+                        <Label Style="{StaticResource BodySecondary}"
+                               Text="{x:Static strings:AppStrings.RoleEmployerDescription}" />
+                        <Button Command="{Binding NavigateToEmployerCommand}"
+                                SemanticProperties.Description="{x:Static strings:AppStrings.EmployerCta}"
+                                Text="{x:Static strings:AppStrings.EmployerCta}" />
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,6 +1,23 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-	<application android:allowBackup="true" android:icon="@mipmap/appicon" android:roundIcon="@mipmap/appicon_round" android:supportsRtl="true"></application>
-	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<!--
+		Permission policy: request the minimum. Permissions (camera, location,
+		microphone, storage, contacts, SMS) are added ONLY when a real feature
+		requires them, with runtime-just-in-time requests (see docs/phase-01-report.md, section K).
+	-->
 	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+	<!--
+		allowBackup="false": auth tokens (SecureStorage) and future cached
+		documents must not silently migrate to other devices via Auto Backup.
+		Revisit with a data-extraction-rules.xml if a legitimate restore need appears.
+		supportsRtl="true": required for the Arabic (RTL) experience.
+	-->
+	<application
+		android:allowBackup="false"
+		android:icon="@mipmap/appicon"
+		android:roundIcon="@mipmap/appicon_round"
+		android:supportsRtl="true">
+	</application>
 </manifest>

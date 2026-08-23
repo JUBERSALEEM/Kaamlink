@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:KaamLink.Features.Employer"
+             xmlns:strings="clr-namespace:KaamLink.Resources.Strings"
+             x:Class="KaamLink.Features.Employer.EmployerHomePage"
+             x:DataType="vm:EmployerHomeViewModel"
+             Title="{x:Static strings:AppStrings.EmployerHomeTitle}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="16">
+
+            <Label FontSize="56" Text="🏭" />
+
+            <Label SemanticProperties.HeadingLevel="Level1"
+                   Style="{StaticResource Title1}"
+                   Text="{x:Static strings:AppStrings.EmployerHomeTitle}" />
+
+            <Label Style="{StaticResource BodySecondary}"
+                   Text="{x:Static strings:AppStrings.EmployerHomePlaceholder}" />
+
+            <Border Style="{StaticResource Card}">
+                <Label Style="{StaticResource Caption}"
+                       Text="{x:Static strings:AppStrings.EmployerHomeRoadmapNote}" />
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

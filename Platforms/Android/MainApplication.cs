@@ -1,7 +1,7 @@
-﻿using Android.App;
+using Android.App;
 using Android.Runtime;
 
-namespace Kaamlink
+namespace KaamLink
 {
     [Application]
     public class MainApplication : MauiApplication

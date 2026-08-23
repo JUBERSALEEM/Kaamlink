@@ -361,3 +361,22 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+# ==================== KaamLink additions ====================
+# Signing keys & local secrets — NEVER commit these (see docs/phase-01-report.md, section I)
+*.keystore
+*.jks
+*.p12
+key.properties
+
+# Environment-specific configuration
+.env
+.env.*
+!.env.example
+appsettings.*.local.json
+
+# Local IDE/tooling state
+.vs/
+.vscode/
+
+# Android local config (SDK paths are machine-specific)
+**/Platforms/Android/local.properties

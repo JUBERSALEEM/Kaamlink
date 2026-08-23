@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
-namespace Kaamlink
+namespace KaamLink
 {
     public partial class App : Application
     {

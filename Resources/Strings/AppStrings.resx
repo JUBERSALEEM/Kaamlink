@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Neutral (English) user-facing strings — the ONLY place user-facing copy lives.
+    Rules:
+      * XAML/C# reference AppStrings.* via x:Static / the strongly-typed class only.
+      * Every key added here MUST also be added to AppStrings.ar.resx and to
+        AppStrings.Designer.cs (hand-maintained; ResXFileCodeGenerator does not
+        run in CLI builds, which is why the designer file is committed).
+  -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AppName" xml:space="preserve">
+    <value>KaamLink</value>
+    <comment>Brand name — do not translate, transliterate only.</comment>
+  </data>
+  <data name="AppTagline" xml:space="preserve">
+    <value>Direct hiring for practical work in the UAE.</value>
+  </data>
+  <data name="RoleSelectionTitle" xml:space="preserve">
+    <value>Get started</value>
+  </data>
+  <data name="RoleSelectionSubtitle" xml:space="preserve">
+    <value>Choose how you want to use KaamLink.</value>
+  </data>
+  <data name="RoleWorkerTitle" xml:space="preserve">
+    <value>I'm looking for work</value>
+  </data>
+  <data name="RoleWorkerDescription" xml:space="preserve">
+    <value>Show your skills, find genuine jobs, and get assessed fairly.</value>
+  </data>
+  <data name="RoleEmployerTitle" xml:space="preserve">
+    <value>I'm hiring workers</value>
+  </data>
+  <data name="RoleEmployerDescription" xml:space="preserve">
+    <value>Find suitable workers, assess practical ability, and hire confidently.</value>
+  </data>
+  <data name="WorkerCta" xml:space="preserve">
+    <value>Find work</value>
+  </data>
+  <data name="EmployerCta" xml:space="preserve">
+    <value>Hire workers</value>
+  </data>
+  <data name="WorkerHomeTitle" xml:space="preserve">
+    <value>Worker home</value>
+  </data>
+  <data name="WorkerHomePlaceholder" xml:space="preserve">
+    <value>Your jobs, applications, site visits and assessments will appear here.</value>
+  </data>
+  <data name="WorkerHomeRoadmapNote" xml:space="preserve">
+    <value>This area is under construction — job discovery arrives in the next phase.</value>
+  </data>
+  <data name="EmployerHomeTitle" xml:space="preserve">
+    <value>Employer home</value>
+  </data>
+  <data name="EmployerHomePlaceholder" xml:space="preserve">
+    <value>Your vacancies, applicants, site visits and hiring pipeline will appear here.</value>
+  </data>
+  <data name="EmployerHomeRoadmapNote" xml:space="preserve">
+    <value>This area is under construction — vacancy management arrives in the next phase.</value>
+  </data>
+</root>
