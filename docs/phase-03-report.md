@@ -122,9 +122,11 @@ product owner asked).
     have misrouted the app after silent token refresh).
 - ✅ Test doubles mirror real implementations (`InMemorySkillCatalogRepository`,
   `SeedTestCatalog` mirrors seed names incl. Arabic).
-- ✅ Committed locally on `arena/01a02fc9-kaamlink` (3 commits: backend / Android /
-  docs). **Push is currently blocked by an expired sandbox GitHub token — the repo's
-  GitHub connection needs a reconnect (then `git push origin arena/01a02fc9-kaamlink`).**
+- ✅ **All package pins verified against the live nuget.org index** (every referenced
+  version exists; restore failures on a dev machine point at SDK/feed/workload, not pins).
+  Repo additionally ships `NuGet.config` (explicit gallery) + `global.json` (.NET 10 gate).
+- ✅ Pushed to `arena/01a02fc9-kaamlink` (backend / Android / docs / build-hardening
+  commits).
 - ⚠️ CI workflow files remain at `ci/workflows/` — pushing real GitHub workflows
   needs the `workflows` permission; activation is one command (`ci/README.md`).
 
