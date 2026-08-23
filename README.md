@@ -12,23 +12,28 @@ with employers (factories, workshops, contractors, SMEs, warehouses) — built a
 
 ## Status
 
-**Phase 01 — foundation complete.** The repository previously contained Microsoft
-sample/template code (a .NET MAUI workshop task-tracker unrelated to this product);
-it has been fully removed and replaced with a clean, minimal, compiling foundation.
+**Phase 03 — onboarding complete; the app is ready for its first boot.**
 
-What exists today (intentionally small):
+* **Phase 01** — foundation: sample code removed, clean Android-first MAUI shell
+  → [docs/phase-01-report.md](docs/phase-01-report.md)
+* **Phase 02** — backend: phone-OTP auth (JWT + rotating refresh tokens), audit log,
+  rate limiting, CI, docker-compose → [docs/phase-02-report.md](docs/phase-02-report.md)
+* **Phase 03** — onboarding on both sides: OTP sign-in in the app; worker
+  3-step onboarding (Skill Passport); employer company registration; admin
+  verification-lite; seeded bilingual occupation catalog
+  → [docs/phase-03-report.md](docs/phase-03-report.md)
 
-* Android-first .NET MAUI app shell with dependency injection
-* Role-separated entry point: **Looking for work** / **Hiring workers**
-  (Worker and Employer are separate experiences with separate navigation roots)
-* Navigation-skeleton pages for the Worker and Employer experience roots
-  (honest placeholders — no fake functionality; features land in later phases)
-* Design-system tokens (colors, typography, card/button styles) in `Resources/Styles`
-* Localization infrastructure — English + Arabic (RTL), `Resources/Strings`
-* Centralized route registry (`Core/Navigation/AppRoutes.cs`)
+**Want to run it? → [docs/first-boot-guide.md](docs/first-boot-guide.md)**
+(backend up → app on emulator/device → sign in with your phone → onboard → home).
 
-Full audit, architecture and roadmap: **[docs/phase-01-report.md](docs/phase-01-report.md)**
-Architecture decisions: **[docs/adr](docs/adr)**
+What exists today:
+
+* Android-first .NET MAUI app: role selection → phone-OTP sign-in → guided onboarding
+  → homes, session kept in the Android Keystore (secure storage), silent token refresh
+* Backend API (ASP.NET Core 10 + PostgreSQL): auth, worker profiles, companies,
+  admin review queue, bilingual skill catalog (seeded)
+* Design system + full EN/AR localization, centralized routes/strings/status labels
+* Honest placeholders only — job discovery and vacancy posting arrive next phase (§50)
 
 ## Stack (V1)
 
@@ -37,28 +42,36 @@ Architecture decisions: **[docs/adr](docs/adr)**
 | Client    | .NET MAUI (net10.0-android), XAML + MVVM      | Android-only in V1; min SDK 21 |
 | MVVM      | CommunityToolkit.Mvvm (source generators)     | `[ObservableProperty]` / `[RelayCommand]` |
 | Strings   | .resx (en neutral + ar satellite)             | RTL supported (`supportsRtl=true`) |
-| Backend   | *Not built yet* — ASP.NET Core + PostgreSQL (recommended) | See phase-01 report §E/§J |
+| Backend   | ASP.NET Core 10 + PostgreSQL 16 (modular monolith) | see `backend/README.md` |
 
 ## Repository layout
 
 ```
 KaamLink.csproj          Android-only MAUI project (RootNamespace: KaamLink)
-App.xaml(.cs)            App entry; merges Colors.xaml + Styles.xaml
-AppShell.xaml(.cs)       Shell root — role-selection page + route registration
-MauiProgram.cs           App composition root (DI registrations: RegisterServices)
-Core/                    Cross-feature app concerns
-  Navigation/AppRoutes.cs  Central route-name registry (no magic strings)
+App.xaml(.cs)            App entry; converters + merges Colors.xaml + Styles.xaml
+AppShell.xaml(.cs)       Shell root — all pages are top-level routes (absolute navigation)
+MauiProgram.cs           App composition root (RegisterServices)
+Core/
+  Navigation/            AppRoutes (route registry), RoleNavigator (role gating)
+  Api/                   ApiClient + DTOs (source-gen JSON), SessionService, token store,
+                         bearer/refresh handler, ApiException — the only place URLs live
+  Presentation/          EnumDisplay (enum ↔ localized labels), converters, localization helpers
+  Text/                  PhoneInput (mirrors backend phone normalization)
 Features/
   Onboarding/            Role selection (worker vs employer entry)
-  Worker/                Worker experience root (WorkerHome*)
-  Employer/              Employer experience root (EmployerHome*)
+  Auth/                  Phone login + OTP verify (resend cooldown)
+  Worker/                WorkerOnboarding (3 steps) + WorkerHome (live profile)
+  Employer/              EmployerOnboarding (company) + EmployerHome (verification state)
 Resources/
   Styles/                Colors.xaml (design tokens), Styles.xaml (design system)
   Strings/               AppStrings.resx (en) · AppStrings.ar.resx · committed Designer.cs
   Fonts/                 OpenSans Regular/Semibold
   AppIcon/ Splash/       Interim brand mark (replace in branding phase)
-Platforms/Android/       Manifest (min permissions, allowBackup=false), colors
-docs/                    Phase 01 report + ADRs
+Platforms/Android/       Manifest, network_security_config (cleartext = dev machine only)
+backend/                 ASP.NET Core API, EF Core migrations, tests, docker-compose
+docs/                    Phase reports, ADRs, first-boot guide
+tools/                   Static cross-verification (runs without a .NET SDK)
+ci/                      CI workflow definitions (activate per ci/README.md)
 ```
 
 ## Build
@@ -75,9 +88,13 @@ dotnet build KaamLink.csproj -f net10.0-android -c Debug
 Run on a device/emulator (one-time per device): `dotnet build -t:Run -f net10.0-android`
 (or use your IDE's deploy). Package for release: `dotnet publish -f net10.0-android -c Release`.
 
-> Note: this environment has no .NET SDK and no package/workload egress, so the
-> foundation was authored compile-correct but could not be built here. Run the
-> commands above on a developer machine/CI as the first verification step.
+The app needs the backend: `cd backend && cp .env.example .env && docker compose up --build`
+(API on http://localhost:8080; OTP codes appear in the API logs while the SMS sandbox is `log`).
+**Complete walkthrough: [docs/first-boot-guide.md](docs/first-boot-guide.md).**
+
+> Note: this repository environment has no .NET SDK and no package/workload egress, so code
+> is authored compile-correct and statically cross-verified (`tools/verify-phase03.py`,
+> 93 checks) but the first `dotnet build` locally/CI is the formal verification gate.
 
 ## Working agreements
 
