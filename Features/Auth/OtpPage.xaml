@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:KaamLink.Features.Auth"
+             xmlns:strings="clr-namespace:KaamLink.Resources.Strings"
+             x:Class="KaamLink.Features.Auth.OtpPage"
+             x:DataType="vm:OtpViewModel"
+             Title="{x:Static strings:AppStrings.OtpTitle}"
+             Shell.NavBarIsVisible="False">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24"
+                             Spacing="20"
+                             VerticalOptions="Center">
+
+            <VerticalStackLayout Spacing="8">
+                <Label SemanticProperties.HeadingLevel="Level1"
+                       Style="{StaticResource Title1}"
+                       Text="{x:Static strings:AppStrings.OtpTitle}" />
+                <Label Style="{StaticResource BodySecondary}"
+                       Text="{x:Static strings:AppStrings.OtpSubtitle}" />
+                <Label FontFamily="OpenSansSemibold"
+                       Style="{StaticResource Body}"
+                       Text="{Binding Phone}" />
+            </VerticalStackLayout>
+
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Style="{StaticResource SectionTitle}"
+                           Text="{x:Static strings:AppStrings.OtpCodeLabel}" />
+                    <Entry AutomationProperties.Name="{x:Static strings:AppStrings.OtpCodeLabel}"
+                           FontSize="24"
+                           HorizontalTextAlignment="Center"
+                           IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}, FallbackValue=True}"
+                           Keyboard="Numeric"
+                           MaxLength="6"
+                           Placeholder="••••••"
+                           Text="{Binding Code}" />
+                    <Label IsVisible="{Binding HasError}"
+                           Style="{StaticResource Caption}"
+                           Text="{Binding ErrorMessage}"
+                           TextColor="{StaticResource Error}" />
+                    <Button Command="{Binding VerifyCommand}"
+                            IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}, FallbackValue=True}"
+                            SemanticProperties.Description="{x:Static strings:AppStrings.VerifyCta}"
+                            Text="{x:Static strings:AppStrings.VerifyCta}" />
+                    <Button BackgroundColor="Transparent"
+                            Command="{Binding ResendCommand}"
+                            IsEnabled="{Binding CanResend}"
+                            SemanticProperties.Description="{x:Static strings:AppStrings.ResendCta}"
+                            Text="{Binding ResendText}"
+                            TextColor="{StaticResource Primary}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

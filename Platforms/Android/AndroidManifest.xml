@@ -13,10 +13,13 @@
 		documents must not silently migrate to other devices via Auto Backup.
 		Revisit with a data-extraction-rules.xml if a legitimate restore need appears.
 		supportsRtl="true": required for the Arabic (RTL) experience.
+		networkSecurityConfig: cleartext HTTP only to the local dev machine
+		(10.0.2.2 / localhost via adb reverse); TLS required everywhere else.
 	-->
 	<application
 		android:allowBackup="false"
 		android:icon="@mipmap/appicon"
+		android:networkSecurityConfig="@xml/network_security_config"
 		android:roundIcon="@mipmap/appicon_round"
 		android:supportsRtl="true">
 	</application>

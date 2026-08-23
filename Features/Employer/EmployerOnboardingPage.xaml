@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:KaamLink.Features.Employer"
+             xmlns:strings="clr-namespace:KaamLink.Resources.Strings"
+             x:Class="KaamLink.Features.Employer.EmployerOnboardingPage"
+             x:DataType="vm:EmployerOnboardingViewModel"
+             Title="{x:Static strings:AppStrings.EobTitle}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="16">
+
+            <VerticalStackLayout Spacing="4">
+                <Label SemanticProperties.HeadingLevel="Level1"
+                       Style="{StaticResource Title2}"
+                       Text="{x:Static strings:AppStrings.EobTitle}" />
+                <Label Style="{StaticResource BodySecondary}"
+                       Text="{x:Static strings:AppStrings.EobSubtitle}" />
+            </VerticalStackLayout>
+
+            <Label IsVisible="{Binding HasError}"
+                   Style="{StaticResource Body}"
+                   Text="{Binding ErrorMessage}"
+                   TextColor="{StaticResource Error}" />
+
+            <Label Style="{StaticResource SectionTitle}"
+                   Text="{x:Static strings:AppStrings.CompanyNameLabel}" />
+            <Entry AutomationProperties.Name="{x:Static strings:AppStrings.CompanyNameLabel}"
+                   Text="{Binding CompanyName}" />
+
+            <Label Style="{StaticResource SectionTitle}"
+                   Text="{x:Static strings:AppStrings.CompanyCategoryLabel}" />
+            <Picker ItemDisplayBinding="{Binding Label}"
+                    ItemsSource="{Binding BusinessCategories}"
+                    SelectedItem="{Binding SelectedCategory}"
+                    Title="{x:Static strings:AppStrings.CompanyCategoryLabel}" />
+
+            <Label Style="{StaticResource SectionTitle}"
+                   Text="{x:Static strings:AppStrings.EmirateLabel}" />
+            <Picker ItemDisplayBinding="{Binding Label}"
+                    ItemsSource="{Binding Emirates}"
+                    SelectedItem="{Binding SelectedEmirate}"
+                    Title="{x:Static strings:AppStrings.EmirateLabel}" />
+
+            <Label Style="{StaticResource SectionTitle}"
+                   Text="{x:Static strings:AppStrings.AreaLabel}" />
+            <Entry AutomationProperties.Name="{x:Static strings:AppStrings.AreaLabel}"
+                   Text="{Binding Area}" />
+
+            <Label Style="{StaticResource SectionTitle}"
+                   Text="{x:Static strings:AppStrings.TradeLicenseLabel}" />
+            <Entry AutomationProperties.Name="{x:Static strings:AppStrings.TradeLicenseLabel}"
+                   Text="{Binding TradeLicenseNumber}" />
+            <Label Style="{StaticResource Caption}"
+                   Text="{x:Static strings:AppStrings.TradeLicenseHint}" />
+
+            <Button Command="{Binding SubmitCommand}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}, FallbackValue=True}"
+                    SemanticProperties.Description="{x:Static strings:AppStrings.EobSubmitCta}"
+                    Text="{x:Static strings:AppStrings.EobSubmitCta}" />
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

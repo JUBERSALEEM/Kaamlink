@@ -8,22 +8,119 @@
              Title="{x:Static strings:AppStrings.WorkerHomeTitle}">
 
     <ScrollView>
-        <VerticalStackLayout Padding="24" Spacing="16">
+        <VerticalStackLayout Padding="24" Spacing="20">
 
-            <Label FontSize="56" Text="👷" />
+            <ActivityIndicator HorizontalOptions="Center"
+                               IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}" />
 
-            <Label SemanticProperties.HeadingLevel="Level1"
-                   Style="{StaticResource Title1}"
-                   Text="{x:Static strings:AppStrings.WorkerHomeTitle}" />
+            <VerticalStackLayout IsVisible="{Binding HasError}" Spacing="12">
+                <Label Style="{StaticResource Body}"
+                       Text="{Binding ErrorMessage}"
+                       TextColor="{StaticResource Error}" />
+                <Button Command="{Binding LoadCommand}"
+                        SemanticProperties.Description="{x:Static strings:AppStrings.RetryCta}"
+                        Text="{x:Static strings:AppStrings.RetryCta}" />
+            </VerticalStackLayout>
 
-            <Label Style="{StaticResource BodySecondary}"
-                   Text="{x:Static strings:AppStrings.WorkerHomePlaceholder}" />
+            <VerticalStackLayout IsVisible="{Binding IsLoaded}" Spacing="20">
 
-            <Border Style="{StaticResource Card}">
-                <Label Style="{StaticResource Caption}"
-                       Text="{x:Static strings:AppStrings.WorkerHomeRoadmapNote}" />
-            </Border>
+                <!-- Identity -->
+                <VerticalStackLayout Spacing="4">
+                    <Label SemanticProperties.HeadingLevel="Level1"
+                           Style="{StaticResource Title1}"
+                           Text="{Binding DisplayName}" />
+                    <Label Style="{StaticResource BodySecondary}"
+                           Text="{Binding Headline}" />
+                </VerticalStackLayout>
 
+                <!-- Completeness -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Style="{StaticResource SectionTitle}"
+                               Text="{Binding CompletenessText}" />
+                        <ProgressBar HeightRequest="8"
+                                     Progress="{Binding CompletenessProgress}"
+                                     ProgressColor="{StaticResource Primary}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Skill Passport -->
+                <VerticalStackLayout Spacing="8">
+                    <Label SemanticProperties.HeadingLevel="Level2"
+                           Style="{StaticResource SectionTitle}"
+                           Text="{x:Static strings:AppStrings.SkillsSectionTitle}" />
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Skills}" Spacing="8">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:SkillRowModel">
+                                <Border Padding="12,10"
+                                        Stroke="{StaticResource Border}"
+                                        StrokeShape="RoundRectangle 12">
+                                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
+                                        <Label Grid.Column="0"
+                                               FontFamily="OpenSansSemibold"
+                                               Style="{StaticResource Body}"
+                                               Text="{Binding Label}"
+                                               VerticalOptions="Center" />
+                                        <Label Grid.Column="1"
+                                               Style="{StaticResource Caption}"
+                                               Text="{Binding YearsSummary}"
+                                               VerticalOptions="Center" />
+                                        <Border Grid.Column="2"
+                                                BackgroundColor="{StaticResource Gray100}"
+                                                Padding="8,2"
+                                                Stroke="{StaticResource Border}"
+                                                StrokeShape="RoundRectangle 10">
+                                            <Label Style="{StaticResource Caption}"
+                                                   Text="{Binding StateLabel}"
+                                                   VerticalOptions="Center" />
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+
+                <!-- Availability & salary -->
+                <VerticalStackLayout Spacing="8">
+                    <Label SemanticProperties.HeadingLevel="Level2"
+                           Style="{StaticResource SectionTitle}"
+                           Text="{x:Static strings:AppStrings.AvailabilitySectionTitle}" />
+                    <Label Style="{StaticResource Body}"
+                           Text="{Binding AvailabilityText}" />
+                    <Label IsVisible="{Binding HasSalary}"
+                           Style="{StaticResource Body}"
+                           Text="{Binding SalaryText}" />
+                </VerticalStackLayout>
+
+                <Label IsVisible="{Binding HasAbout}"
+                       Style="{StaticResource BodySecondary}"
+                       Text="{Binding About}" />
+
+                <!-- Honest roadmap note — job discovery is NOT in this build (§50). -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Style="{StaticResource Body}"
+                               Text="{x:Static strings:AppStrings.WorkerHomePlaceholder}" />
+                        <Label Style="{StaticResource Caption}"
+                               Text="{x:Static strings:AppStrings.WorkerHomeRoadmapNote}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Session actions -->
+                <Button BackgroundColor="Transparent"
+                        Command="{Binding SwitchToEmployerCommand}"
+                        SemanticProperties.Description="{x:Static strings:AppStrings.SwitchToEmployerCta}"
+                        Text="{x:Static strings:AppStrings.SwitchToEmployerCta}"
+                        TextColor="{StaticResource Primary}" />
+                <Button BackgroundColor="Transparent"
+                        Command="{Binding LogoutCommand}"
+                        SemanticProperties.Description="{x:Static strings:AppStrings.LogoutCta}"
+                        Text="{x:Static strings:AppStrings.LogoutCta}"
+                        TextColor="{StaticResource Error}" />
+
+            </VerticalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

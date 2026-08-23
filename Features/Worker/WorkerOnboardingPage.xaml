@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:KaamLink.Features.Worker"
+             xmlns:strings="clr-namespace:KaamLink.Resources.Strings"
+             x:Class="KaamLink.Features.Worker.WorkerOnboardingPage"
+             x:DataType="vm:WorkerOnboardingViewModel"
+             Title="{x:Static strings:AppStrings.WobTitle}">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- Step indicator -->
+        <Label Grid.Row="0"
+               Padding="24,16"
+               Style="{StaticResource Caption}"
+               Text="{Binding StepTitle}" />
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="24,0" Spacing="20">
+
+                <ActivityIndicator HorizontalOptions="Center"
+                                   IsRunning="{Binding IsLoadingCatalog}"
+                                   IsVisible="{Binding IsLoadingCatalog}" />
+
+                <Label IsVisible="{Binding HasError}"
+                       Style="{StaticResource Body}"
+                       Text="{Binding ErrorMessage}"
+                       TextColor="{StaticResource Error}" />
+
+                <Button Command="{Binding LoadCommand}"
+                        IsVisible="{Binding CatalogReady, Converter={StaticResource InvertedBoolConverter}, FallbackValue=False}"
+                        SemanticProperties.Description="{x:Static strings:AppStrings.RetryCta}"
+                        Text="{x:Static strings:AppStrings.RetryCta}" />
+
+                <!-- STEP 1 · basics -->
+                <VerticalStackLayout IsVisible="{Binding IsStep1}" Spacing="16">
+                    <VerticalStackLayout Spacing="4">
+                        <Label SemanticProperties.HeadingLevel="Level1"
+                               Style="{StaticResource Title2}"
+                               Text="{x:Static strings:AppStrings.WobBasicsTitle}" />
+                        <Label Style="{StaticResource BodySecondary}"
+                               Text="{x:Static strings:AppStrings.WobBasicsSubtitle}" />
+                    </VerticalStackLayout>
+
+                    <Label Style="{StaticResource SectionTitle}"
+                           Text="{x:Static strings:AppStrings.DisplayNameLabel}" />
+                    <Entry AutomationProperties.Name="{x:Static strings:AppStrings.DisplayNameLabel}"
+                           Text="{Binding DisplayName}" />
+
+                    <Label Style="{StaticResource SectionTitle}"
+                           Text="{x:Static strings:AppStrings.ProfessionCategoryLabel}" />
+                    <Picker ItemDisplayBinding="{Binding Label}"
+                            ItemsSource="{Binding ProfessionCategories}"
+                            SelectedItem="{Binding SelectedProfessionCategory}"
+                            Title="{x:Static strings:AppStrings.ProfessionCategoryLabel}" />
+
+                    <Label Style="{StaticResource SectionTitle}"
+                           Text="{x:Static strings:AppStrings.ProfessionLabel}" />
+                    <Picker ItemDisplayBinding="{Binding Label}"
+                            ItemsSource="{Binding ProfessionOptions}"
+                            SelectedItem="{Binding SelectedProfession}"
+                            Title="{x:Static strings:AppStrings.ProfessionLabel}" />
+
+                    <Label Style="{StaticResource SectionTitle}"
+                           Text="{x:Static strings:AppStrings.EmirateLabel}" />
+                    <Picker ItemDisplayBinding="{Binding Label}"
+                            ItemsSource="{Binding Emirates}"
+                            SelectedItem="{Binding SelectedEmirate}"
+                            Title="{x:Static strings:AppStrings.EmirateLabel}" />
+
+                    <Label Style="{StaticResource SectionTitle}"
+                           Text="{x:Static strings:AppStrings.AreaLabel}" />
+                    <Entry AutomationProperties.Name="{x:Static strings:AppStrings.AreaLabel}"
+                           Text="{Binding Area}" />
+                </VerticalStackLayout>
+
+                <!-- STEP 2 · skills -->
+                <VerticalStackLayout IsVisible="{Binding IsStep2}" Spacing="16">
+                    <VerticalStackLayout Spacing="4">
+                        <Label SemanticProperties.HeadingLevel="Level1"
+                               Style="{StaticResource Title2}"
+                               Text="{x:Static strings:AppStrings.WobSkillsTitle}" />
+                        <Label Style="{StaticResource BodySecondary}"
+                               Text="{x:Static strings:AppStrings.WobSkillsSubtitle}" />
+                    </VerticalStackLayout>
+
+                    <Picker ItemDisplayBinding="{Binding Label}"
+                            ItemsSource="{Binding SkillCategories}"
+                            SelectedItem="{Binding SelectedSkillCategory}"
+                            Title="{x:Static strings:AppStrings.ProfessionCategoryLabel}" />
+                    <Picker ItemDisplayBinding="{Binding Label}"
+                            ItemsSource="{Binding SkillOptions}"
+                            SelectedItem="{Binding SelectedSkill}"
+                            Title="{x:Static strings:AppStrings.SkillLabel}" />
+                    <Entry AutomationProperties.Name="{x:Static strings:AppStrings.YearsLabel}"
+                           Keyboard="Numeric"
+                           MaxLength="2"
+                           Placeholder="{x:Static strings:AppStrings.YearsLabel}"
+                           Text="{Binding YearsText}" />
+                    <Button Command="{Binding AddSkillCommand}"
+                            SemanticProperties.Description="{x:Static strings:AppStrings.AddSkillCta}"
+                            Text="{x:Static strings:AppStrings.AddSkillCta}" />
+
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding AddedSkills}" Spacing="8">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:AddedSkillModel">
+                                <Border Padding="12,8"
+                                        Stroke="{StaticResource Border}"
+                                        StrokeShape="RoundRectangle 12">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Label Grid.Column="0"
+                                               Style="{StaticResource Body}"
+                                               Text="{Binding Summary}"
+                                               VerticalOptions="Center" />
+                                        <Button Grid.Column="1"
+                                                BackgroundColor="Transparent"
+                                                Command="{Binding BindingContext.RemoveSkillCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                                CommandParameter="{Binding .}"
+                                                HeightRequest="40"
+                                                Padding="16,0"
+                                                SemanticProperties.Description="{x:Static strings:AppStrings.RemoveSkillCta}"
+                                                Text="{x:Static strings:AppStrings.RemoveSkillCta}"
+                                                TextColor="{StaticResource Error}" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+
+                <!-- STEP 3 · preferences -->
+                <VerticalStackLayout IsVisible="{Binding IsStep3}" Spacing="16">
+                    <VerticalStackLayout Spacing="4">
+                        <Label SemanticProperties.HeadingLevel="Level1"
+                               Style="{StaticResource Title2}"
+                               Text="{x:Static strings:AppStrings.WobAvailabilityTitle}" />
+                    </VerticalStackLayout>
+
+                    <Label Style="{StaticResource SectionTitle}"
+                           Text="{x:Static strings:AppStrings.AvailabilityLabel}" />
+                    <Picker ItemDisplayBinding="{Binding Label}"
+                            ItemsSource="{Binding Availabilities}"
+                            SelectedItem="{Binding SelectedAvailability}"
+                            Title="{x:Static strings:AppStrings.AvailabilityLabel}" />
+
+                    <Label Style="{StaticResource SectionTitle}"
+                           Text="{x:Static strings:AppStrings.SalaryMinLabel}" />
+                    <Entry AutomationProperties.Name="{x:Static strings:AppStrings.SalaryMinLabel}"
+                           Keyboard="Numeric"
+                           Text="{Binding SalaryMinText}" />
+
+                    <Label Style="{StaticResource SectionTitle}"
+                           Text="{x:Static strings:AppStrings.SalaryMaxLabel}" />
+                    <Entry AutomationProperties.Name="{x:Static strings:AppStrings.SalaryMaxLabel}"
+                           Keyboard="Numeric"
+                           Text="{Binding SalaryMaxText}" />
+
+                    <Label Style="{StaticResource SectionTitle}"
+                           Text="{x:Static strings:AppStrings.AboutLabel}" />
+                    <Editor AutomationProperties.Name="{x:Static strings:AppStrings.AboutLabel}"
+                            AutoSize="TextChanges"
+                            MinimumHeightRequest="96"
+                            Placeholder="{x:Static strings:AppStrings.AboutPlaceholder}"
+                            Text="{Binding About}" />
+                </VerticalStackLayout>
+
+                <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                   IsVisible="{Binding IsBusy}" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Step navigation -->
+        <Grid Grid.Row="2"
+              Padding="24,12"
+              ColumnDefinitions="Auto,*"
+              ColumnSpacing="12">
+            <Button Grid.Column="0"
+                    BackgroundColor="Transparent"
+                    Command="{Binding BackCommand}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}, FallbackValue=True}"
+                    IsVisible="{Binding IsStep1, Converter={StaticResource InvertedBoolConverter}, FallbackValue=False}"
+                    SemanticProperties.Description="{x:Static strings:AppStrings.BackCta}"
+                    Text="{x:Static strings:AppStrings.BackCta}"
+                    TextColor="{StaticResource Primary}" />
+            <Button Grid.Column="1"
+                    Command="{Binding ContinueFromBasicsCommand}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}, FallbackValue=True}"
+                    IsVisible="{Binding IsStep1}"
+                    SemanticProperties.Description="{x:Static strings:AppStrings.ContinueCta}"
+                    Text="{x:Static strings:AppStrings.ContinueCta}" />
+            <Button Grid.Column="1"
+                    Command="{Binding ContinueFromSkillsCommand}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}, FallbackValue=True}"
+                    IsVisible="{Binding IsStep2}"
+                    SemanticProperties.Description="{x:Static strings:AppStrings.ContinueCta}"
+                    Text="{x:Static strings:AppStrings.ContinueCta}" />
+            <Button Grid.Column="1"
+                    Command="{Binding FinishCommand}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}, FallbackValue=True}"
+                    IsVisible="{Binding IsStep3}"
+                    SemanticProperties.Description="{x:Static strings:AppStrings.FinishCta}"
+                    Text="{x:Static strings:AppStrings.FinishCta}" />
+        </Grid>
+
+    </Grid>
+</ContentPage>

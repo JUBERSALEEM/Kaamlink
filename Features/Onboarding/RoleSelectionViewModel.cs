@@ -1,16 +1,56 @@
+using KaamLink.Core.Api;
+
 namespace KaamLink.Features.Onboarding
 {
     /// <summary>
     /// Entry-point choice between the Worker and Employer experiences.
-    /// Worker and Employer are separate product experiences with separate
-    /// navigation roots — they share only infrastructure (see docs/phase-01-report.md, section D).
+    /// Session-aware: a returning user with a valid session goes straight to
+    /// their destination; anyone else signs in first. The backend's /me summary
+    /// (RoleNavigator) decides home vs onboarding — never local flags.
     /// </summary>
     public partial class RoleSelectionViewModel : ObservableObject
     {
-        [RelayCommand]
-        private Task NavigateToWorkerAsync() => Shell.Current.GoToAsync(AppRoutes.WorkerHome);
+        private readonly ISessionService _session;
+        private bool _sessionRestored;
+
+        public RoleSelectionViewModel(ISessionService session) => _session = session;
+
+        [ObservableProperty]
+        private bool _isBusy;
+
+        /// <summary>Called once from the page (appearing) to restore a stored session.</summary>
+        public async Task EnsureSessionRestoredAsync()
+        {
+            if (_sessionRestored)
+                return;
+            _sessionRestored = true;
+
+            IsBusy = true;
+            try
+            {
+                await _session.RestoreAsync();
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
 
         [RelayCommand]
-        private Task NavigateToEmployerAsync() => Shell.Current.GoToAsync(AppRoutes.EmployerHome);
+        private Task NavigateToWorkerAsync() => NavigateWithRoleAsync(RoleNavigator.Worker);
+
+        [RelayCommand]
+        private Task NavigateToEmployerAsync() => NavigateWithRoleAsync(RoleNavigator.Employer);
+
+        private async Task NavigateWithRoleAsync(string role)
+        {
+            if (_session.IsAuthenticated && _session.CurrentUser is not null)
+            {
+                await Shell.Current.GoToAsync(RoleNavigator.AbsoluteRouteFor(_session.CurrentUser, role));
+                return;
+            }
+
+            await Shell.Current.GoToAsync(RoleNavigator.LoginRouteFor(role));
+        }
     }
 }

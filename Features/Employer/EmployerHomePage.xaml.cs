@@ -7,5 +7,12 @@ namespace KaamLink.Features.Employer
             InitializeComponent();
             BindingContext = viewModel;
         }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            if (BindingContext is EmployerHomeViewModel viewModel)
+                viewModel.LoadCommand.Execute(null);
+        }
     }
 }

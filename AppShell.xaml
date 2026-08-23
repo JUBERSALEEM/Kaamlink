@@ -3,15 +3,43 @@
     x:Class="KaamLink.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:auth="clr-namespace:KaamLink.Features.Auth"
+    xmlns:employer="clr-namespace:KaamLink.Features.Employer"
     xmlns:onboarding="clr-namespace:KaamLink.Features.Onboarding"
+    xmlns:worker="clr-namespace:KaamLink.Features.Worker"
     FlyoutBehavior="Disabled">
 
     <!--
+        Every flow page is a top-level ShellContent so navigation is ABSOLUTE
+        (//route) and login/onboarding pages never linger on a navigation stack.
         Route names come from Core/Navigation/AppRoutes.cs — keep them in sync.
-        Worker and Employer roots are registered in AppShell.xaml.cs via
-        Routing.RegisterRoute until role-gated navigation lands with auth (Phase 02+).
+        Pages + view models resolve through DI (registered in MauiProgram).
     -->
     <ShellContent
         Route="welcome"
         ContentTemplate="{DataTemplate onboarding:RoleSelectionPage}" />
+
+    <ShellContent
+        Route="login"
+        ContentTemplate="{DataTemplate auth:LoginPage}" />
+
+    <ShellContent
+        Route="otp"
+        ContentTemplate="{DataTemplate auth:OtpPage}" />
+
+    <ShellContent
+        Route="worker-onboarding"
+        ContentTemplate="{DataTemplate worker:WorkerOnboardingPage}" />
+
+    <ShellContent
+        Route="workerhome"
+        ContentTemplate="{DataTemplate worker:WorkerHomePage}" />
+
+    <ShellContent
+        Route="employer-onboarding"
+        ContentTemplate="{DataTemplate employer:EmployerOnboardingPage}" />
+
+    <ShellContent
+        Route="employerhome"
+        ContentTemplate="{DataTemplate employer:EmployerHomePage}" />
 </Shell>

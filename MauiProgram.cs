@@ -1,3 +1,5 @@
+using KaamLink.Core.Api;
+using KaamLink.Features.Auth;
 using KaamLink.Features.Employer;
 using KaamLink.Features.Onboarding;
 using KaamLink.Features.Worker;
@@ -28,21 +30,41 @@ namespace KaamLink
         }
 
         /// <summary>
-        /// Dependency injection registrations. Pages and view models are currently
-        /// the only services; repositories/API clients/sync services are added in
-        /// later phases behind interfaces (see docs/phase-01-report.md, section E).
+        /// Composition root. Core services are singletons (session spans the whole
+        /// app lifetime); pages and view models are transient (fresh state per visit).
+        /// The api named client carries the bearer/refresh handler; the session
+        /// service uses its own plain client so the graph cannot cycle.
         /// </summary>
         private static void RegisterServices(IServiceCollection services)
         {
+            // Core: session + api
+            services.AddSingleton<ITokenStore, SecureStorageTokenStore>();
+            services.AddSingleton<SessionService>();
+            services.AddSingleton<ISessionService>(sp => sp.GetRequiredService<SessionService>());
+            services.AddTransient<AuthHeaderHandler>();
+            services
+                .AddHttpClient<IApiClient, ApiClient>(client => client.BaseAddress = ApiConfig.BaseUri)
+                .AddHttpMessageHandler<AuthHeaderHandler>();
+
             // Entry point
             services.AddTransient<RoleSelectionPage>();
             services.AddTransient<RoleSelectionViewModel>();
 
-            // Worker experience root
+            // Auth
+            services.AddTransient<LoginPage>();
+            services.AddTransient<LoginViewModel>();
+            services.AddTransient<OtpPage>();
+            services.AddTransient<OtpViewModel>();
+
+            // Worker experience
+            services.AddTransient<WorkerOnboardingPage>();
+            services.AddTransient<WorkerOnboardingViewModel>();
             services.AddTransient<WorkerHomePage>();
             services.AddTransient<WorkerHomeViewModel>();
 
-            // Employer experience root
+            // Employer experience
+            services.AddTransient<EmployerOnboardingPage>();
+            services.AddTransient<EmployerOnboardingViewModel>();
             services.AddTransient<EmployerHomePage>();
             services.AddTransient<EmployerHomeViewModel>();
         }

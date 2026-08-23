@@ -8,22 +8,86 @@
              Title="{x:Static strings:AppStrings.EmployerHomeTitle}">
 
     <ScrollView>
-        <VerticalStackLayout Padding="24" Spacing="16">
+        <VerticalStackLayout Padding="24" Spacing="20">
 
-            <Label FontSize="56" Text="🏭" />
+            <ActivityIndicator HorizontalOptions="Center"
+                               IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}" />
 
-            <Label SemanticProperties.HeadingLevel="Level1"
-                   Style="{StaticResource Title1}"
-                   Text="{x:Static strings:AppStrings.EmployerHomeTitle}" />
+            <VerticalStackLayout IsVisible="{Binding HasError}" Spacing="12">
+                <Label Style="{StaticResource Body}"
+                       Text="{Binding ErrorMessage}"
+                       TextColor="{StaticResource Error}" />
+                <Button Command="{Binding LoadCommand}"
+                        SemanticProperties.Description="{x:Static strings:AppStrings.RetryCta}"
+                        Text="{x:Static strings:AppStrings.RetryCta}" />
+            </VerticalStackLayout>
 
-            <Label Style="{StaticResource BodySecondary}"
-                   Text="{x:Static strings:AppStrings.EmployerHomePlaceholder}" />
+            <VerticalStackLayout IsVisible="{Binding IsLoaded}" Spacing="16">
 
-            <Border Style="{StaticResource Card}">
-                <Label Style="{StaticResource Caption}"
-                       Text="{x:Static strings:AppStrings.EmployerHomeRoadmapNote}" />
-            </Border>
+                <Label SemanticProperties.HeadingLevel="Level1"
+                       Style="{StaticResource SectionTitle}"
+                       Text="{x:Static strings:AppStrings.CompanySectionTitle}" />
 
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Companies}" Spacing="12">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="vm:CompanyCardModel">
+                            <Border Style="{StaticResource Card}">
+                                <VerticalStackLayout Spacing="8">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Label Grid.Column="0"
+                                               SemanticProperties.HeadingLevel="Level2"
+                                               Style="{StaticResource SectionTitle}"
+                                               Text="{Binding Name}" />
+                                        <Border Grid.Column="1"
+                                                Padding="10,3"
+                                                Stroke="{Binding VerificationState, Converter={StaticResource VerificationStateColorConverter}}"
+                                                StrokeShape="RoundRectangle 12">
+                                            <Label FontFamily="OpenSansSemibold"
+                                                   Style="{StaticResource Caption}"
+                                                   Text="{Binding VerificationLabel}"
+                                                   TextColor="{Binding VerificationState, Converter={StaticResource VerificationStateColorConverter}}" />
+                                        </Border>
+                                    </Grid>
+                                    <Label Style="{StaticResource BodySecondary}"
+                                           Text="{Binding CategoryEmirateLine}" />
+                                    <Label Style="{StaticResource Caption}"
+                                           Text="{Binding RoleText}" />
+                                    <Label IsVisible="{Binding IsPending}"
+                                           Style="{StaticResource Caption}"
+                                           Text="{x:Static strings:AppStrings.VerificationPendingNote}" />
+                                    <Label IsVisible="{Binding HasReason}"
+                                           Style="{StaticResource Caption}"
+                                           Text="{Binding VerificationReason}"
+                                           TextColor="{StaticResource Error}" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+                <!-- Honest roadmap note — vacancy posting is NOT in this build (§50). -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Style="{StaticResource Body}"
+                               Text="{x:Static strings:AppStrings.EmployerHomePlaceholder}" />
+                        <Label Style="{StaticResource Caption}"
+                               Text="{x:Static strings:AppStrings.EmployerHomeRoadmapNote}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Button BackgroundColor="Transparent"
+                        Command="{Binding SwitchToWorkerCommand}"
+                        SemanticProperties.Description="{x:Static strings:AppStrings.SwitchToWorkerCta}"
+                        Text="{x:Static strings:AppStrings.SwitchToWorkerCta}"
+                        TextColor="{StaticResource Primary}" />
+                <Button BackgroundColor="Transparent"
+                        Command="{Binding LogoutCommand}"
+                        SemanticProperties.Description="{x:Static strings:AppStrings.LogoutCta}"
+                        Text="{x:Static strings:AppStrings.LogoutCta}"
+                        TextColor="{StaticResource Error}" />
+
+            </VerticalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

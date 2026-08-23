@@ -2,9 +2,15 @@
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:KaamLink"
+             xmlns:presentation="clr-namespace:KaamLink.Core.Presentation"
              x:Class="KaamLink.App">
     <Application.Resources>
         <ResourceDictionary>
+
+            <!-- Shared converter instances (InvertedBoolConverter ships with MAUI). -->
+            <InvertedBoolConverter x:Key="InvertedBoolConverter" />
+            <presentation:VerificationStateColorConverter x:Key="VerificationStateColorConverter" />
+
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />

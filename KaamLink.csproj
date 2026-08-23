@@ -57,6 +57,8 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
+		<!-- HttpClientFactory (AddHttpClient): correct socket-pool lifetime for the API client. -->
+		<PackageReference Include="Microsoft.Extensions.Http" Version="10.0.0" />
 		<!-- MVVM source generators ([ObservableProperty]/[RelayCommand]) — the app's MVVM standard. -->
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 	</ItemGroup>

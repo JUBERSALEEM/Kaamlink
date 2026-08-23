@@ -62,5 +62,205 @@ namespace KaamLink.Resources.Strings
         public static string EmployerHomePlaceholder => ResourceManager.GetString(nameof(EmployerHomePlaceholder), Culture)!;
 
         public static string EmployerHomeRoadmapNote => ResourceManager.GetString(nameof(EmployerHomeRoadmapNote), Culture)!;
+
+        // ---- Phase 03: auth ----
+
+        public static string LoginTitle => ResourceManager.GetString(nameof(LoginTitle), Culture)!;
+
+        public static string LoginSubtitle => ResourceManager.GetString(nameof(LoginSubtitle), Culture)!;
+
+        public static string PhoneLabel => ResourceManager.GetString(nameof(PhoneLabel), Culture)!;
+
+        public static string PhonePlaceholder => ResourceManager.GetString(nameof(PhonePlaceholder), Culture)!;
+
+        public static string SendCodeCta => ResourceManager.GetString(nameof(SendCodeCta), Culture)!;
+
+        public static string OtpTitle => ResourceManager.GetString(nameof(OtpTitle), Culture)!;
+
+        public static string OtpSubtitle => ResourceManager.GetString(nameof(OtpSubtitle), Culture)!;
+
+        public static string OtpCodeLabel => ResourceManager.GetString(nameof(OtpCodeLabel), Culture)!;
+
+        public static string VerifyCta => ResourceManager.GetString(nameof(VerifyCta), Culture)!;
+
+        public static string ResendCta => ResourceManager.GetString(nameof(ResendCta), Culture)!;
+
+        public static string ResendWaitFormat => ResourceManager.GetString(nameof(ResendWaitFormat), Culture)!;
+
+        // ---- Phase 03: shared errors + navigation ----
+
+        public static string ErrorInvalidPhone => ResourceManager.GetString(nameof(ErrorInvalidPhone), Culture)!;
+
+        public static string ErrorInvalidCode => ResourceManager.GetString(nameof(ErrorInvalidCode), Culture)!;
+
+        public static string ErrorGeneric => ResourceManager.GetString(nameof(ErrorGeneric), Culture)!;
+
+        public static string ErrorOffline => ResourceManager.GetString(nameof(ErrorOffline), Culture)!;
+
+        public static string ErrorTooManyAttempts => ResourceManager.GetString(nameof(ErrorTooManyAttempts), Culture)!;
+
+        public static string ErrorRequiredFields => ResourceManager.GetString(nameof(ErrorRequiredFields), Culture)!;
+
+        public static string ErrorSalaryRange => ResourceManager.GetString(nameof(ErrorSalaryRange), Culture)!;
+
+        public static string ErrorYearsInvalid => ResourceManager.GetString(nameof(ErrorYearsInvalid), Culture)!;
+
+        public static string ErrorDuplicateSkill => ResourceManager.GetString(nameof(ErrorDuplicateSkill), Culture)!;
+
+        public static string ErrorNeedOneSkill => ResourceManager.GetString(nameof(ErrorNeedOneSkill), Culture)!;
+
+        public static string ErrorTooManyCompanies => ResourceManager.GetString(nameof(ErrorTooManyCompanies), Culture)!;
+
+        public static string ErrorCompanyNameInvalid => ResourceManager.GetString(nameof(ErrorCompanyNameInvalid), Culture)!;
+
+        public static string StepTitleFormat => ResourceManager.GetString(nameof(StepTitleFormat), Culture)!;
+
+        public static string ContinueCta => ResourceManager.GetString(nameof(ContinueCta), Culture)!;
+
+        public static string BackCta => ResourceManager.GetString(nameof(BackCta), Culture)!;
+
+        public static string FinishCta => ResourceManager.GetString(nameof(FinishCta), Culture)!;
+
+        public static string RetryCta => ResourceManager.GetString(nameof(RetryCta), Culture)!;
+
+        // ---- Phase 03: worker onboarding ----
+
+        public static string WobTitle => ResourceManager.GetString(nameof(WobTitle), Culture)!;
+
+        public static string WobBasicsTitle => ResourceManager.GetString(nameof(WobBasicsTitle), Culture)!;
+
+        public static string WobBasicsSubtitle => ResourceManager.GetString(nameof(WobBasicsSubtitle), Culture)!;
+
+        public static string DisplayNameLabel => ResourceManager.GetString(nameof(DisplayNameLabel), Culture)!;
+
+        public static string ProfessionCategoryLabel => ResourceManager.GetString(nameof(ProfessionCategoryLabel), Culture)!;
+
+        public static string ProfessionLabel => ResourceManager.GetString(nameof(ProfessionLabel), Culture)!;
+
+        public static string EmirateLabel => ResourceManager.GetString(nameof(EmirateLabel), Culture)!;
+
+        public static string AreaLabel => ResourceManager.GetString(nameof(AreaLabel), Culture)!;
+
+        public static string WobSkillsTitle => ResourceManager.GetString(nameof(WobSkillsTitle), Culture)!;
+
+        public static string WobSkillsSubtitle => ResourceManager.GetString(nameof(WobSkillsSubtitle), Culture)!;
+
+        public static string SkillLabel => ResourceManager.GetString(nameof(SkillLabel), Culture)!;
+
+        public static string YearsLabel => ResourceManager.GetString(nameof(YearsLabel), Culture)!;
+
+        public static string YearsShort => ResourceManager.GetString(nameof(YearsShort), Culture)!;
+
+        public static string AddSkillCta => ResourceManager.GetString(nameof(AddSkillCta), Culture)!;
+
+        public static string RemoveSkillCta => ResourceManager.GetString(nameof(RemoveSkillCta), Culture)!;
+
+        public static string WobAvailabilityTitle => ResourceManager.GetString(nameof(WobAvailabilityTitle), Culture)!;
+
+        public static string AvailabilityLabel => ResourceManager.GetString(nameof(AvailabilityLabel), Culture)!;
+
+        public static string SalaryMinLabel => ResourceManager.GetString(nameof(SalaryMinLabel), Culture)!;
+
+        public static string SalaryMaxLabel => ResourceManager.GetString(nameof(SalaryMaxLabel), Culture)!;
+
+        public static string AboutLabel => ResourceManager.GetString(nameof(AboutLabel), Culture)!;
+
+        public static string AboutPlaceholder => ResourceManager.GetString(nameof(AboutPlaceholder), Culture)!;
+
+        // ---- Phase 03: worker home ----
+
+        public static string ProfileCompletenessFormat => ResourceManager.GetString(nameof(ProfileCompletenessFormat), Culture)!;
+
+        public static string SkillsSectionTitle => ResourceManager.GetString(nameof(SkillsSectionTitle), Culture)!;
+
+        public static string SelfDeclaredBadge => ResourceManager.GetString(nameof(SelfDeclaredBadge), Culture)!;
+
+        public static string AvailabilitySectionTitle => ResourceManager.GetString(nameof(AvailabilitySectionTitle), Culture)!;
+
+        public static string SalaryExpectationFormat => ResourceManager.GetString(nameof(SalaryExpectationFormat), Culture)!;
+
+        public static string SwitchToEmployerCta => ResourceManager.GetString(nameof(SwitchToEmployerCta), Culture)!;
+
+        public static string SwitchToWorkerCta => ResourceManager.GetString(nameof(SwitchToWorkerCta), Culture)!;
+
+        public static string LogoutCta => ResourceManager.GetString(nameof(LogoutCta), Culture)!;
+
+        // ---- Phase 03: employer onboarding ----
+
+        public static string EobTitle => ResourceManager.GetString(nameof(EobTitle), Culture)!;
+
+        public static string EobSubtitle => ResourceManager.GetString(nameof(EobSubtitle), Culture)!;
+
+        public static string CompanyNameLabel => ResourceManager.GetString(nameof(CompanyNameLabel), Culture)!;
+
+        public static string CompanyCategoryLabel => ResourceManager.GetString(nameof(CompanyCategoryLabel), Culture)!;
+
+        public static string TradeLicenseLabel => ResourceManager.GetString(nameof(TradeLicenseLabel), Culture)!;
+
+        public static string TradeLicenseHint => ResourceManager.GetString(nameof(TradeLicenseHint), Culture)!;
+
+        public static string EobSubmitCta => ResourceManager.GetString(nameof(EobSubmitCta), Culture)!;
+
+        // ---- Phase 03: employer home ----
+
+        public static string CompanySectionTitle => ResourceManager.GetString(nameof(CompanySectionTitle), Culture)!;
+
+        public static string VerificationPending => ResourceManager.GetString(nameof(VerificationPending), Culture)!;
+
+        public static string VerificationVerified => ResourceManager.GetString(nameof(VerificationVerified), Culture)!;
+
+        public static string VerificationRejected => ResourceManager.GetString(nameof(VerificationRejected), Culture)!;
+
+        public static string VerificationPendingNote => ResourceManager.GetString(nameof(VerificationPendingNote), Culture)!;
+
+        public static string VerificationReasonFormat => ResourceManager.GetString(nameof(VerificationReasonFormat), Culture)!;
+
+        public static string MembershipRoleFormat => ResourceManager.GetString(nameof(MembershipRoleFormat), Culture)!;
+
+        // ---- Phase 03: enum labels ----
+
+        public static string EmirateAbuDhabi => ResourceManager.GetString(nameof(EmirateAbuDhabi), Culture)!;
+
+        public static string EmirateDubai => ResourceManager.GetString(nameof(EmirateDubai), Culture)!;
+
+        public static string EmirateSharjah => ResourceManager.GetString(nameof(EmirateSharjah), Culture)!;
+
+        public static string EmirateAjman => ResourceManager.GetString(nameof(EmirateAjman), Culture)!;
+
+        public static string EmirateUmmAlQuwain => ResourceManager.GetString(nameof(EmirateUmmAlQuwain), Culture)!;
+
+        public static string EmirateRasAlKhaimah => ResourceManager.GetString(nameof(EmirateRasAlKhaimah), Culture)!;
+
+        public static string EmirateFujairah => ResourceManager.GetString(nameof(EmirateFujairah), Culture)!;
+
+        public static string AvailabilityImmediately => ResourceManager.GetString(nameof(AvailabilityImmediately), Culture)!;
+
+        public static string AvailabilityWithinTwoWeeks => ResourceManager.GetString(nameof(AvailabilityWithinTwoWeeks), Culture)!;
+
+        public static string AvailabilityWithinOneMonth => ResourceManager.GetString(nameof(AvailabilityWithinOneMonth), Culture)!;
+
+        public static string AvailabilityNotAvailable => ResourceManager.GetString(nameof(AvailabilityNotAvailable), Culture)!;
+
+        public static string BizConstructionContracting => ResourceManager.GetString(nameof(BizConstructionContracting), Culture)!;
+
+        public static string BizManufacturingFactory => ResourceManager.GetString(nameof(BizManufacturingFactory), Culture)!;
+
+        public static string BizWorkshop => ResourceManager.GetString(nameof(BizWorkshop), Culture)!;
+
+        public static string BizLogisticsWarehouse => ResourceManager.GetString(nameof(BizLogisticsWarehouse), Culture)!;
+
+        public static string BizFacilityServices => ResourceManager.GetString(nameof(BizFacilityServices), Culture)!;
+
+        public static string BizOther => ResourceManager.GetString(nameof(BizOther), Culture)!;
+
+        public static string CompanyRoleOwner => ResourceManager.GetString(nameof(CompanyRoleOwner), Culture)!;
+
+        public static string CompanyRoleAdmin => ResourceManager.GetString(nameof(CompanyRoleAdmin), Culture)!;
+
+        public static string CompanyRoleHiringManager => ResourceManager.GetString(nameof(CompanyRoleHiringManager), Culture)!;
+
+        public static string CompanyRoleSupervisor => ResourceManager.GetString(nameof(CompanyRoleSupervisor), Culture)!;
+
+        public static string CompanyRoleViewer => ResourceManager.GetString(nameof(CompanyRoleViewer), Culture)!;
     }
 }

@@ -115,4 +115,297 @@
   <data name="EmployerHomeRoadmapNote" xml:space="preserve">
     <value>This area is under construction — vacancy management arrives in the next phase.</value>
   </data>
+  <!-- Phase 03: auth -->
+  <data name="LoginTitle" xml:space="preserve">
+    <value>Sign in with your phone</value>
+  </data>
+  <data name="LoginSubtitle" xml:space="preserve">
+    <value>We'll text you a one-time verification code.</value>
+  </data>
+  <data name="PhoneLabel" xml:space="preserve">
+    <value>UAE mobile number</value>
+  </data>
+  <data name="PhonePlaceholder" xml:space="preserve">
+    <value>050 123 4567</value>
+    <comment>Digits only — do not translate.</comment>
+  </data>
+  <data name="SendCodeCta" xml:space="preserve">
+    <value>Send code</value>
+  </data>
+  <data name="OtpTitle" xml:space="preserve">
+    <value>Enter the code</value>
+  </data>
+  <data name="OtpSubtitle" xml:space="preserve">
+    <value>We sent a 6-digit code to</value>
+  </data>
+  <data name="OtpCodeLabel" xml:space="preserve">
+    <value>Verification code</value>
+  </data>
+  <data name="VerifyCta" xml:space="preserve">
+    <value>Verify and continue</value>
+  </data>
+  <data name="ResendCta" xml:space="preserve">
+    <value>Resend code</value>
+  </data>
+  <data name="ResendWaitFormat" xml:space="preserve">
+    <value>Resend in {0}s</value>
+    <comment>{0} = seconds remaining.</comment>
+  </data>
+  <!-- Phase 03: shared errors + navigation -->
+  <data name="ErrorInvalidPhone" xml:space="preserve">
+    <value>Enter a valid UAE mobile number (e.g. 0501234567).</value>
+  </data>
+  <data name="ErrorInvalidCode" xml:space="preserve">
+    <value>The code doesn't match. Check it and try again.</value>
+  </data>
+  <data name="ErrorGeneric" xml:space="preserve">
+    <value>Something went wrong. Please try again.</value>
+  </data>
+  <data name="ErrorOffline" xml:space="preserve">
+    <value>No connection. Check your network and try again.</value>
+  </data>
+  <data name="ErrorTooManyAttempts" xml:space="preserve">
+    <value>Too many attempts. Please wait a moment and try again.</value>
+  </data>
+  <data name="ErrorRequiredFields" xml:space="preserve">
+    <value>Please fill in the required fields.</value>
+  </data>
+  <data name="ErrorSalaryRange" xml:space="preserve">
+    <value>Minimum salary cannot exceed maximum salary.</value>
+  </data>
+  <data name="ErrorYearsInvalid" xml:space="preserve">
+    <value>Experience must be 0–50 years.</value>
+  </data>
+  <data name="ErrorDuplicateSkill" xml:space="preserve">
+    <value>That skill is already in your list.</value>
+  </data>
+  <data name="ErrorNeedOneSkill" xml:space="preserve">
+    <value>Add at least one skill to continue.</value>
+  </data>
+  <data name="ErrorTooManyCompanies" xml:space="preserve">
+    <value>You can register at most 3 companies.</value>
+  </data>
+  <data name="ErrorCompanyNameInvalid" xml:space="preserve">
+    <value>Company name must be 2–160 characters.</value>
+  </data>
+  <data name="StepTitleFormat" xml:space="preserve">
+    <value>Step {0} of {1}</value>
+  </data>
+  <data name="ContinueCta" xml:space="preserve">
+    <value>Continue</value>
+  </data>
+  <data name="BackCta" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="FinishCta" xml:space="preserve">
+    <value>Finish setup</value>
+  </data>
+  <data name="RetryCta" xml:space="preserve">
+    <value>Retry</value>
+  </data>
+  <!-- Phase 03: worker onboarding -->
+  <data name="WobTitle" xml:space="preserve">
+    <value>Your profile</value>
+  </data>
+  <data name="WobBasicsTitle" xml:space="preserve">
+    <value>Tell us about you</value>
+  </data>
+  <data name="WobBasicsSubtitle" xml:space="preserve">
+    <value>This helps employers find you for the right jobs.</value>
+  </data>
+  <data name="DisplayNameLabel" xml:space="preserve">
+    <value>Full name</value>
+  </data>
+  <data name="ProfessionCategoryLabel" xml:space="preserve">
+    <value>Profession group</value>
+  </data>
+  <data name="ProfessionLabel" xml:space="preserve">
+    <value>Your main profession</value>
+  </data>
+  <data name="EmirateLabel" xml:space="preserve">
+    <value>Emirate</value>
+  </data>
+  <data name="AreaLabel" xml:space="preserve">
+    <value>Area (optional)</value>
+  </data>
+  <data name="WobSkillsTitle" xml:space="preserve">
+    <value>Your skills</value>
+  </data>
+  <data name="WobSkillsSubtitle" xml:space="preserve">
+    <value>Add the skills you can prove on site. Years of experience are self-declared.</value>
+  </data>
+  <data name="SkillLabel" xml:space="preserve">
+    <value>Skill</value>
+  </data>
+  <data name="YearsLabel" xml:space="preserve">
+    <value>Years of experience</value>
+  </data>
+  <data name="YearsShort" xml:space="preserve">
+    <value>yrs</value>
+  </data>
+  <data name="AddSkillCta" xml:space="preserve">
+    <value>Add skill</value>
+  </data>
+  <data name="RemoveSkillCta" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="WobAvailabilityTitle" xml:space="preserve">
+    <value>Work preferences</value>
+  </data>
+  <data name="AvailabilityLabel" xml:space="preserve">
+    <value>When can you start?</value>
+  </data>
+  <data name="SalaryMinLabel" xml:space="preserve">
+    <value>Expected salary min (AED, optional)</value>
+  </data>
+  <data name="SalaryMaxLabel" xml:space="preserve">
+    <value>Expected salary max (AED, optional)</value>
+  </data>
+  <data name="AboutLabel" xml:space="preserve">
+    <value>About you (optional)</value>
+  </data>
+  <data name="AboutPlaceholder" xml:space="preserve">
+    <value>e.g. 6 years of aluminium fabrication in Sharjah</value>
+  </data>
+  <!-- Phase 03: worker home -->
+  <data name="ProfileCompletenessFormat" xml:space="preserve">
+    <value>Profile {0}% complete</value>
+    <comment>{0} = integer percentage.</comment>
+  </data>
+  <data name="SkillsSectionTitle" xml:space="preserve">
+    <value>Skill Passport</value>
+  </data>
+  <data name="SelfDeclaredBadge" xml:space="preserve">
+    <value>Self-declared</value>
+  </data>
+  <data name="AvailabilitySectionTitle" xml:space="preserve">
+    <value>Availability</value>
+  </data>
+  <data name="SalaryExpectationFormat" xml:space="preserve">
+    <value>Expected salary: {0}–{1} AED/month</value>
+    <comment>{0} = min, {1} = max.</comment>
+  </data>
+  <data name="SwitchToEmployerCta" xml:space="preserve">
+    <value>I'm also hiring workers</value>
+  </data>
+  <data name="SwitchToWorkerCta" xml:space="preserve">
+    <value>I'm also looking for work</value>
+  </data>
+  <data name="LogoutCta" xml:space="preserve">
+    <value>Sign out</value>
+  </data>
+  <!-- Phase 03: employer onboarding -->
+  <data name="EobTitle" xml:space="preserve">
+    <value>Register your company</value>
+  </data>
+  <data name="EobSubtitle" xml:space="preserve">
+    <value>Companies show as Verified only after our team reviews them.</value>
+  </data>
+  <data name="CompanyNameLabel" xml:space="preserve">
+    <value>Company name</value>
+  </data>
+  <data name="CompanyCategoryLabel" xml:space="preserve">
+    <value>Business category</value>
+  </data>
+  <data name="TradeLicenseLabel" xml:space="preserve">
+    <value>Trade licence number (optional)</value>
+  </data>
+  <data name="TradeLicenseHint" xml:space="preserve">
+    <value>Sharing your licence number speeds up the review.</value>
+  </data>
+  <data name="EobSubmitCta" xml:space="preserve">
+    <value>Submit for review</value>
+  </data>
+  <!-- Phase 03: employer home -->
+  <data name="CompanySectionTitle" xml:space="preserve">
+    <value>Your company</value>
+  </data>
+  <data name="VerificationPending" xml:space="preserve">
+    <value>Pending review</value>
+  </data>
+  <data name="VerificationVerified" xml:space="preserve">
+    <value>Verified</value>
+  </data>
+  <data name="VerificationRejected" xml:space="preserve">
+    <value>Rejected</value>
+  </data>
+  <data name="VerificationPendingNote" xml:space="preserve">
+    <value>Our team is reviewing your company. Verified companies build worker trust.</value>
+  </data>
+  <data name="VerificationReasonFormat" xml:space="preserve">
+    <value>Reason: {0}</value>
+  </data>
+  <data name="MembershipRoleFormat" xml:space="preserve">
+    <value>Your role: {0}</value>
+  </data>
+  <!-- Phase 03: enum labels (emirates) -->
+  <data name="EmirateAbuDhabi" xml:space="preserve">
+    <value>Abu Dhabi</value>
+  </data>
+  <data name="EmirateDubai" xml:space="preserve">
+    <value>Dubai</value>
+  </data>
+  <data name="EmirateSharjah" xml:space="preserve">
+    <value>Sharjah</value>
+  </data>
+  <data name="EmirateAjman" xml:space="preserve">
+    <value>Ajman</value>
+  </data>
+  <data name="EmirateUmmAlQuwain" xml:space="preserve">
+    <value>Umm Al Quwain</value>
+  </data>
+  <data name="EmirateRasAlKhaimah" xml:space="preserve">
+    <value>Ras Al Khaimah</value>
+  </data>
+  <data name="EmirateFujairah" xml:space="preserve">
+    <value>Fujairah</value>
+  </data>
+  <!-- Phase 03: enum labels (availability) -->
+  <data name="AvailabilityImmediately" xml:space="preserve">
+    <value>Immediately</value>
+  </data>
+  <data name="AvailabilityWithinTwoWeeks" xml:space="preserve">
+    <value>Within 2 weeks</value>
+  </data>
+  <data name="AvailabilityWithinOneMonth" xml:space="preserve">
+    <value>Within a month</value>
+  </data>
+  <data name="AvailabilityNotAvailable" xml:space="preserve">
+    <value>Not available now</value>
+  </data>
+  <!-- Phase 03: enum labels (business categories) -->
+  <data name="BizConstructionContracting" xml:space="preserve">
+    <value>Construction / contracting</value>
+  </data>
+  <data name="BizManufacturingFactory" xml:space="preserve">
+    <value>Manufacturing / factory</value>
+  </data>
+  <data name="BizWorkshop" xml:space="preserve">
+    <value>Workshop</value>
+  </data>
+  <data name="BizLogisticsWarehouse" xml:space="preserve">
+    <value>Logistics / warehouse</value>
+  </data>
+  <data name="BizFacilityServices" xml:space="preserve">
+    <value>Facility services</value>
+  </data>
+  <data name="BizOther" xml:space="preserve">
+    <value>Other</value>
+  </data>
+  <!-- Phase 03: enum labels (company roles) -->
+  <data name="CompanyRoleOwner" xml:space="preserve">
+    <value>Owner</value>
+  </data>
+  <data name="CompanyRoleAdmin" xml:space="preserve">
+    <value>Admin</value>
+  </data>
+  <data name="CompanyRoleHiringManager" xml:space="preserve">
+    <value>Hiring manager</value>
+  </data>
+  <data name="CompanyRoleSupervisor" xml:space="preserve">
+    <value>Supervisor</value>
+  </data>
+  <data name="CompanyRoleViewer" xml:space="preserve">
+    <value>Viewer</value>
+  </data>
 </root>
