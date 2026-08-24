@@ -30,6 +30,24 @@ namespace KaamLink.Core.Navigation
         /// <summary>Employer experience root.</summary>
         public const string EmployerHome = "employerhome";
 
+        /// <summary>Worker job feed (Phase 04).</summary>
+        public const string VacancyFeed = "vacancyfeed";
+
+        /// <summary>Vacancy detail + apply. Accepts ?vacancyId=.</summary>
+        public const string VacancyDetail = "vacancydetail";
+
+        /// <summary>The worker's own applications.</summary>
+        public const string MyApplications = "myapplications";
+
+        /// <summary>Employer vacancy list. Accepts ?companyId=&amp;companyName=.</summary>
+        public const string CompanyVacancies = "companyvacancies";
+
+        /// <summary>Create/edit a vacancy. Accepts ?companyId= and optional ?vacancyId=.</summary>
+        public const string VacancyEdit = "vacancyedit";
+
+        /// <summary>Applicants of one vacancy. Accepts ?companyId=&amp;vacancyId=&amp;title=.</summary>
+        public const string VacancyApplications = "vacancyapplications";
+
         /// <summary>Absolute Shell URI that replaces the navigation stack.</summary>
         public static string Absolute(string route) => "//" + route;
     }

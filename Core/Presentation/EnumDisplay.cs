@@ -15,6 +15,8 @@ namespace KaamLink.Core.Presentation
         public static string LocalizedSkill(SkillItemDto skill) => Localized(skill.NameEn, skill.NameAr);
 
         public static string LocalizedSkill(WorkerSkillItemDto skill) => Localized(skill.NameEn, skill.NameAr);
+
+        public static string LocalizedSkill(VacancySkillItemDto skill) => Localized(skill.NameEn, skill.NameAr);
     }
 
     /// <summary>A pickable option: wire value (backend enum name) + localized label.</summary>
@@ -85,6 +87,28 @@ namespace KaamLink.Core.Presentation
             "Pending" => AppStrings.VerificationPending,
             "Verified" => AppStrings.VerificationVerified,
             "Rejected" => AppStrings.VerificationRejected,
+            _ => value ?? string.Empty
+        };
+
+        // Mirrors backend/src/KaamLink.Domain/Jobs/VacancyStatus.cs
+        public static string VacancyStatus(string? value) => value switch
+        {
+            "Draft" => AppStrings.VacancyStatusDraft,
+            "Active" => AppStrings.VacancyStatusActive,
+            "Paused" => AppStrings.VacancyStatusPaused,
+            "Closed" => AppStrings.VacancyStatusClosed,
+            _ => value ?? string.Empty
+        };
+
+        // Mirrors backend/src/KaamLink.Domain/Jobs/ApplicationStatus.cs
+        public static string ApplicationStatus(string? value) => value switch
+        {
+            "Applied" => AppStrings.ApplicationStatusApplied,
+            "Viewed" => AppStrings.ApplicationStatusViewed,
+            "Shortlisted" => AppStrings.ApplicationStatusShortlisted,
+            "Rejected" => AppStrings.ApplicationStatusRejected,
+            "Hired" => AppStrings.ApplicationStatusHired,
+            "Withdrawn" => AppStrings.ApplicationStatusWithdrawn,
             _ => value ?? string.Empty
         };
 

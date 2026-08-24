@@ -262,5 +262,121 @@ namespace KaamLink.Resources.Strings
         public static string CompanyRoleSupervisor => ResourceManager.GetString(nameof(CompanyRoleSupervisor), Culture)!;
 
         public static string CompanyRoleViewer => ResourceManager.GetString(nameof(CompanyRoleViewer), Culture)!;
+
+        public static string FeedTitle => ResourceManager.GetString(nameof(FeedTitle), Culture)!;
+
+        public static string FeedSearchPlaceholder => ResourceManager.GetString(nameof(FeedSearchPlaceholder), Culture)!;
+
+        public static string FeedEmirateAll => ResourceManager.GetString(nameof(FeedEmirateAll), Culture)!;
+
+        public static string FeedSearchCta => ResourceManager.GetString(nameof(FeedSearchCta), Culture)!;
+
+        public static string FeedEmpty => ResourceManager.GetString(nameof(FeedEmpty), Culture)!;
+
+        public static string FeedLoadMoreCta => ResourceManager.GetString(nameof(FeedLoadMoreCta), Culture)!;
+
+        public static string FeedCardSalaryFormat => ResourceManager.GetString(nameof(FeedCardSalaryFormat), Culture)!;
+
+        public static string FeedCardSalaryHidden => ResourceManager.GetString(nameof(FeedCardSalaryHidden), Culture)!;
+
+        public static string HeadcountFormat => ResourceManager.GetString(nameof(HeadcountFormat), Culture)!;
+
+        public static string DetailApplySectionTitle => ResourceManager.GetString(nameof(DetailApplySectionTitle), Culture)!;
+
+        public static string DetailCoverNotePlaceholder => ResourceManager.GetString(nameof(DetailCoverNotePlaceholder), Culture)!;
+
+        public static string ApplyCta => ResourceManager.GetString(nameof(ApplyCta), Culture)!;
+
+        public static string AppliedBadgeFormat => ResourceManager.GetString(nameof(AppliedBadgeFormat), Culture)!;
+
+        public static string ErrorAlreadyApplied => ResourceManager.GetString(nameof(ErrorAlreadyApplied), Culture)!;
+
+        public static string ErrorOnboardingIncomplete => ResourceManager.GetString(nameof(ErrorOnboardingIncomplete), Culture)!;
+
+        public static string ErrorCompanyNotVerified => ResourceManager.GetString(nameof(ErrorCompanyNotVerified), Culture)!;
+
+        public static string MyApplicationsTitle => ResourceManager.GetString(nameof(MyApplicationsTitle), Culture)!;
+
+        public static string MyApplicationsEmpty => ResourceManager.GetString(nameof(MyApplicationsEmpty), Culture)!;
+
+        public static string WithdrawCta => ResourceManager.GetString(nameof(WithdrawCta), Culture)!;
+
+        public static string BrowseJobsCta => ResourceManager.GetString(nameof(BrowseJobsCta), Culture)!;
+
+        public static string VacancyStatusDraft => ResourceManager.GetString(nameof(VacancyStatusDraft), Culture)!;
+
+        public static string VacancyStatusActive => ResourceManager.GetString(nameof(VacancyStatusActive), Culture)!;
+
+        public static string VacancyStatusPaused => ResourceManager.GetString(nameof(VacancyStatusPaused), Culture)!;
+
+        public static string VacancyStatusClosed => ResourceManager.GetString(nameof(VacancyStatusClosed), Culture)!;
+
+        public static string ApplicationStatusApplied => ResourceManager.GetString(nameof(ApplicationStatusApplied), Culture)!;
+
+        public static string ApplicationStatusViewed => ResourceManager.GetString(nameof(ApplicationStatusViewed), Culture)!;
+
+        public static string ApplicationStatusShortlisted => ResourceManager.GetString(nameof(ApplicationStatusShortlisted), Culture)!;
+
+        public static string ApplicationStatusRejected => ResourceManager.GetString(nameof(ApplicationStatusRejected), Culture)!;
+
+        public static string ApplicationStatusHired => ResourceManager.GetString(nameof(ApplicationStatusHired), Culture)!;
+
+        public static string ApplicationStatusWithdrawn => ResourceManager.GetString(nameof(ApplicationStatusWithdrawn), Culture)!;
+
+        public static string CompanyVacanciesTitle => ResourceManager.GetString(nameof(CompanyVacanciesTitle), Culture)!;
+
+        public static string NewVacancyCta => ResourceManager.GetString(nameof(NewVacancyCta), Culture)!;
+
+        public static string CompanyVacanciesEmpty => ResourceManager.GetString(nameof(CompanyVacanciesEmpty), Culture)!;
+
+        public static string ApplicationsCountFormat => ResourceManager.GetString(nameof(ApplicationsCountFormat), Culture)!;
+
+        public static string ActivateCta => ResourceManager.GetString(nameof(ActivateCta), Culture)!;
+
+        public static string PauseCta => ResourceManager.GetString(nameof(PauseCta), Culture)!;
+
+        public static string CloseCta => ResourceManager.GetString(nameof(CloseCta), Culture)!;
+
+        public static string VacancyEditTitleNew => ResourceManager.GetString(nameof(VacancyEditTitleNew), Culture)!;
+
+        public static string VacancyEditTitleEdit => ResourceManager.GetString(nameof(VacancyEditTitleEdit), Culture)!;
+
+        public static string FieldTitleLabel => ResourceManager.GetString(nameof(FieldTitleLabel), Culture)!;
+
+        public static string FieldDescriptionLabel => ResourceManager.GetString(nameof(FieldDescriptionLabel), Culture)!;
+
+        public static string FieldEmirateLabel => ResourceManager.GetString(nameof(FieldEmirateLabel), Culture)!;
+
+        public static string FieldAreaLabel => ResourceManager.GetString(nameof(FieldAreaLabel), Culture)!;
+
+        public static string FieldSalaryMinLabel => ResourceManager.GetString(nameof(FieldSalaryMinLabel), Culture)!;
+
+        public static string FieldSalaryMaxLabel => ResourceManager.GetString(nameof(FieldSalaryMaxLabel), Culture)!;
+
+        public static string FieldHeadcountLabel => ResourceManager.GetString(nameof(FieldHeadcountLabel), Culture)!;
+
+        public static string FieldSkillsLabel => ResourceManager.GetString(nameof(FieldSkillsLabel), Culture)!;
+
+        public static string SaveCta => ResourceManager.GetString(nameof(SaveCta), Culture)!;
+
+        public static string VacancyApplicationsTitle => ResourceManager.GetString(nameof(VacancyApplicationsTitle), Culture)!;
+
+        public static string ApplicantsEmpty => ResourceManager.GetString(nameof(ApplicantsEmpty), Culture)!;
+
+        public static string ActionMarkViewed => ResourceManager.GetString(nameof(ActionMarkViewed), Culture)!;
+
+        public static string ActionShortlist => ResourceManager.GetString(nameof(ActionShortlist), Culture)!;
+
+        public static string ActionReject => ResourceManager.GetString(nameof(ActionReject), Culture)!;
+
+        public static string ActionHire => ResourceManager.GetString(nameof(ActionHire), Culture)!;
+
+        public static string CompletenessFormat => ResourceManager.GetString(nameof(CompletenessFormat), Culture)!;
+
+        public static string CoverNoteLabel => ResourceManager.GetString(nameof(CoverNoteLabel), Culture)!;
+
+        public static string FieldInvalidNumber => ResourceManager.GetString(nameof(FieldInvalidNumber), Culture)!;
+
+        public static string ManageVacanciesCta => ResourceManager.GetString(nameof(ManageVacanciesCta), Culture)!;
     }
 }

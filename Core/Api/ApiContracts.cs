@@ -134,7 +134,111 @@ namespace KaamLink.Core.Api
     public sealed record SkillCategoryDto(
         Guid Id, string NameEn, string NameAr, IReadOnlyList<SkillItemDto> Skills);
 
-    public sealed record SkillItemDto(Guid Id, string NameEn, string NameAr, bool RequiresCertification);
+    public sealed record SkillItemDto(Guid Id, string NameEn, string NameAr, bool RequiresCertification)
+    {
+        /// <summary>UI-language display name (JSON-ignored; display concern only).</summary>
+        [JsonIgnore]
+        public string LocalizedName => Presentation.LocalizationHelpers.Localized(NameEn, NameAr);
+    }
+
+    // ---- Jobs (Phase 04) ----
+
+    public sealed record PagedResponseDto<T>(IReadOnlyList<T> Items, int Page, int PageSize, bool HasMore);
+
+    public sealed record VacancySkillItemDto(Guid SkillId, string NameEn, string NameAr, bool RequiresCertification);
+
+    public sealed record VacancyFeedItemDto(
+        Guid Id,
+        string Title,
+        string CompanyName,
+        string CompanyVerificationState,
+        string Emirate,
+        string? Area,
+        int? SalaryMinAed,
+        int? SalaryMaxAed,
+        int Headcount,
+        IReadOnlyList<VacancySkillItemDto> Skills,
+        DateTimeOffset CreatedAt);
+
+    public sealed record VacancyDetailDto(
+        Guid Id,
+        string Title,
+        string? Description,
+        Guid CompanyId,
+        string CompanyName,
+        string CompanyVerificationState,
+        string Emirate,
+        string? Area,
+        int? SalaryMinAed,
+        int? SalaryMaxAed,
+        int Headcount,
+        IReadOnlyList<VacancySkillItemDto> Skills,
+        string? OwnApplicationStatus,
+        DateTimeOffset CreatedAt);
+
+    public sealed record CompanyVacancySummaryDto(
+        Guid Id,
+        string Title,
+        string Status,
+        string Emirate,
+        string? Area,
+        int? SalaryMinAed,
+        int? SalaryMaxAed,
+        int Headcount,
+        int ApplicationCount,
+        DateTimeOffset CreatedAt);
+
+    public sealed record UpsertVacancyRequestDto
+    {
+        public string Title { get; init; } = string.Empty;
+
+        public string? Description { get; init; }
+
+        public string Emirate { get; init; } = string.Empty;
+
+        public string? Area { get; init; }
+
+        public int? SalaryMinAed { get; init; }
+
+        public int? SalaryMaxAed { get; init; }
+
+        public int Headcount { get; init; } = 1;
+
+        public List<Guid> SkillIds { get; init; } = [];
+    }
+
+    public sealed record ChangeVacancyStatusRequestDto(string Status);
+
+    public sealed record ApplicationItemDto(
+        Guid Id,
+        Guid VacancyId,
+        string VacancyTitle,
+        string CompanyName,
+        string Status,
+        string? CoverNote,
+        DateTimeOffset? ReviewedAt,
+        DateTimeOffset CreatedAt);
+
+    public sealed record ApplyRequestDto
+    {
+        public string? CoverNote { get; init; }
+    }
+
+    public sealed record VacancyApplicationItemDto(
+        Guid Id,
+        string Status,
+        string? CoverNote,
+        Guid WorkerProfileId,
+        string WorkerDisplayName,
+        string WorkerPhoneNumber,
+        string? WorkerEmirate,
+        Guid? WorkerPrimarySkillId,
+        int WorkerProfileCompletenessPct,
+        DateTimeOffset CreatedAt);
+
+    public sealed record ChangeApplicationStatusRequestDto(string Status);
+
+    public sealed record ApplicationStatusChangeDto(Guid Id, string Status, DateTimeOffset? ReviewedAt);
 
     // ---- Serializer ----
 
@@ -157,5 +261,19 @@ namespace KaamLink.Core.Api
     [JsonSerializable(typeof(CompanySummaryDto))]
     [JsonSerializable(typeof(CreateCompanyRequestDto))]
     [JsonSerializable(typeof(SkillCatalogResponseDto))]
+    [JsonSerializable(typeof(PagedResponseDto<VacancyFeedItemDto>))]
+    [JsonSerializable(typeof(VacancyFeedItemDto))]
+    [JsonSerializable(typeof(VacancyDetailDto))]
+    [JsonSerializable(typeof(CompanyVacancySummaryDto))]
+    [JsonSerializable(typeof(IReadOnlyList<CompanyVacancySummaryDto>))]
+    [JsonSerializable(typeof(UpsertVacancyRequestDto))]
+    [JsonSerializable(typeof(ChangeVacancyStatusRequestDto))]
+    [JsonSerializable(typeof(ApplicationItemDto))]
+    [JsonSerializable(typeof(IReadOnlyList<ApplicationItemDto>))]
+    [JsonSerializable(typeof(ApplyRequestDto))]
+    [JsonSerializable(typeof(VacancyApplicationItemDto))]
+    [JsonSerializable(typeof(IReadOnlyList<VacancyApplicationItemDto>))]
+    [JsonSerializable(typeof(ChangeApplicationStatusRequestDto))]
+    [JsonSerializable(typeof(ApplicationStatusChangeDto))]
     public sealed partial class AppJsonContext : JsonSerializerContext;
 }

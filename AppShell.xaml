@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:auth="clr-namespace:KaamLink.Features.Auth"
     xmlns:employer="clr-namespace:KaamLink.Features.Employer"
+    xmlns:jobs="clr-namespace:KaamLink.Features.Jobs"
     xmlns:onboarding="clr-namespace:KaamLink.Features.Onboarding"
     xmlns:worker="clr-namespace:KaamLink.Features.Worker"
     FlyoutBehavior="Disabled">
@@ -42,4 +43,29 @@
     <ShellContent
         Route="employerhome"
         ContentTemplate="{DataTemplate employer:EmployerHomePage}" />
+
+    <!-- Phase 04: jobs core -->
+    <ShellContent
+        Route="vacancyfeed"
+        ContentTemplate="{DataTemplate jobs:VacancyFeedPage}" />
+
+    <ShellContent
+        Route="vacancydetail"
+        ContentTemplate="{DataTemplate jobs:VacancyDetailPage}" />
+
+    <ShellContent
+        Route="myapplications"
+        ContentTemplate="{DataTemplate jobs:MyApplicationsPage}" />
+
+    <ShellContent
+        Route="companyvacancies"
+        ContentTemplate="{DataTemplate jobs:CompanyVacanciesPage}" />
+
+    <ShellContent
+        Route="vacancyedit"
+        ContentTemplate="{DataTemplate jobs:VacancyEditPage}" />
+
+    <ShellContent
+        Route="vacancyapplications"
+        ContentTemplate="{DataTemplate jobs:VacancyApplicationsPage}" />
 </Shell>

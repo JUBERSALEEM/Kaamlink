@@ -4,6 +4,7 @@
              xmlns:vm="clr-namespace:KaamLink.Features.Employer"
              xmlns:strings="clr-namespace:KaamLink.Resources.Strings"
              x:Class="KaamLink.Features.Employer.EmployerHomePage"
+             x:Name="Page"
              x:DataType="vm:EmployerHomeViewModel"
              Title="{x:Static strings:AppStrings.EmployerHomeTitle}">
 
@@ -60,6 +61,12 @@
                                            Style="{StaticResource Caption}"
                                            Text="{Binding VerificationReason}"
                                            TextColor="{StaticResource Error}" />
+                                    <!-- Phase 04: vacancy management for this company -->
+                                    <Button Command="{Binding BindingContext.ManageVacanciesCommand, Source={x:Reference Page}}"
+                                            CommandParameter="{Binding}"
+                                            HorizontalOptions="Start"
+                                            SemanticProperties.Description="{x:Static strings:AppStrings.ManageVacanciesCta}"
+                                            Text="{x:Static strings:AppStrings.ManageVacanciesCta}" />
                                 </VerticalStackLayout>
                             </Border>
                         </DataTemplate>

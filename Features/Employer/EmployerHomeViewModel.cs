@@ -7,6 +7,7 @@ namespace KaamLink.Features.Employer
 {
     /// <summary>Presentation wrapper for a company on the employer home (labels pre-localized).</summary>
     public sealed record CompanyCardModel(
+        Guid Id,
         string Name,
         string CategoryEmirateLine,
         string RoleText,
@@ -71,6 +72,7 @@ namespace KaamLink.Features.Employer
                     var categoryLine = $"{EnumDisplay.BusinessCategory(company.Category)} · {EnumDisplay.Emirate(company.Emirate)}";
                     var hasReason = !string.IsNullOrWhiteSpace(company.VerificationReason);
                     Companies.Add(new CompanyCardModel(
+                        company.Id,
                         company.Name,
                         categoryLine,
                         string.Format(AppStrings.MembershipRoleFormat, EnumDisplay.CompanyRole(company.Role)),
@@ -96,6 +98,16 @@ namespace KaamLink.Features.Employer
             {
                 IsBusy = false;
             }
+        }
+
+        [RelayCommand]
+        private async Task ManageVacanciesAsync(CompanyCardModel? card)
+        {
+            if (card is null)
+                return;
+            await Shell.Current.GoToAsync(
+                $"{AppRoutes.Absolute(AppRoutes.CompanyVacancies)}" +
+                $"?companyId={card.Id}&companyName={Uri.EscapeDataString(card.Name)}");
         }
 
         [RelayCommand]

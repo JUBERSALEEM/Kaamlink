@@ -98,7 +98,20 @@
                        Style="{StaticResource BodySecondary}"
                        Text="{Binding About}" />
 
-                <!-- Honest roadmap note — job discovery is NOT in this build (§50). -->
+                <!-- Jobs (Phase 04): real feed + applications -->
+                <VerticalStackLayout Spacing="8">
+                    <Label SemanticProperties.HeadingLevel="Level2"
+                           Style="{StaticResource SectionTitle}"
+                           Text="{x:Static strings:AppStrings.FeedTitle}" />
+                    <Button Command="{Binding BrowseJobsCommand}"
+                            SemanticProperties.Description="{x:Static strings:AppStrings.BrowseJobsCta}"
+                            Text="{x:Static strings:AppStrings.BrowseJobsCta}" />
+                    <Button Command="{Binding OpenMyApplicationsCommand}"
+                            SemanticProperties.Description="{x:Static strings:AppStrings.MyApplicationsTitle}"
+                            Text="{x:Static strings:AppStrings.MyApplicationsTitle}" />
+                </VerticalStackLayout>
+
+                <!-- Honest roadmap note — assessments are NOT in this build (§50). -->
                 <Border Style="{StaticResource Card}">
                     <VerticalStackLayout Spacing="4">
                         <Label Style="{StaticResource Body}"

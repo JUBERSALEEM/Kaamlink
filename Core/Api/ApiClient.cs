@@ -28,6 +28,37 @@ namespace KaamLink.Core.Api
         Task<CompanySummaryDto> CreateCompanyAsync(CreateCompanyRequestDto request, CancellationToken ct = default);
 
         Task<IReadOnlyList<CompanySummaryDto>> GetMyCompaniesAsync(CancellationToken ct = default);
+
+        // ---- Jobs (Phase 04) ----
+
+        Task<PagedResponseDto<VacancyFeedItemDto>> SearchVacanciesAsync(
+            string? emirate, Guid? skillId, string? keyword, int page, int pageSize, CancellationToken ct = default);
+
+        Task<VacancyDetailDto> GetVacancyAsync(Guid vacancyId, CancellationToken ct = default);
+
+        Task<ApplicationItemDto> ApplyAsync(Guid vacancyId, string? coverNote, CancellationToken ct = default);
+
+        Task<IReadOnlyList<ApplicationItemDto>> GetMyApplicationsAsync(CancellationToken ct = default);
+
+        Task<ApplicationItemDto> WithdrawApplicationAsync(Guid applicationId, CancellationToken ct = default);
+
+        Task<IReadOnlyList<CompanyVacancySummaryDto>> GetCompanyVacanciesAsync(
+            Guid companyId, CancellationToken ct = default);
+
+        Task<CompanyVacancySummaryDto> CreateVacancyAsync(
+            Guid companyId, UpsertVacancyRequestDto request, CancellationToken ct = default);
+
+        Task<CompanyVacancySummaryDto> UpdateVacancyAsync(
+            Guid companyId, Guid vacancyId, UpsertVacancyRequestDto request, CancellationToken ct = default);
+
+        Task<CompanyVacancySummaryDto> ChangeVacancyStatusAsync(
+            Guid companyId, Guid vacancyId, string status, CancellationToken ct = default);
+
+        Task<IReadOnlyList<VacancyApplicationItemDto>> GetVacancyApplicationsAsync(
+            Guid companyId, Guid vacancyId, CancellationToken ct = default);
+
+        Task<ApplicationStatusChangeDto> ChangeApplicationStatusAsync(
+            Guid companyId, Guid vacancyId, Guid applicationId, string status, CancellationToken ct = default);
     }
 
     public sealed class ApiClient : IApiClient
@@ -39,6 +70,12 @@ namespace KaamLink.Core.Api
             public const string ProfileNotFound = "worker.profile_not_found";
             public const string OtpInvalid = "auth.otp_invalid";
             public const string PhoneInvalid = "auth.phone_invalid";
+            public const string AlreadyApplied = "jobs.already_applied";
+            public const string ProfileRequired = "worker.profile_required";
+            public const string OnboardingIncomplete = "worker.onboarding_incomplete";
+            public const string CompanyNotVerified = "jobs.company_not_verified";
+            public const string SalaryPairRequired = "jobs.salary_pair_required";
+            public const string SalaryInvalid = "jobs.salary_invalid";
         }
 
         private readonly HttpClient _http;
@@ -89,6 +126,83 @@ namespace KaamLink.Core.Api
             await SendAsync<IReadOnlyList<CompanySummaryDto>>(HttpMethod.Get, "companies/mine",
                 body: null, bodyTypeInfo: null, AppJsonContext.Default.IReadOnlyListCompanySummaryDto, ct)
             ?? Array.Empty<CompanySummaryDto>();
+
+        // ---- Jobs (Phase 04) ----
+
+        public async Task<PagedResponseDto<VacancyFeedItemDto>> SearchVacanciesAsync(
+            string? emirate, Guid? skillId, string? keyword, int page, int pageSize, CancellationToken ct = default)
+        {
+            var parts = new List<string> { $"page={page}", $"pageSize={pageSize}" };
+            if (!string.IsNullOrWhiteSpace(emirate))
+                parts.Add($"emirate={Uri.EscapeDataString(emirate)}");
+            if (skillId is not null)
+                parts.Add($"skillId={skillId.Value}");
+            if (!string.IsNullOrWhiteSpace(keyword))
+                parts.Add($"q={Uri.EscapeDataString(keyword.Trim())}");
+
+            return await SendAsync<PagedResponseDto<VacancyFeedItemDto>>(
+                       HttpMethod.Get, "vacancies?" + string.Join("&", parts),
+                       body: null, bodyTypeInfo: null, AppJsonContext.Default.PagedResponseDtoVacancyFeedItemDto, ct)
+                ?? new PagedResponseDto<VacancyFeedItemDto>(
+                    Array.Empty<VacancyFeedItemDto>(), page, pageSize, HasMore: false);
+        }
+
+        public Task<VacancyDetailDto> GetVacancyAsync(Guid vacancyId, CancellationToken ct = default) =>
+            SendAsync<VacancyDetailDto>(HttpMethod.Get, $"vacancies/{vacancyId}",
+                body: null, bodyTypeInfo: null, AppJsonContext.Default.VacancyDetailDto, ct)!;
+
+        public Task<ApplicationItemDto> ApplyAsync(Guid vacancyId, string? coverNote, CancellationToken ct = default) =>
+            SendAsync<ApplicationItemDto>(HttpMethod.Post, $"vacancies/{vacancyId}/applications",
+                new ApplyRequestDto { CoverNote = coverNote },
+                AppJsonContext.Default.ApplyRequestDto, AppJsonContext.Default.ApplicationItemDto, ct)!;
+
+        public async Task<IReadOnlyList<ApplicationItemDto>> GetMyApplicationsAsync(CancellationToken ct = default) =>
+            await SendAsync<IReadOnlyList<ApplicationItemDto>>(HttpMethod.Get, "workers/me/applications",
+                body: null, bodyTypeInfo: null, AppJsonContext.Default.IReadOnlyListApplicationItemDto, ct)
+            ?? Array.Empty<ApplicationItemDto>();
+
+        public Task<ApplicationItemDto> WithdrawApplicationAsync(Guid applicationId, CancellationToken ct = default) =>
+            SendAsync<ApplicationItemDto>(HttpMethod.Post, $"workers/me/applications/{applicationId}/withdraw",
+                body: null, bodyTypeInfo: null, AppJsonContext.Default.ApplicationItemDto, ct)!;
+
+        public async Task<IReadOnlyList<CompanyVacancySummaryDto>> GetCompanyVacanciesAsync(
+            Guid companyId, CancellationToken ct = default) =>
+            await SendAsync<IReadOnlyList<CompanyVacancySummaryDto>>(
+                HttpMethod.Get, $"companies/{companyId}/vacancies",
+                body: null, bodyTypeInfo: null, AppJsonContext.Default.IReadOnlyListCompanyVacancySummaryDto, ct)
+            ?? Array.Empty<CompanyVacancySummaryDto>();
+
+        public Task<CompanyVacancySummaryDto> CreateVacancyAsync(
+            Guid companyId, UpsertVacancyRequestDto request, CancellationToken ct = default) =>
+            SendAsync<CompanyVacancySummaryDto>(HttpMethod.Post, $"companies/{companyId}/vacancies",
+                request, AppJsonContext.Default.UpsertVacancyRequestDto,
+                AppJsonContext.Default.CompanyVacancySummaryDto, ct)!;
+
+        public Task<CompanyVacancySummaryDto> UpdateVacancyAsync(
+            Guid companyId, Guid vacancyId, UpsertVacancyRequestDto request, CancellationToken ct = default) =>
+            SendAsync<CompanyVacancySummaryDto>(HttpMethod.Put, $"companies/{companyId}/vacancies/{vacancyId}",
+                request, AppJsonContext.Default.UpsertVacancyRequestDto,
+                AppJsonContext.Default.CompanyVacancySummaryDto, ct)!;
+
+        public Task<CompanyVacancySummaryDto> ChangeVacancyStatusAsync(
+            Guid companyId, Guid vacancyId, string status, CancellationToken ct = default) =>
+            SendAsync<CompanyVacancySummaryDto>(HttpMethod.Post, $"companies/{companyId}/vacancies/{vacancyId}/status",
+                new ChangeVacancyStatusRequestDto(status), AppJsonContext.Default.ChangeVacancyStatusRequestDto,
+                AppJsonContext.Default.CompanyVacancySummaryDto, ct)!;
+
+        public async Task<IReadOnlyList<VacancyApplicationItemDto>> GetVacancyApplicationsAsync(
+            Guid companyId, Guid vacancyId, CancellationToken ct = default) =>
+            await SendAsync<IReadOnlyList<VacancyApplicationItemDto>>(
+                HttpMethod.Get, $"companies/{companyId}/vacancies/{vacancyId}/applications",
+                body: null, bodyTypeInfo: null, AppJsonContext.Default.IReadOnlyListVacancyApplicationItemDto, ct)
+            ?? Array.Empty<VacancyApplicationItemDto>();
+
+        public Task<ApplicationStatusChangeDto> ChangeApplicationStatusAsync(
+            Guid companyId, Guid vacancyId, Guid applicationId, string status, CancellationToken ct = default) =>
+            SendAsync<ApplicationStatusChangeDto>(HttpMethod.Post,
+                $"companies/{companyId}/vacancies/{vacancyId}/applications/{applicationId}/status",
+                new ChangeApplicationStatusRequestDto(status), AppJsonContext.Default.ChangeApplicationStatusRequestDto,
+                AppJsonContext.Default.ApplicationStatusChangeDto, ct)!;
 
         // ---- core send pipeline ----
 

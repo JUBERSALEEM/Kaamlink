@@ -143,6 +143,14 @@ namespace KaamLink.Features.Worker
         }
 
         [RelayCommand]
+        private async Task BrowseJobsAsync() =>
+            await Shell.Current.GoToAsync(AppRoutes.Absolute(AppRoutes.VacancyFeed));
+
+        [RelayCommand]
+        private async Task OpenMyApplicationsAsync() =>
+            await Shell.Current.GoToAsync(AppRoutes.Absolute(AppRoutes.MyApplications));
+
+        [RelayCommand]
         private async Task SwitchToEmployerAsync() => await SwitchExperienceAsync(RoleNavigator.Employer);
 
         internal async Task SwitchExperienceAsync(string role)

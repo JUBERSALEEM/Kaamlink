@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:vm="clr-namespace:KaamLink.Features.Jobs"
+             xmlns:api="clr-namespace:KaamLink.Core.Api"
+             xmlns:strings="clr-namespace:KaamLink.Resources.Strings"
+             x:Class="KaamLink.Features.Jobs.VacancyEditPage"
+             x:DataType="vm:VacancyEditViewModel"
+             Title="{Binding PageTitle}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="14">
+
+            <ActivityIndicator HorizontalOptions="Center"
+                               IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}" />
+
+            <VerticalStackLayout IsVisible="{Binding HasError}" Spacing="12">
+                <Label Style="{StaticResource Body}"
+                       Text="{Binding ErrorMessage}"
+                       TextColor="{StaticResource Error}" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout IsVisible="{Binding IsLoaded}" Spacing="14">
+
+                <Label Style="{StaticResource Caption}" Text="{x:Static strings:AppStrings.FieldTitleLabel}" />
+                <Entry MaxLength="120" Text="{Binding Title}" />
+
+                <Label Style="{StaticResource Caption}" Text="{x:Static strings:AppStrings.FieldDescriptionLabel}" />
+                <Editor AutoSize="TextChanges" HeightRequest="96" MaxLength="4000" Text="{Binding Description}" />
+
+                <Label Style="{StaticResource Caption}" Text="{x:Static strings:AppStrings.FieldEmirateLabel}" />
+                <Picker ItemDisplayBinding="{Binding Label}"
+                        ItemsSource="{Binding EmirateOptions}"
+                        SelectedItem="{Binding SelectedEmirate}" />
+
+                <Label Style="{StaticResource Caption}" Text="{x:Static strings:AppStrings.FieldAreaLabel}" />
+                <Entry MaxLength="120" Text="{Binding Area}" />
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                    <VerticalStackLayout Grid.Column="0">
+                        <Label Style="{StaticResource Caption}" Text="{x:Static strings:AppStrings.FieldSalaryMinLabel}" />
+                        <Entry Keyboard="Numeric" Text="{Binding SalaryMinText}" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="1">
+                        <Label Style="{StaticResource Caption}" Text="{x:Static strings:AppStrings.FieldSalaryMaxLabel}" />
+                        <Entry Keyboard="Numeric" Text="{Binding SalaryMaxText}" />
+                    </VerticalStackLayout>
+                </Grid>
+
+                <Label Style="{StaticResource Caption}" Text="{x:Static strings:AppStrings.FieldHeadcountLabel}" />
+                <Entry Keyboard="Numeric" Text="{Binding HeadcountText}" />
+
+                <Label Style="{StaticResource Caption}" Text="{x:Static strings:AppStrings.FieldSkillsLabel}" />
+                <Border Padding="8" Stroke="{StaticResource Border}" StrokeShape="RoundRectangle 12">
+                    <CollectionView HeightRequest="220"
+                                    ItemsSource="{Binding SkillOptions}"
+                                    SelectedItems="{Binding SelectedSkills}"
+                                    SelectionMode="Multiple">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="api:SkillItemDto">
+                                <Label Padding="8,6"
+                                       Style="{StaticResource Body}"
+                                       Text="{Binding LocalizedName}" />
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Border>
+
+                <Button Command="{Binding SaveCommand}"
+                        SemanticProperties.Description="{x:Static strings:AppStrings.SaveCta}"
+                        Text="{x:Static strings:AppStrings.SaveCta}" />
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

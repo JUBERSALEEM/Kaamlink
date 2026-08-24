@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:KaamLink.Features.Jobs"
+             xmlns:strings="clr-namespace:KaamLink.Resources.Strings"
+             x:Class="KaamLink.Features.Jobs.VacancyDetailPage"
+             x:DataType="vm:VacancyDetailViewModel"
+             Title="{x:Static strings:AppStrings.FeedTitle}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="16">
+
+            <ActivityIndicator HorizontalOptions="Center"
+                               IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}" />
+
+            <VerticalStackLayout IsVisible="{Binding HasError}" Spacing="12">
+                <Label Style="{StaticResource Body}"
+                       Text="{Binding ErrorMessage}"
+                       TextColor="{StaticResource Error}" />
+                <Button Command="{Binding LoadCommand}"
+                        SemanticProperties.Description="{x:Static strings:AppStrings.RetryCta}"
+                        Text="{x:Static strings:AppStrings.RetryCta}" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout IsVisible="{Binding IsLoaded}" Spacing="14">
+
+                <Label SemanticProperties.HeadingLevel="Level1"
+                       Style="{StaticResource Title1}"
+                       Text="{Binding Title}" />
+
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Grid.Column="0"
+                           FontFamily="OpenSansSemibold"
+                           Style="{StaticResource Body}"
+                           Text="{Binding CompanyLine}"
+                           VerticalOptions="Center" />
+                    <Border Grid.Column="1"
+                            Padding="10,3"
+                            Stroke="{Binding CompanyVerificationState, Converter={StaticResource VerificationStateColorConverter}}"
+                            StrokeShape="RoundRectangle 12">
+                        <Label FontFamily="OpenSansSemibold"
+                               Style="{StaticResource Caption}"
+                               Text="{Binding CompanyVerificationLabel}"
+                               TextColor="{Binding CompanyVerificationState, Converter={StaticResource VerificationStateColorConverter}}" />
+                    </Border>
+                </Grid>
+
+                <Label Style="{StaticResource BodySecondary}"
+                       Text="{Binding LocationLine}" />
+                <Label Style="{StaticResource Body}"
+                       Text="{Binding SalaryText}" />
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Grid.Column="0"
+                           Style="{StaticResource Caption}"
+                           Text="{Binding SkillsLine}"
+                           VerticalOptions="Center" />
+                    <Label Grid.Column="1"
+                           Style="{StaticResource Caption}"
+                           Text="{Binding HeadcountText}" />
+                </Grid>
+
+                <Label IsVisible="{Binding HasDescription}"
+                       Style="{StaticResource Body}"
+                       Text="{Binding Description}" />
+
+                <!-- Own application state (server truth) -->
+                <Border IsVisible="{Binding HasOwnApplication}"
+                        Padding="10,3"
+                        Stroke="{Binding OwnApplicationStatus, Converter={StaticResource StatusColorConverter}}"
+                        StrokeShape="RoundRectangle 12">
+                    <Label FontFamily="OpenSansSemibold"
+                           Style="{StaticResource Caption}"
+                           Text="{Binding OwnApplicationLabel}"
+                           TextColor="{Binding OwnApplicationStatus, Converter={StaticResource StatusColorConverter}}" />
+                </Border>
+
+                <!-- Apply -->
+                <VerticalStackLayout IsVisible="{Binding CanApply}" Spacing="10">
+                    <Label SemanticProperties.HeadingLevel="Level2"
+                           Style="{StaticResource SectionTitle}"
+                           Text="{x:Static strings:AppStrings.DetailApplySectionTitle}" />
+                    <Editor AutoSize="TextChanges"
+                            HeightRequest="96"
+                            Placeholder="{x:Static strings:AppStrings.DetailCoverNotePlaceholder}"
+                            Text="{Binding CoverNote}" />
+                    <Button Command="{Binding ApplyCommand}"
+                            SemanticProperties.Description="{x:Static strings:AppStrings.ApplyCta}"
+                            Text="{x:Static strings:AppStrings.ApplyCta}" />
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

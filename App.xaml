@@ -10,6 +10,7 @@
             <!-- Shared converter instances (InvertedBoolConverter ships with MAUI). -->
             <InvertedBoolConverter x:Key="InvertedBoolConverter" />
             <presentation:VerificationStateColorConverter x:Key="VerificationStateColorConverter" />
+            <presentation:StatusColorConverter x:Key="StatusColorConverter" />
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />

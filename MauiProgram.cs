@@ -1,6 +1,7 @@
 using KaamLink.Core.Api;
 using KaamLink.Features.Auth;
 using KaamLink.Features.Employer;
+using KaamLink.Features.Jobs;
 using KaamLink.Features.Onboarding;
 using KaamLink.Features.Worker;
 using Microsoft.Extensions.Logging;
@@ -67,6 +68,20 @@ namespace KaamLink
             services.AddTransient<EmployerOnboardingViewModel>();
             services.AddTransient<EmployerHomePage>();
             services.AddTransient<EmployerHomeViewModel>();
+
+            // Jobs core (Phase 04)
+            services.AddTransient<VacancyFeedPage>();
+            services.AddTransient<VacancyFeedViewModel>();
+            services.AddTransient<VacancyDetailPage>();
+            services.AddTransient<VacancyDetailViewModel>();
+            services.AddTransient<MyApplicationsPage>();
+            services.AddTransient<MyApplicationsViewModel>();
+            services.AddTransient<CompanyVacanciesPage>();
+            services.AddTransient<CompanyVacanciesViewModel>();
+            services.AddTransient<VacancyEditPage>();
+            services.AddTransient<VacancyEditViewModel>();
+            services.AddTransient<VacancyApplicationsPage>();
+            services.AddTransient<VacancyApplicationsViewModel>();
         }
     }
 }
