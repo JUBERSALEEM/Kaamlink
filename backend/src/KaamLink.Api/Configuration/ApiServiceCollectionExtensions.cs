@@ -61,7 +61,7 @@ public static class ApiServiceCollectionExtensions
                 RateLimitPolicies.OtpRequest,
                 context => RateLimitPartition.GetSlidingWindowLimiter(
                     RateLimitKey.For(context),
-                    _ => new SlidingWindowLimiterOptions
+                    _ => new SlidingWindowRateLimiterOptions
                     {
                         PermitLimit = 5,
                         Window = TimeSpan.FromMinutes(5),
@@ -73,7 +73,7 @@ public static class ApiServiceCollectionExtensions
                 RateLimitPolicies.OtpVerify,
                 context => RateLimitPartition.GetSlidingWindowLimiter(
                     RateLimitKey.For(context),
-                    _ => new SlidingWindowLimiterOptions
+                    _ => new SlidingWindowRateLimiterOptions
                     {
                         PermitLimit = 15,
                         Window = TimeSpan.FromMinutes(5),
