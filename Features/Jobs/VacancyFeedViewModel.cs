@@ -108,7 +108,13 @@ namespace KaamLink.Features.Jobs
             catch (ApiException exception)
             {
                 HasError = true;
-                ErrorMessage = exception.IsOffline ? AppStrings.ErrorOffline : AppStrings.ErrorGeneric;
+                ErrorMessage = exception.Code switch
+                {
+                    // The feed gates on completed onboarding — say so, don't shrug generically.
+                    ApiClient.Codes.OnboardingIncomplete or ApiClient.Codes.ProfileRequired =>
+                        AppStrings.ErrorOnboardingIncomplete,
+                    _ => exception.IsOffline ? AppStrings.ErrorOffline : AppStrings.ErrorGeneric
+                };
             }
             finally
             {
