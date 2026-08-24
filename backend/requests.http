@@ -91,3 +91,68 @@ Authorization: Bearer {{verify.response.body.accessToken}}
 Content-Type: application/json
 
 { "approve": true }
+
+// ---------------------------------------------------------------- Phase 04
+
+### Employer: create a vacancy (starts Draft)
+# @name vacancy
+POST {{host}}/api/v1/companies/{{company.response.body.id}}/vacancies
+Authorization: Bearer {{verify.response.body.accessToken}}
+Content-Type: application/json
+
+{ "title": "Aluminium Fabricator", "emirate": "Sharjah", "area": "Industrial Area 12", "salaryMinAed": 3000, "salaryMaxAed": 4000, "headcount": 2, "skillIds": ["ce4dccee-4687-4af8-8937-f84b21a3c449"] }
+
+### Publish attempt: fails while company is Pending → jobs.company_not_verified
+POST {{host}}/api/v1/companies/{{company.response.body.id}}/vacancies/{{vacancy.response.body.id}}/status
+Authorization: Bearer {{verify.response.body.accessToken}}
+Content-Type: application/json
+
+{ "status": "Active" }
+
+### ADMIN: verify the company first (see the admin endpoints above), then retry publish.
+
+### Employer's vacancies (any status, with applicant counts)
+GET {{host}}/api/v1/companies/{{company.response.body.id}}/vacancies
+Authorization: Bearer {{verify.response.body.accessToken}}
+
+### Edit a vacancy (same contract as create)
+PUT {{host}}/api/v1/companies/{{company.response.body.id}}/vacancies/{{vacancy.response.body.id}}
+Authorization: Bearer {{verify.response.body.accessToken}}
+Content-Type: application/json
+
+{ "title": "Aluminium Fabricator — Night Shift", "emirate": "Sharjah", "salaryMinAed": 3200, "salaryMaxAed": 4200, "headcount": 3, "skillIds": ["ce4dccee-4687-4af8-8937-f84b21a3c449"] }
+
+### WORKER feed (active only; emirate/skillId/q filters, page/pageSize ≤ 50)
+GET {{host}}/api/v1/vacancies?emirate=Sharjah&page=1&pageSize=20
+Authorization: Bearer {{verify.response.body.accessToken}}
+
+### Vacancy detail (worker view; carries ownApplicationStatus when applied)
+GET {{host}}/api/v1/vacancies/{{vacancy.response.body.id}}
+Authorization: Bearer {{verify.response.body.accessToken}}
+
+### WORKER: apply (requires completed onboarding; one per vacancy)
+# @name application
+POST {{host}}/api/v1/vacancies/{{vacancy.response.body.id}}/applications
+Authorization: Bearer {{verify.response.body.accessToken}}
+Content-Type: application/json
+
+{ "coverNote": "6 years of experience, available immediately." }
+
+### WORKER: my applications
+GET {{host}}/api/v1/workers/me/applications
+Authorization: Bearer {{verify.response.body.accessToken}}
+
+### WORKER: withdraw while the decision is open
+POST {{host}}/api/v1/workers/me/applications/{{application.response.body.id}}/withdraw
+Authorization: Bearer {{verify.response.body.accessToken}}
+
+### EMPLOYER: applicants of the vacancy (hiring roles only — contains phone numbers)
+GET {{host}}/api/v1/companies/{{company.response.body.id}}/vacancies/{{vacancy.response.body.id}}/applications
+Authorization: Bearer {{verify.response.body.accessToken}}
+
+### EMPLOYER: decision — Viewed | Shortlisted | Rejected | Hired (terminal states are final)
+POST {{host}}/api/v1/companies/{{company.response.body.id}}/vacancies/{{vacancy.response.body.id}}/applications/{{application.response.body.id}}/status
+Authorization: Bearer {{verify.response.body.accessToken}}
+Content-Type: application/json
+
+{ "status": "Shortlisted" }

@@ -12,7 +12,7 @@ with employers (factories, workshops, contractors, SMEs, warehouses) — built a
 
 ## Status
 
-**Phase 03 — onboarding complete; the app is ready for its first boot.**
+**Phase 04 — jobs core complete: vacancy posting → worker feed → apply.**
 
 * **Phase 01** — foundation: sample code removed, clean Android-first MAUI shell
   → [docs/phase-01-report.md](docs/phase-01-report.md)
@@ -22,6 +22,9 @@ with employers (factories, workshops, contractors, SMEs, warehouses) — built a
   3-step onboarding (Skill Passport); employer company registration; admin
   verification-lite; seeded bilingual occupation catalog
   → [docs/phase-03-report.md](docs/phase-03-report.md)
+* **Phase 04** — jobs core: employer vacancy posting (verification-gated publishing,
+  role matrix), worker feed with filters, apply, employer applicant decisions,
+  withdrawal → [docs/phase-04-report.md](docs/phase-04-report.md)
 
 **Want to run it? → [docs/first-boot-guide.md](docs/first-boot-guide.md)**
 (backend up → app on emulator/device → sign in with your phone → onboard → home).
