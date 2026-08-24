@@ -187,6 +187,28 @@ check('<None Remove="backend\\**\\*"' in csproj,
       "KaamLink.csproj excludes backend/** from None items",
       "KaamLink.csproj missing None Remove for backend tree")
 
+# Snapshot/designer model-builder lines execute in FILE ORDER at runtime.
+# A bare b.Navigation("N") is a LOOKUP: it throws InvalidOperationException unless
+# a creating call (HasOne/HasMany/WithOne/WithMany with the same name) already ran
+# on an earlier line. (Caught live: Vacancy-block Navigation("Skills") referenced a
+# navigation only created later in the VacancySkill block — API crashed at startup
+# during HasPendingModelChanges.)
+section("Snapshot/designer navigation ordering")
+for label, text in (("snapshot", snapshot), ("designer", designer)):
+    violations = []
+    for lineno, line in enumerate(text.splitlines(), start=1):
+        m = re.search(r'b\.Navigation\("(\w+)"\)', line)
+        if not m:
+            continue
+        nav = m.group(1)
+        creator = re.compile(
+            r'(WithMany|WithOne)\("' + re.escape(nav) + r'"\)'
+            r'|Has(One|Many)\("[^"]+",\s*"' + re.escape(nav) + r'"\)')
+        if not any(creator.search(prior) for prior in text.splitlines()[:lineno - 1]):
+            violations.append(f"{label}:{lineno} Navigation(\"{nav}\") has no creator on an earlier line")
+    check(not violations, f"{label} navigation lookups resolve before use",
+          "; ".join(violations) if violations else f"{label} navigation ordering broken")
+
 # ---------------------------------------------------------------- summary
 print(f"\n{'=' * 60}\n{checks} checks, {len(failures)} failures")
 if failures:

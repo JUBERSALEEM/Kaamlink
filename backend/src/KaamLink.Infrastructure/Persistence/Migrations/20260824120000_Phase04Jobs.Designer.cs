@@ -741,7 +741,6 @@ namespace KaamLink.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Skills");
                 });
 
             modelBuilder.Entity("KaamLink.Domain.Jobs.VacancySkill", b =>

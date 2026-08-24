@@ -22,6 +22,12 @@ WORKDIR /app
 ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 
+# Npgsql probes for GSSAPI/Kerberos on the first connection; the slim image lacks
+# the native lib (harmless log noise for password auth, but noise hides real errors).
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libgssapi-krb5-2 \
+    && rm -rf /var/lib/apt/lists/*
+
 # Run as the built-in non-root user.
 USER $APP_UID
 
