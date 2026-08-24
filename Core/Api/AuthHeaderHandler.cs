@@ -26,7 +26,8 @@ namespace KaamLink.Core.Api
 
             var response = await base.SendAsync(request, cancellationToken);
 
-            if (response.StatusCode != HttpStatusCode.Unauthorized || request.Options.ContainsKey(RetriedKey))
+            if (response.StatusCode != HttpStatusCode.Unauthorized
+                || (request.Options.TryGetValue(RetriedKey, out var alreadyRetried) && alreadyRetried))
                 return response;
 
             if (!await _session.RefreshAsync())
