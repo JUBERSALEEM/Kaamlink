@@ -19,6 +19,10 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0" />
+    <!-- Security pin: transitively arrives as 2.0.0 via Microsoft.AspNetCore.OpenApi;
+         2.0.0–2.7.4 is vulnerable (GHSA-v5pm-xwqc-g5wc, OpenAPI reader recursion DoS).
+         Pin 2.7.5+ — restore then warns nothing and stays patchable independently. -->
+    <PackageReference Include="Microsoft.OpenApi" Version="2.7.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
