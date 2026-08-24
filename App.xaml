@@ -7,8 +7,8 @@
     <Application.Resources>
         <ResourceDictionary>
 
-            <!-- Shared converter instances (InvertedBoolConverter ships with MAUI). -->
-            <InvertedBoolConverter x:Key="InvertedBoolConverter" />
+            <!-- Shared converter instances (MAUI core has no boolean inverter — ours is in Core/Presentation). -->
+            <presentation:InverseBoolConverter x:Key="InvertedBoolConverter" />
             <presentation:VerificationStateColorConverter x:Key="VerificationStateColorConverter" />
             <presentation:StatusColorConverter x:Key="StatusColorConverter" />
 

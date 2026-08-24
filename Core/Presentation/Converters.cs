@@ -59,4 +59,19 @@ namespace KaamLink.Core.Presentation
         public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
             throw new NotSupportedException();
     }
+
+    /// <summary>
+    /// Boolean inverter for IsEnabled/IsVisible bindings. MAUI core ships no built-in
+    /// inverter (the familiar InvertedBoolConverter lives in the CommunityToolkit.Maui
+    /// package); this 3-line one keeps us at zero extra dependencies.
+    /// Registered in App.xaml under the conventional key "InvertedBoolConverter".
+    /// </summary>
+    public sealed class InverseBoolConverter : IValueConverter
+    {
+        public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+            value is not true;
+
+        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+            value is not true;
+    }
 }
