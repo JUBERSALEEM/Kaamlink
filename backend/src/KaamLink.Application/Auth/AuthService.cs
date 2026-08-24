@@ -111,7 +111,7 @@ public sealed class AuthService(
         challenge.Consume(now);
 
         var isNewUser = user is null;
-        if (isNewUser)
+        if (user is null)
         {
             // Platform-admin bootstrap applies at registration only (see AdminOptions).
             var isBootstrapAdmin = adminOptions.BootstrapPhones.Contains(
