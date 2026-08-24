@@ -241,6 +241,58 @@ namespace KaamLink.Core.Api
 
     public sealed record ApplicationStatusChangeDto(Guid Id, string Status, DateTimeOffset? ReviewedAt);
 
+    // ---- Skill assessments (Phase 05) ----
+
+    /// <summary>One row of "My assessments" (worker). VerificationState mirrors the server enum name.</summary>
+    public sealed record MyAssessmentItemDto(
+        Guid SkillId,
+        string SkillNameEn,
+        string SkillNameAr,
+        bool RequiresCertification,
+        bool AssessmentAvailable,
+        string VerificationState,
+        int? LatestScorePercent,
+        bool? LatestPassed)
+    {
+        /// <summary>UI-language display name (JSON-ignored; display concern only).</summary>
+        [JsonIgnore]
+        public string LocalizedSkillName => Presentation.LocalizationHelpers.Localized(SkillNameEn, SkillNameAr);
+    }
+
+    /// <summary>One MCQ question — the contract deliberately carries NO correct-answer field.</summary>
+    public sealed record AssessmentQuestionItemDto(
+        Guid Id,
+        int SortOrder,
+        string TextEn,
+        string TextAr,
+        string OptionAEn,
+        string OptionAAr,
+        string OptionBEn,
+        string OptionBAr,
+        string OptionCEn,
+        string OptionCAr,
+        string OptionDEn,
+        string OptionDAr);
+
+    public sealed record StartAssessmentResponseDto(
+        Guid AttemptId,
+        Guid SkillId,
+        int PassMarkPercent,
+        int TotalQuestions,
+        List<AssessmentQuestionItemDto> Questions);
+
+    public sealed record SubmitAssessmentAnswerItemDto(Guid QuestionId, int SelectedOptionIndex);
+
+    public sealed record SubmitAssessmentRequestDto(List<SubmitAssessmentAnswerItemDto> Answers);
+
+    public sealed record AssessmentResultDto(
+        Guid AttemptId,
+        int CorrectAnswers,
+        int TotalQuestions,
+        int ScorePercent,
+        bool Passed,
+        string VerificationState);
+
     // ---- Serializer ----
 
     [JsonSourceGenerationOptions(
@@ -276,5 +328,11 @@ namespace KaamLink.Core.Api
     [JsonSerializable(typeof(IReadOnlyList<VacancyApplicationItemDto>))]
     [JsonSerializable(typeof(ChangeApplicationStatusRequestDto))]
     [JsonSerializable(typeof(ApplicationStatusChangeDto))]
+    [JsonSerializable(typeof(MyAssessmentItemDto))]
+    [JsonSerializable(typeof(IReadOnlyList<MyAssessmentItemDto>))]
+    [JsonSerializable(typeof(AssessmentQuestionItemDto))]
+    [JsonSerializable(typeof(StartAssessmentResponseDto))]
+    [JsonSerializable(typeof(SubmitAssessmentRequestDto))]
+    [JsonSerializable(typeof(AssessmentResultDto))]
     public sealed partial class AppJsonContext : JsonSerializerContext;
 }

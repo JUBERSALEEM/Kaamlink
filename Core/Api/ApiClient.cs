@@ -76,6 +76,9 @@ namespace KaamLink.Core.Api
             public const string CompanyNotVerified = "jobs.company_not_verified";
             public const string SalaryPairRequired = "jobs.salary_pair_required";
             public const string SalaryInvalid = "jobs.salary_invalid";
+            public const string AssessmentNotAvailable = "assessment.not_available";
+            public const string AssessmentSkillNotOnProfile = "assessment.skill_not_on_profile";
+            public const string AssessmentAlreadyCompleted = "assessment.already_completed";
         }
 
         private readonly HttpClient _http;
@@ -164,6 +167,24 @@ namespace KaamLink.Core.Api
         public Task<ApplicationItemDto> WithdrawApplicationAsync(Guid applicationId, CancellationToken ct = default) =>
             SendAsync<ApplicationItemDto>(HttpMethod.Post, $"workers/me/applications/{applicationId}/withdraw",
                 body: null, bodyTypeInfo: null, AppJsonContext.Default.ApplicationItemDto, ct)!;
+
+        // ---- Skill assessments (Phase 05) ----
+
+        public async Task<IReadOnlyList<MyAssessmentItemDto>> GetMyAssessmentsAsync(CancellationToken ct = default) =>
+            await SendAsync<IReadOnlyList<MyAssessmentItemDto>>(HttpMethod.Get, "workers/me/assessments",
+                body: null, bodyTypeInfo: null, AppJsonContext.Default.IReadOnlyListMyAssessmentItemDto, ct)
+            ?? Array.Empty<MyAssessmentItemDto>();
+
+        public Task<StartAssessmentResponseDto> StartAssessmentAsync(Guid skillId, CancellationToken ct = default) =>
+            SendAsync<StartAssessmentResponseDto>(HttpMethod.Post, $"workers/me/assessments/{skillId}/attempts",
+                body: null, bodyTypeInfo: null, AppJsonContext.Default.StartAssessmentResponseDto, ct)!;
+
+        public Task<AssessmentResultDto> SubmitAssessmentAsync(
+            Guid skillId, Guid attemptId, List<SubmitAssessmentAnswerItemDto> answers, CancellationToken ct = default) =>
+            SendAsync<AssessmentResultDto>(
+                HttpMethod.Post, $"workers/me/assessments/{skillId}/attempts/{attemptId}/submit",
+                new SubmitAssessmentRequestDto(answers),
+                AppJsonContext.Default.SubmitAssessmentRequestDto, AppJsonContext.Default.AssessmentResultDto, ct)!;
 
         public async Task<IReadOnlyList<CompanyVacancySummaryDto>> GetCompanyVacanciesAsync(
             Guid companyId, CancellationToken ct = default) =>

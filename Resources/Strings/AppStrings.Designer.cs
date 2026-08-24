@@ -378,5 +378,28 @@ namespace KaamLink.Resources.Strings
         public static string FieldInvalidNumber => ResourceManager.GetString(nameof(FieldInvalidNumber), Culture)!;
 
         public static string ManageVacanciesCta => ResourceManager.GetString(nameof(ManageVacanciesCta), Culture)!;
+        public static string AssessmentsTitle => ResourceManager.GetString(nameof(AssessmentsTitle), Culture)!;
+        public static string MyAssessmentsCta => ResourceManager.GetString(nameof(MyAssessmentsCta), Culture)!;
+        public static string AssessmentsEmpty => ResourceManager.GetString(nameof(AssessmentsEmpty), Culture)!;
+        public static string AssessmentStartCta => ResourceManager.GetString(nameof(AssessmentStartCta), Culture)!;
+        public static string AssessmentNotAvailable => ResourceManager.GetString(nameof(AssessmentNotAvailable), Culture)!;
+        public static string StateSelfDeclared => ResourceManager.GetString(nameof(StateSelfDeclared), Culture)!;
+        public static string StateEmployerVerified => ResourceManager.GetString(nameof(StateEmployerVerified), Culture)!;
+        public static string StateAssessmentVerified => ResourceManager.GetString(nameof(StateAssessmentVerified), Culture)!;
+        public static string AssessmentScoreFormat => ResourceManager.GetString(nameof(AssessmentScoreFormat), Culture)!;
+        public static string AssessmentPassedShort => ResourceManager.GetString(nameof(AssessmentPassedShort), Culture)!;
+        public static string AssessmentFailedShort => ResourceManager.GetString(nameof(AssessmentFailedShort), Culture)!;
+        public static string AssessmentPassMarkFormat => ResourceManager.GetString(nameof(AssessmentPassMarkFormat), Culture)!;
+        public static string AssessmentAnsweredFormat => ResourceManager.GetString(nameof(AssessmentAnsweredFormat), Culture)!;
+        public static string AssessmentSubmitCta => ResourceManager.GetString(nameof(AssessmentSubmitCta), Culture)!;
+        public static string AssessmentResultPassedTitle => ResourceManager.GetString(nameof(AssessmentResultPassedTitle), Culture)!;
+        public static string AssessmentResultFailedTitle => ResourceManager.GetString(nameof(AssessmentResultFailedTitle), Culture)!;
+        public static string AssessmentResultScoreFormat => ResourceManager.GetString(nameof(AssessmentResultScoreFormat), Culture)!;
+        public static string AssessmentPassedNote => ResourceManager.GetString(nameof(AssessmentPassedNote), Culture)!;
+        public static string AssessmentFailedNote => ResourceManager.GetString(nameof(AssessmentFailedNote), Culture)!;
+        public static string AssessmentDoneCta => ResourceManager.GetString(nameof(AssessmentDoneCta), Culture)!;
+        public static string ErrorAssessmentNotAvailable => ResourceManager.GetString(nameof(ErrorAssessmentNotAvailable), Culture)!;
+        public static string ErrorAssessmentSkillNotOnProfile => ResourceManager.GetString(nameof(ErrorAssessmentSkillNotOnProfile), Culture)!;
+        public static string ErrorAssessmentAlreadyCompleted => ResourceManager.GetString(nameof(ErrorAssessmentAlreadyCompleted), Culture)!;
     }
 }

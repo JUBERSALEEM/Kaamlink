@@ -151,6 +151,10 @@ namespace KaamLink.Features.Worker
             await Shell.Current.GoToAsync(AppRoutes.Absolute(AppRoutes.MyApplications));
 
         [RelayCommand]
+        private async Task OpenMyAssessmentsAsync() =>
+            await Shell.Current.GoToAsync(AppRoutes.Absolute(AppRoutes.MyAssessments));
+
+        [RelayCommand]
         private async Task SwitchToEmployerAsync() => await SwitchExperienceAsync(RoleNavigator.Employer);
 
         internal async Task SwitchExperienceAsync(string role)

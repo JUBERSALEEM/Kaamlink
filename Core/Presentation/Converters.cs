@@ -48,6 +48,9 @@ namespace KaamLink.Core.Presentation
                 "Rejected" => "Error",
                 "Hired" => "Success",
                 "Withdrawn" => "TextSecondary",
+                "SelfDeclared" => "TextSecondary",
+                "EmployerVerified" => "Success",
+                "AssessmentVerified" => "Success",
                 _ => "TextSecondary"
             };
 
@@ -73,5 +76,31 @@ namespace KaamLink.Core.Presentation
 
         public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
             value is not true;
+    }
+
+    /// <summary>Selected assessment option → filled brand background (false → card surface).</summary>
+    public sealed class SelectedOptionBackgroundConverter : IValueConverter
+    {
+        public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+            Lookup(value is true ? "Primary" : "CardSurface");
+
+        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+            throw new NotSupportedException();
+
+        private static object? Lookup(string key) =>
+            Application.Current?.Resources.TryGetValue(key, out var color) == true ? color : Colors.Gray;
+    }
+
+    /// <summary>Selected assessment option → on-brand text color (false → primary text).</summary>
+    public sealed class SelectedOptionTextColorConverter : IValueConverter
+    {
+        public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+            Lookup(value is true ? "TextOnPrimary" : "TextPrimary");
+
+        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+            throw new NotSupportedException();
+
+        private static object? Lookup(string key) =>
+            Application.Current?.Resources.TryGetValue(key, out var color) == true ? color : Colors.Gray;
     }
 }

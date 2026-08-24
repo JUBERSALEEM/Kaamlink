@@ -93,7 +93,7 @@
     <value>الرئيسية للعامل</value>
   </data>
   <data name="WorkerHomePlaceholder" xml:space="preserve">
-    <value>أصبحت الوظائف والطلبات متاحة الآن — وستصل التقييمات في مرحلة لاحقة.</value>
+    <value>قريبًا: جدولة زيارات صاحب العمل وقواعد انتهاء صلاحية الوظائف.</value>
   </data>
   <data name="WorkerHomeRoadmapNote" xml:space="preserve">
     <value>تصل شارات توثيق المهارات مع مرحلة التقييم.</value>
@@ -570,5 +570,74 @@
   </data>
   <data name="ManageVacanciesCta" xml:space="preserve">
     <value>الشواغر</value>
+  </data>
+  <data name="AssessmentsTitle" xml:space="preserve">
+    <value>تقييماتي</value>
+  </data>
+  <data name="MyAssessmentsCta" xml:space="preserve">
+    <value>تقييمات المهارات</value>
+  </data>
+  <data name="AssessmentsEmpty" xml:space="preserve">
+    <value>لا توجد مهارات في ملفك بعد. أكمل التسجيل لفتح التقييمات.</value>
+  </data>
+  <data name="AssessmentStartCta" xml:space="preserve">
+    <value>بدء التقييم</value>
+  </data>
+  <data name="AssessmentNotAvailable" xml:space="preserve">
+    <value>لا يوجد تقييم لهذه المهارة بعد — تتم إضافة المزيد.</value>
+  </data>
+  <data name="StateSelfDeclared" xml:space="preserve">
+    <value>إقرار ذاتي</value>
+  </data>
+  <data name="StateEmployerVerified" xml:space="preserve">
+    <value>موثقة من صاحب العمل</value>
+  </data>
+  <data name="StateAssessmentVerified" xml:space="preserve">
+    <value>اجتاز التقييم ✓</value>
+  </data>
+  <data name="AssessmentScoreFormat" xml:space="preserve">
+    <value>آخر نتيجة: {0}٪</value>
+  </data>
+  <data name="AssessmentPassedShort" xml:space="preserve">
+    <value>ناجح</value>
+  </data>
+  <data name="AssessmentFailedShort" xml:space="preserve">
+    <value>غير ناجح</value>
+  </data>
+  <data name="AssessmentPassMarkFormat" xml:space="preserve">
+    <value>درجة النجاح: {0}٪</value>
+  </data>
+  <data name="AssessmentAnsweredFormat" xml:space="preserve">
+    <value>أجبت على {0} من {1}</value>
+  </data>
+  <data name="AssessmentSubmitCta" xml:space="preserve">
+    <value>إرسال الإجابات</value>
+  </data>
+  <data name="AssessmentResultPassedTitle" xml:space="preserve">
+    <value>اجتزت التقييم!</value>
+  </data>
+  <data name="AssessmentResultFailedTitle" xml:space="preserve">
+    <value>لم تنجح هذه المرة</value>
+  </data>
+  <data name="AssessmentResultScoreFormat" xml:space="preserve">
+    <value>أجبت بشكل صحيح على {0} من {1} — {2}٪</value>
+  </data>
+  <data name="AssessmentPassedNote" xml:space="preserve">
+    <value>أحسنت — تم توثيق هذه المهارة بالتقييم في جواز مهاراتك.</value>
+  </data>
+  <data name="AssessmentFailedNote" xml:space="preserve">
+    <value>يمكنك إعادة التقييم في أي وقت؛ كل محاولة تُحتسب بشكل مستقل.</value>
+  </data>
+  <data name="AssessmentDoneCta" xml:space="preserve">
+    <value>تم</value>
+  </data>
+  <data name="ErrorAssessmentNotAvailable" xml:space="preserve">
+    <value>لا يوجد تقييم لهذه المهارة بعد.</value>
+  </data>
+  <data name="ErrorAssessmentSkillNotOnProfile" xml:space="preserve">
+    <value>أضف هذه المهارة إلى ملفك قبل إجراء تقييمها.</value>
+  </data>
+  <data name="ErrorAssessmentAlreadyCompleted" xml:space="preserve">
+    <value>تم إرسال هذه المحاولة مسبقًا. ابدأ محاولة جديدة لإعادة المحاولة.</value>
   </data>
 </root>

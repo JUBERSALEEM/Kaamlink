@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:KaamLink.Features.Assessments"
+             xmlns:strings="clr-namespace:KaamLink.Resources.Strings"
+             x:Class="KaamLink.Features.Assessments.AssessmentRunPage"
+             x:DataType="vm:AssessmentRunViewModel"
+             Title="{Binding SkillName}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="14">
+
+            <ActivityIndicator HorizontalOptions="Center"
+                               IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}" />
+
+            <!-- Error panel (start/submit failures incl. honest 404s) -->
+            <VerticalStackLayout IsVisible="{Binding HasError}" Spacing="10">
+                <Label Style="{StaticResource Body}"
+                       Text="{Binding ErrorMessage}"
+                       TextColor="{StaticResource Error}" />
+                <Button Command="{Binding StartCommand}"
+                        Text="{x:Static strings:AppStrings.RetryCta}" />
+            </VerticalStackLayout>
+
+            <!-- Quiz body -->
+            <VerticalStackLayout IsVisible="{Binding IsLoaded}" Spacing="14">
+                <Label Style="{StaticResource Caption}" Text="{Binding PassMarkText}" />
+
+                <CollectionView ItemsSource="{Binding Questions}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="vm:QuestionRowModel">
+                            <Border Style="{StaticResource Card}" Margin="0,0,0,12" Padding="16">
+                                <VerticalStackLayout Spacing="10">
+                                    <Label Style="{StaticResource Body}" Text="{Binding Text}" />
+                                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Options}" Spacing="8">
+                                        <BindableLayout.ItemTemplate>
+                                            <DataTemplate x:DataType="vm:OptionRowModel">
+                                                <Button BackgroundColor="{Binding IsSelected, Converter={StaticResource SelectedOptionBackground}}"
+                                                        Command="{Binding DataContext.SelectOptionCommand, Source={RelativeSource AncestorType={x:Type vm:AssessmentRunViewModel}}}"
+                                                        CommandParameter="{Binding .}"
+                                                        FontFamily="OpenSansRegular"
+                                                        FontSize="14"
+                                                        HeightRequest="48"
+                                                        Text="{Binding Text}"
+                                                        TextColor="{Binding IsSelected, Converter={StaticResource SelectedOptionText}}" />
+                                            </DataTemplate>
+                                        </BindableLayout.ItemTemplate>
+                                    </VerticalStackLayout>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <Label Style="{StaticResource Caption}" Text="{Binding AnsweredCountText}" />
+                <Button Command="{Binding SubmitCommand}"
+                        SemanticProperties.Description="{x:Static strings:AppStrings.AssessmentSubmitCta}"
+                        Text="{x:Static strings:AppStrings.AssessmentSubmitCta}" />
+            </VerticalStackLayout>
+
+            <!-- Server verdict panel -->
+            <VerticalStackLayout IsVisible="{Binding HasResult}" Spacing="12">
+                <Border Style="{StaticResource Card}" Padding="24">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Style="{StaticResource Title2}"
+                               Text="{Binding ResultTitle}"
+                               TextColor="{Binding ResultState, Converter={StaticResource StatusColorConverter}}" />
+                        <Label Style="{StaticResource Body}" Text="{Binding ResultScoreText}" />
+                        <Label Style="{StaticResource BodySecondary}" Text="{Binding ResultNote}" />
+                    </VerticalStackLayout>
+                </Border>
+                <Button Command="{Binding DoneCommand}"
+                        Text="{x:Static strings:AppStrings.AssessmentDoneCta}" />
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

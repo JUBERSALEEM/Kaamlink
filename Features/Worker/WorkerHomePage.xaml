@@ -111,6 +111,15 @@
                             Text="{x:Static strings:AppStrings.MyApplicationsTitle}" />
                 </VerticalStackLayout>
 
+                <!-- Trust (Phase 05): real assessments with server-side scoring -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Style="{StaticResource SectionTitle}"
+                           Text="{x:Static strings:AppStrings.AssessmentsTitle}" />
+                    <Button Command="{Binding OpenMyAssessmentsCommand}"
+                            SemanticProperties.Description="{x:Static strings:AppStrings.MyAssessmentsCta}"
+                            Text="{x:Static strings:AppStrings.MyAssessmentsCta}" />
+                </VerticalStackLayout>
+
                 <!-- Honest roadmap note — assessments are NOT in this build (§50). -->
                 <Border Style="{StaticResource Card}">
                     <VerticalStackLayout Spacing="4">

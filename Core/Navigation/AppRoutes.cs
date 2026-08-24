@@ -48,6 +48,12 @@ namespace KaamLink.Core.Navigation
         /// <summary>Applicants of one vacancy. Accepts ?companyId=&amp;vacancyId=&amp;title=.</summary>
         public const string VacancyApplications = "vacancyapplications";
 
+        /// <summary>Worker's skill assessments (Phase 05).</summary>
+        public const string MyAssessments = "myassessments";
+
+        /// <summary>Assessment runner. Accepts ?skillId=&amp;skillName=.</summary>
+        public const string AssessmentRun = "assessmentrun";
+
         /// <summary>Absolute Shell URI that replaces the navigation stack.</summary>
         public static string Absolute(string route) => "//" + route;
     }

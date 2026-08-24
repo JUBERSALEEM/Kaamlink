@@ -3,6 +3,7 @@
     x:Class="KaamLink.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:assessments="clr-namespace:KaamLink.Features.Assessments"
     xmlns:auth="clr-namespace:KaamLink.Features.Auth"
     xmlns:employer="clr-namespace:KaamLink.Features.Employer"
     xmlns:jobs="clr-namespace:KaamLink.Features.Jobs"
@@ -68,4 +69,13 @@
     <ShellContent
         Route="vacancyapplications"
         ContentTemplate="{DataTemplate jobs:VacancyApplicationsPage}" />
+
+    <!-- Phase 05: skill assessments -->
+    <ShellContent
+        Route="myassessments"
+        ContentTemplate="{DataTemplate assessments:MyAssessmentsPage}" />
+
+    <ShellContent
+        Route="assessmentrun"
+        ContentTemplate="{DataTemplate assessments:AssessmentRunPage}" />
 </Shell>

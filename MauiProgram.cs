@@ -1,4 +1,5 @@
 using KaamLink.Core.Api;
+using KaamLink.Features.Assessments;
 using KaamLink.Features.Auth;
 using KaamLink.Features.Employer;
 using KaamLink.Features.Jobs;
@@ -68,6 +69,12 @@ namespace KaamLink
             services.AddTransient<EmployerOnboardingViewModel>();
             services.AddTransient<EmployerHomePage>();
             services.AddTransient<EmployerHomeViewModel>();
+
+            // Skill assessments (Phase 05)
+            services.AddTransient<MyAssessmentsPage>();
+            services.AddTransient<MyAssessmentsViewModel>();
+            services.AddTransient<AssessmentRunPage>();
+            services.AddTransient<AssessmentRunViewModel>();
 
             // Jobs core (Phase 04)
             services.AddTransient<VacancyFeedPage>();

@@ -101,7 +101,7 @@
     <value>Worker home</value>
   </data>
   <data name="WorkerHomePlaceholder" xml:space="preserve">
-    <value>Vacancies and applications are live — assessments arrive in a later phase.</value>
+    <value>Next: employer visit scheduling and vacancy expiry rules.</value>
   </data>
   <data name="WorkerHomeRoadmapNote" xml:space="preserve">
     <value>Skill verification badges arrive with the assessment phase.</value>
@@ -582,5 +582,74 @@
   </data>
   <data name="ManageVacanciesCta" xml:space="preserve">
     <value>Vacancies</value>
+  </data>
+  <data name="AssessmentsTitle" xml:space="preserve">
+    <value>My assessments</value>
+  </data>
+  <data name="MyAssessmentsCta" xml:space="preserve">
+    <value>Skill assessments</value>
+  </data>
+  <data name="AssessmentsEmpty" xml:space="preserve">
+    <value>No skills on your profile yet. Complete onboarding to unlock assessments.</value>
+  </data>
+  <data name="AssessmentStartCta" xml:space="preserve">
+    <value>Start assessment</value>
+  </data>
+  <data name="AssessmentNotAvailable" xml:space="preserve">
+    <value>No assessment for this skill yet — more are being added.</value>
+  </data>
+  <data name="StateSelfDeclared" xml:space="preserve">
+    <value>Self-declared</value>
+  </data>
+  <data name="StateEmployerVerified" xml:space="preserve">
+    <value>Verified by employer</value>
+  </data>
+  <data name="StateAssessmentVerified" xml:space="preserve">
+    <value>Assessment passed ✓</value>
+  </data>
+  <data name="AssessmentScoreFormat" xml:space="preserve">
+    <value>Last score: {0}%</value>
+  </data>
+  <data name="AssessmentPassedShort" xml:space="preserve">
+    <value>passed</value>
+  </data>
+  <data name="AssessmentFailedShort" xml:space="preserve">
+    <value>not passed</value>
+  </data>
+  <data name="AssessmentPassMarkFormat" xml:space="preserve">
+    <value>Pass mark: {0}%</value>
+  </data>
+  <data name="AssessmentAnsweredFormat" xml:space="preserve">
+    <value>Answered {0} of {1}</value>
+  </data>
+  <data name="AssessmentSubmitCta" xml:space="preserve">
+    <value>Submit answers</value>
+  </data>
+  <data name="AssessmentResultPassedTitle" xml:space="preserve">
+    <value>Assessment passed!</value>
+  </data>
+  <data name="AssessmentResultFailedTitle" xml:space="preserve">
+    <value>Not passed this time</value>
+  </data>
+  <data name="AssessmentResultScoreFormat" xml:space="preserve">
+    <value>You answered {0} of {1} correctly — {2}%</value>
+  </data>
+  <data name="AssessmentPassedNote" xml:space="preserve">
+    <value>Well done — this skill is now marked as assessment-verified on your Skill Passport.</value>
+  </data>
+  <data name="AssessmentFailedNote" xml:space="preserve">
+    <value>You can retake the assessment anytime; every attempt is scored on its own.</value>
+  </data>
+  <data name="AssessmentDoneCta" xml:space="preserve">
+    <value>Done</value>
+  </data>
+  <data name="ErrorAssessmentNotAvailable" xml:space="preserve">
+    <value>There is no assessment for this skill yet.</value>
+  </data>
+  <data name="ErrorAssessmentSkillNotOnProfile" xml:space="preserve">
+    <value>Add this skill to your profile before taking its assessment.</value>
+  </data>
+  <data name="ErrorAssessmentAlreadyCompleted" xml:space="preserve">
+    <value>This attempt was already submitted. Start a new one to retry.</value>
   </data>
 </root>
