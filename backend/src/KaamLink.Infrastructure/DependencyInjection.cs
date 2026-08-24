@@ -36,6 +36,7 @@ public static class DependencyInjection
         services.AddScoped<ISkillCatalogRepository, SkillCatalogRepository>();
         services.AddScoped<IVacancyRepository, Jobs.VacancyRepository>();
         services.AddScoped<IJobApplicationRepository, Jobs.JobApplicationRepository>();
+        services.AddScoped<IAssessmentRepository, Assessments.AssessmentRepository>();
 
         // OTP provider selection behind the port (§35). "log" is the development
         // sandbox; Production startup guards reject it until a real provider is wired.

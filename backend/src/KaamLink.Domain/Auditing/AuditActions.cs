@@ -27,4 +27,9 @@ public static class AuditActions
     public const string ApplicationSubmitted = "jobs.application_submitted";
     public const string ApplicationStatusChanged = "jobs.application_status_changed";
     public const string ApplicationWithdrawn = "jobs.application_withdrawn";
+
+    // Phase 05 — skill assessments (no sensitive payloads in metadata: score + skill id only).
+    public const string AssessmentAttemptStarted = "assessment.attempt_started";
+    public const string AssessmentSubmitted = "assessment.submitted";
+    public const string WorkerSkillAssessmentVerified = "worker.skill_assessment_verified";
 }

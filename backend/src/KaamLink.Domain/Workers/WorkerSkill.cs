@@ -23,6 +23,9 @@ public sealed class WorkerSkill
 
     public SkillVerificationState VerificationState { get; private set; }
 
+    /// <summary>Timestamp of the assessment pass that earned AssessmentVerified (Phase 05).</summary>
+    public DateTimeOffset? AssessmentVerifiedAt { get; private set; }
+
     private WorkerSkill()
     {
     }
@@ -35,4 +38,11 @@ public sealed class WorkerSkill
         IsPrimary = isPrimary,
         VerificationState = SkillVerificationState.SelfDeclared
     };
+
+    /// <summary>Written ONLY by the assessment service after a server-scored pass — never by the worker.</summary>
+    public void MarkAssessmentVerified(DateTimeOffset now)
+    {
+        VerificationState = SkillVerificationState.AssessmentVerified;
+        AssessmentVerifiedAt = now;
+    }
 }

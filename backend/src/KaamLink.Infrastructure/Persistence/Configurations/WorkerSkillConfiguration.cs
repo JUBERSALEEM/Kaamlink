@@ -23,6 +23,8 @@ public sealed class WorkerSkillConfiguration : IEntityTypeConfiguration<WorkerSk
             .HasMaxLength(20)
             .IsRequired();
 
+        builder.Property(w => w.AssessmentVerifiedAt).HasColumnName("assessment_verified_at");
+
         builder.HasIndex(w => w.SkillId).HasDatabaseName("ix_worker_skills_skill_id");
 
         builder.HasOne(w => w.Skill)

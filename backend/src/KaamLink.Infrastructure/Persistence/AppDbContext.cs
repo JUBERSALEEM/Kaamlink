@@ -35,6 +35,14 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<Domain.Jobs.JobApplication> JobApplications => Set<Domain.Jobs.JobApplication>();
 
+    public DbSet<Domain.Assessments.SkillAssessment> SkillAssessments => Set<Domain.Assessments.SkillAssessment>();
+
+    public DbSet<Domain.Assessments.AssessmentQuestion> AssessmentQuestions => Set<Domain.Assessments.AssessmentQuestion>();
+
+    public DbSet<Domain.Assessments.AssessmentAttempt> AssessmentAttempts => Set<Domain.Assessments.AssessmentAttempt>();
+
+    public DbSet<Domain.Assessments.AssessmentAnswer> AssessmentAnswers => Set<Domain.Assessments.AssessmentAnswer>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 }

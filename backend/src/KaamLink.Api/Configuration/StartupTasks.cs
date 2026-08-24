@@ -38,5 +38,6 @@ public static class StartupTasks
         await using var scope = app.Services.CreateAsyncScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         await SkillCatalogSeeder.EnsureSeededAsync(db, app.Logger);
+        await AssessmentCatalogSeeder.EnsureSeededAsync(db, app.Logger);
     }
 }

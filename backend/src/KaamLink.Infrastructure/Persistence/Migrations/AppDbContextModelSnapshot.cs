@@ -477,6 +477,10 @@ namespace KaamLink.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(20)")
                         .HasColumnName("verification_state");
 
+                    b.Property<DateTimeOffset?>("AssessmentVerifiedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("assessment_verified_at");
+
                     b.Property<int>("YearsExperience")
                         .HasColumnType("integer")
                         .HasColumnName("years_experience");
@@ -633,6 +637,264 @@ namespace KaamLink.Infrastructure.Persistence.Migrations
 
                     b.ToTable("vacancy_skills");
                 });
+
+
+            modelBuilder.Entity("KaamLink.Domain.Assessments.SkillAssessment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.HasKey("Id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<int>("PassMarkPercent")
+                        .HasColumnType("integer")
+                        .HasColumnName("pass_mark_percent");
+
+                    b.Property<Guid>("SkillId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("skill_id");
+
+                    b.HasIndex("SkillId")
+                        .IsUnique()
+                        .HasDatabaseName("ux_skill_assessments_skill_id");
+
+                    b.ToTable("skill_assessments");
+                });
+
+            modelBuilder.Entity("KaamLink.Domain.Assessments.AssessmentQuestion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.HasKey("Id");
+
+                    b.Property<Guid>("AssessmentId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("assessment_id");
+
+                    b.Property<int>("CorrectOptionIndex")
+                        .HasColumnType("integer")
+                        .HasColumnName("correct_option_index");
+
+                    b.Property<string>("OptionAAr")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("option_a_ar");
+
+                    b.Property<string>("OptionAEn")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("option_a_en");
+
+                    b.Property<string>("OptionBAr")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("option_b_ar");
+
+                    b.Property<string>("OptionBEn")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("option_b_en");
+
+                    b.Property<string>("OptionCAr")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("option_c_ar");
+
+                    b.Property<string>("OptionCEn")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("option_c_en");
+
+                    b.Property<string>("OptionDAr")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("option_d_ar");
+
+                    b.Property<string>("OptionDEn")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("option_d_en");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer")
+                        .HasColumnName("sort_order");
+
+                    b.Property<string>("TextAr")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)")
+                        .HasColumnName("text_ar");
+
+                    b.Property<string>("TextEn")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)")
+                        .HasColumnName("text_en");
+
+                    b.HasIndex("AssessmentId")
+                        .HasDatabaseName("ix_assessment_questions_assessment_id");
+
+                    b.ToTable("assessment_questions");
+                });
+
+            modelBuilder.Entity("KaamLink.Domain.Assessments.AssessmentAttempt", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.HasKey("Id");
+
+                    b.Property<DateTimeOffset?>("CompletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("completed_at");
+
+                    b.Property<int?>("CorrectAnswers")
+                        .HasColumnType("integer")
+                        .HasColumnName("correct_answers");
+
+                    b.Property<bool?>("Passed")
+                        .HasColumnType("boolean")
+                        .HasColumnName("passed");
+
+                    b.Property<int?>("ScorePercent")
+                        .HasColumnType("integer")
+                        .HasColumnName("score_percent");
+
+                    b.Property<Guid>("SkillId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("skill_id");
+
+                    b.Property<DateTimeOffset>("StartedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("started_at");
+
+                    b.Property<int>("TotalQuestions")
+                        .HasColumnType("integer")
+                        .HasColumnName("total_questions");
+
+                    b.Property<Guid>("WorkerProfileId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("worker_profile_id");
+
+                    b.HasIndex("SkillId")
+                        .HasDatabaseName("ix_assessment_attempts_skill_id");
+
+                    b.HasIndex("WorkerProfileId")
+                        .HasDatabaseName("ix_assessment_attempts_worker_profile_id");
+
+                    b.ToTable("assessment_attempts");
+                });
+
+            modelBuilder.Entity("KaamLink.Domain.Assessments.AssessmentAnswer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.HasKey("Id");
+
+                    b.Property<Guid>("AttemptId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("attempt_id");
+
+                    b.Property<Guid>("QuestionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("question_id");
+
+                    b.Property<int>("SelectedOptionIndex")
+                        .HasColumnType("integer")
+                        .HasColumnName("selected_option_index");
+
+                    b.HasIndex("QuestionId")
+                        .HasDatabaseName("ix_assessment_answers_question_id");
+
+                    b.HasIndex("AttemptId", "QuestionId")
+                        .IsUnique()
+                        .HasDatabaseName("ux_assessment_answers_attempt_question");
+
+                    b.ToTable("assessment_answers");
+                });
+
+            modelBuilder.Entity("KaamLink.Domain.Assessments.AssessmentAnswer", b =>
+                {
+                    b.HasOne("KaamLink.Domain.Assessments.AssessmentAttempt", "Attempt")
+                        .WithMany("Answers")
+                        .HasForeignKey("AttemptId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KaamLink.Domain.Assessments.AssessmentQuestion", null)
+                        .WithMany()
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Attempt");
+                });
+
+            modelBuilder.Entity("KaamLink.Domain.Assessments.AssessmentAttempt", b =>
+                {
+                    b.HasOne("KaamLink.Domain.Skills.Skill", null)
+                        .WithMany()
+                        .HasForeignKey("SkillId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("KaamLink.Domain.Workers.WorkerProfile", null)
+                        .WithMany()
+                        .HasForeignKey("WorkerProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Answers");
+                });
+
+            modelBuilder.Entity("KaamLink.Domain.Assessments.AssessmentQuestion", b =>
+                {
+                    b.HasOne("KaamLink.Domain.Assessments.SkillAssessment", "Assessment")
+                        .WithMany()
+                        .HasForeignKey("AssessmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Assessment");
+                });
+
+            modelBuilder.Entity("KaamLink.Domain.Assessments.SkillAssessment", b =>
+                {
+                    b.HasOne("KaamLink.Domain.Skills.Skill", "Skill")
+                        .WithMany()
+                        .HasForeignKey("SkillId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Skill");
+                });
+
 
             modelBuilder.Entity("KaamLink.Domain.Companies.CompanyMember", b =>
                 {
