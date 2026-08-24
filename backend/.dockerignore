@@ -1,0 +1,9 @@
+# Docker build context hygiene for the backend image.
+# Without this, host bin/obj folders leak into the build stage and overwrite the
+# in-container `dotnet restore` output with Windows-path assets (C:\Users\...),
+# which makes `dotnet publish --no-restore` fail inside Linux with exit code 1.
+**/bin/
+**/obj/
+**/.vs/
+.vs/
+requests.http
