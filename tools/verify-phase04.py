@@ -177,6 +177,16 @@ for key in ("FeedTitle", "ApplyCta", "AppliedBadgeFormat", "ErrorAlreadyApplied"
     check(f'name="{key}"' in resx and f"string {key} =>" in designer,
           f"key {key} resx+designer", f"key {key} missing")
 
+# --------------------------------------- repo-root single-project glob guard
+section("Repo-root glob guard (KaamLink.csproj must not compile backend/**)")
+csproj = read("KaamLink.csproj")
+check('<Compile Remove="backend\\**\\*.cs"' in csproj,
+      "KaamLink.csproj excludes backend/**/*.cs from Compile",
+      "KaamLink.csproj swallowed backend sources (VS CS0246 flood) — re-add Compile Remove for backend")
+check('<None Remove="backend\\**\\*"' in csproj,
+      "KaamLink.csproj excludes backend/** from None items",
+      "KaamLink.csproj missing None Remove for backend tree")
+
 # ---------------------------------------------------------------- summary
 print(f"\n{'=' * 60}\n{checks} checks, {len(failures)} failures")
 if failures:

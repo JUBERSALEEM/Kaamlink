@@ -38,6 +38,18 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<!--
+			Repo-root guard: this single project lives at the repository root, so the SDK's
+			default **/*.cs glob would also compile backend/**/*.cs (EF Core / xUnit / ASP.NET
+			code that has no references here) — that is the VS Error List CS0246 flood on
+			IEntityTypeConfiguration/IHealthCheck/InlineData. The backend builds separately
+			via backend/KaamLink.Backend.slnx; exclude its tree from THIS project.
+		-->
+		<Compile Remove="backend\**\*.cs" />
+		<None Remove="backend\**\*" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<!-- App icon -->
 		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#0F766E" />
 
