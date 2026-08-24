@@ -1,3 +1,4 @@
+using KaamLink.Application.Auth;
 using KaamLink.Domain.Identity;
 
 namespace KaamLink.Application.Abstractions;
