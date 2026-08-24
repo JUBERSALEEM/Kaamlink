@@ -348,7 +348,24 @@ check("Microsoft.Extensions.Http" in csproj, "client references Microsoft.Extens
 check("net10.0-android" in csproj and "net10.0-ios" not in csproj,
       "Android-only target", "unexpected extra target frameworks")
 
-# ---------------------------------------------------------------- summary
+# ------------------------------------------------- backend: test compilation
+# Xunit is NOT covered by ImplicitUsings — regressions here surface as CS0246
+# storms ([Fact]/[Theory]/Assert/InlineData "could not be found") locally.
+section("Backend: Xunit visibility in test projects")
+for test_project in (
+    "backend/tests/KaamLink.UnitTests",
+    "backend/tests/KaamLink.IntegrationTests",
+):
+    global_usings_path = os.path.join(ROOT, test_project, "GlobalUsings.cs")
+    has_global_xunit = (
+        os.path.isfile(global_usings_path)
+        and "global using Xunit" in read(os.path.join(test_project, "GlobalUsings.cs"))
+    )
+    check(has_global_xunit,
+          f"{test_project}/GlobalUsings.cs exposes Xunit",
+          f"{test_project} missing GlobalUsings.cs with 'global using Xunit;'")
+
+# ------------------------------------------------------------- summary
 print(f"\n{'=' * 60}\n{checks} checks, {len(failures)} failures")
 if failures:
     print("FAILURES:")
