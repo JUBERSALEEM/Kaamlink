@@ -489,6 +489,151 @@ namespace KaamLink.Infrastructure.Persistence.Migrations
                     b.ToTable("worker_skills");
                 });
 
+            modelBuilder.Entity("KaamLink.Domain.Jobs.JobApplication", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("CoverNote")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("cover_note");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTimeOffset?>("ReviewedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("reviewed_at");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("status");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid>("VacancyId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("vacancy_id");
+
+                    b.Property<Guid>("WorkerProfileId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("worker_profile_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WorkerProfileId")
+                        .HasDatabaseName("ix_job_applications_worker_profile_id");
+
+                    b.HasIndex("VacancyId", "WorkerProfileId")
+                        .IsUnique()
+                        .HasDatabaseName("ux_job_applications_vacancy_worker");
+
+                    b.ToTable("job_applications");
+                });
+
+            modelBuilder.Entity("KaamLink.Domain.Jobs.Vacancy", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Area")
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("area");
+
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("company_id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by_user_id");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Emirate")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("emirate");
+
+                    b.Property<int>("Headcount")
+                        .HasColumnType("integer")
+                        .HasColumnName("headcount");
+
+                    b.Property<int?>("SalaryMaxAed")
+                        .HasColumnType("integer")
+                        .HasColumnName("salary_max_aed");
+
+                    b.Property<int?>("SalaryMinAed")
+                        .HasColumnType("integer")
+                        .HasColumnName("salary_min_aed");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("status");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("title");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId")
+                        .HasDatabaseName("ix_vacancies_company_id");
+
+                    b.HasIndex("CreatedByUserId")
+                        .HasDatabaseName("ix_vacancies_created_by_user_id");
+
+                    b.HasIndex("Status", "CreatedAt")
+                        .HasDatabaseName("ix_vacancies_status_created_at");
+
+                    b.ToTable("vacancies");
+                });
+
+            modelBuilder.Entity("KaamLink.Domain.Jobs.VacancySkill", b =>
+                {
+                    b.Property<Guid>("VacancyId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("vacancy_id");
+
+                    b.Property<Guid>("SkillId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("skill_id");
+
+                    b.HasKey("VacancyId", "SkillId");
+
+                    b.HasIndex("SkillId")
+                        .HasDatabaseName("ix_vacancy_skills_skill_id");
+
+                    b.ToTable("vacancy_skills");
+                });
+
             modelBuilder.Entity("KaamLink.Domain.Companies.CompanyMember", b =>
                 {
                     b.HasOne("KaamLink.Domain.Companies.Company", "Company")
@@ -565,6 +710,57 @@ namespace KaamLink.Infrastructure.Persistence.Migrations
 
                     b.Navigation("Skill");
                 });
+            modelBuilder.Entity("KaamLink.Domain.Jobs.JobApplication", b =>
+                {
+                    b.HasOne("KaamLink.Domain.Jobs.Vacancy", null)
+                        .WithMany()
+                        .HasForeignKey("VacancyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KaamLink.Domain.Workers.WorkerProfile", null)
+                        .WithMany()
+                        .HasForeignKey("WorkerProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("KaamLink.Domain.Jobs.Vacancy", b =>
+                {
+                    b.HasOne("KaamLink.Domain.Companies.Company", null)
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KaamLink.Domain.Identity.User", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Skills");
+                });
+
+            modelBuilder.Entity("KaamLink.Domain.Jobs.VacancySkill", b =>
+                {
+                    b.HasOne("KaamLink.Domain.Skills.Skill", "Skill")
+                        .WithMany()
+                        .HasForeignKey("SkillId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("KaamLink.Domain.Jobs.Vacancy", "Vacancy")
+                        .WithMany("Skills")
+                        .HasForeignKey("VacancyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Skill");
+
+                    b.Navigation("Vacancy");
+                });
+
 #pragma warning restore 612, 618
         }
     }

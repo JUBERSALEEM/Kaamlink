@@ -1,5 +1,6 @@
 using KaamLink.Application.Auth;
 using KaamLink.Application.Companies;
+using KaamLink.Application.Jobs;
 using KaamLink.Application.Skills;
 using KaamLink.Application.Workers;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +22,8 @@ public static class DependencyInjection
         services.AddScoped<IWorkerProfileService, WorkerProfileService>();
         services.AddScoped<ICompanyService, CompanyService>();
         services.AddScoped<ISkillCatalogService, SkillCatalogService>();
+        services.AddScoped<IVacancyService, VacancyService>();
+        services.AddScoped<IJobApplicationService, JobApplicationService>();
         return services;
     }
 }

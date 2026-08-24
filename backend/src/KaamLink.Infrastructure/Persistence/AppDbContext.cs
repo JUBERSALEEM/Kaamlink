@@ -29,6 +29,12 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<CompanyMember> CompanyMembers => Set<CompanyMember>();
 
+    public DbSet<Domain.Jobs.Vacancy> Vacancies => Set<Domain.Jobs.Vacancy>();
+
+    public DbSet<Domain.Jobs.VacancySkill> VacancySkills => Set<Domain.Jobs.VacancySkill>();
+
+    public DbSet<Domain.Jobs.JobApplication> JobApplications => Set<Domain.Jobs.JobApplication>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 }

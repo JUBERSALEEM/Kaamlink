@@ -20,4 +20,11 @@ public static class AuditActions
     public const string CompanyRegistered = "company.registered";
     public const string CompanyVerified = "company.verified";
     public const string CompanyRejected = "company.rejected";
+
+    public const string VacancyCreated = "jobs.vacancy_created";
+    public const string VacancyUpdated = "jobs.vacancy_updated";
+    public const string VacancyStatusChanged = "jobs.vacancy_status_changed";
+    public const string ApplicationSubmitted = "jobs.application_submitted";
+    public const string ApplicationStatusChanged = "jobs.application_status_changed";
+    public const string ApplicationWithdrawn = "jobs.application_withdrawn";
 }
