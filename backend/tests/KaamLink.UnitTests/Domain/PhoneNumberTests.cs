@@ -27,7 +27,7 @@ public sealed class PhoneNumberTests
     [InlineData("   ")]
     [InlineData("+123")] // too short
     [InlineData("+0234567890")] // leading zero after +
-    [InlineData("+97150123456789")] // too long (> 15 digits)
+    [InlineData("+97150123456789012345")] // too long (> 15 digits)
     [InlineData("051234567")] // UAE local but wrong length
     [InlineData("0401234567")] // not a 05x UAE mobile pattern
     [InlineData("abcdefghij")]

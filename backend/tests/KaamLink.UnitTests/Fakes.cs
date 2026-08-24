@@ -162,9 +162,12 @@ internal sealed class SpyOtpSender : IOtpSender
 
 internal sealed class StubTokenService : ITokenService
 {
+    private int _accessCounter;
     private int _refreshCounter;
 
-    public AccessTokenIssue IssueAccessToken(User user) => new($"access-token-for-{user.Id}", 900);
+    // Real JWTs are unique per issue (jti/iat); the stub mirrors that so rotation tests
+    // can assert the refreshed session carries a NEW access token, not the same string.
+    public AccessTokenIssue IssueAccessToken(User user) => new($"access-token-{++_accessCounter}-for-{user.Id}", 900);
 
     public string NewOpaqueToken() => $"refresh-token-{++_refreshCounter}";
 }
