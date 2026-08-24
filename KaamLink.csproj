@@ -17,8 +17,14 @@
 		<Nullable>enable</Nullable>
 		<NeutralLanguage>en</NeutralLanguage>
 
-		<!-- Compile XAML to C# at build time: faster builds, earlier XAML errors, smaller runtime cost. -->
-		<MauiXamlInflator>SourceGen</MauiXamlInflator>
+		<!--
+			Compile XAML to IL at build time: faster startup, XAML errors at build time.
+			The newer "SourceGen" inflator crashed INTERNALLY on App.xaml (MAUIG1001:
+			dictionary key 'Microsoft.Maui.Controls.Xaml.ElementNode' — a generator bug,
+			not a XAML mistake), so V1 stays on the proven XamlC path. Retry SourceGen
+			on a later .NET 10 servicing SDK.
+		-->
+		<MauiXamlInflator>XamlC</MauiXamlInflator>
 
 		<!-- Display name -->
 		<ApplicationTitle>KaamLink</ApplicationTitle>
