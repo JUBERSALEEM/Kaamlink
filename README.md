@@ -12,7 +12,7 @@ with employers (factories, workshops, contractors, SMEs, warehouses) — built a
 
 ## Status
 
-**Phase 04 — jobs core complete: vacancy posting → worker feed → apply.**
+**Phase 05 — skill assessments live: MCQ banks, single-shot server-scored attempts, pass → Assessment Verified.**
 
 * **Phase 01** — foundation: sample code removed, clean Android-first MAUI shell
   → [docs/phase-01-report.md](docs/phase-01-report.md)
@@ -25,6 +25,10 @@ with employers (factories, workshops, contractors, SMEs, warehouses) — built a
 * **Phase 04** — jobs core: employer vacancy posting (verification-gated publishing,
   role matrix), worker feed with filters, apply, employer applicant decisions,
   withdrawal → [docs/phase-04-report.md](docs/phase-04-report.md)
+* **Phase 05** — skill assessments: seeded bilingual question banks, single-shot
+  server-scored attempts (no correct answers ever leave the server), pass flips a
+  self-declared skill to Assessment Verified
+  → [docs/phase-05-report.md](docs/phase-05-report.md)
 
 **Want to run it? → [docs/first-boot-guide.md](docs/first-boot-guide.md)**
 (backend up → app on emulator/device → sign in with your phone → onboard → home).
@@ -34,9 +38,12 @@ What exists today:
 * Android-first .NET MAUI app: role selection → phone-OTP sign-in → guided onboarding
   → homes, session kept in the Android Keystore (secure storage), silent token refresh
 * Backend API (ASP.NET Core 10 + PostgreSQL): auth, worker profiles, companies,
-  admin review queue, bilingual skill catalog (seeded)
+  admin review queue, bilingual skill catalog (seeded), vacancies, applications,
+  skill assessments
+* Jobs core live: vacancy posting → worker feed with filters → apply → employer
+  applicant decisions → withdrawal
 * Design system + full EN/AR localization, centralized routes/strings/status labels
-* Honest placeholders only — job discovery and vacancy posting arrive next phase (§50)
+* Honest placeholders only — anything not yet built says so (§50)
 
 ## Stack (V1)
 

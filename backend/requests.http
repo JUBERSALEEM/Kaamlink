@@ -156,3 +156,42 @@ Authorization: Bearer {{verify.response.body.accessToken}}
 Content-Type: application/json
 
 { "status": "Shortlisted" }
+
+# ======================================================================
+# Phase 05 — Skill assessments (server-side scoring; trust spine)
+# Run AFTER the Phase 03 worker onboarding steps so {{verify}} is an
+# onboarded worker with skills on the profile (e.g. Welder).
+# ======================================================================
+
+### WORKER: my assessments (skills with availability/state/latest score)
+# @name myAssessments
+GET {{host}}/api/v1/workers/me/assessments
+Authorization: Bearer {{verify.response.body.accessToken}}
+
+### WORKER: start an attempt for a skill that HAS a template (e.g. "Welder").
+# honing in on the security rule: the response carries NO correct answers.
+@attemptSkillId = COPY the "skillId" of an AssessmentAvailable row from myAssessments
+# @name startAssessment
+POST {{host}}/api/v1/workers/me/assessments/{{attemptSkillId}}/attempts
+Authorization: Bearer {{verify.response.body.accessToken}}
+
+### WORKER: submit answers — pass mark is 60%; a pass marks the skill AssessmentVerified.
+# Answer honestly; the right options are defined only server-side.
+# @name submitAssessment
+POST {{host}}/api/v1/workers/me/assessments/{{attemptSkillId}}/attempts/{{startAssessment.response.body.attemptId}}/submit
+Authorization: Bearer {{verify.response.body.accessToken}}
+Content-Type: application/json
+
+{
+  "answers": [
+    { "questionId": "{{startAssessment.response.body.questions[0].id}}", "selectedOptionIndex": 1 },
+    { "questionId": "{{startAssessment.response.body.questions[1].id}}", "selectedOptionIndex": 0 },
+    { "questionId": "{{startAssessment.response.body.questions[2].id}}", "selectedOptionIndex": 2 },
+    { "questionId": "{{startAssessment.response.body.questions[3].id}}", "selectedOptionIndex": 1 },
+    { "questionId": "{{startAssessment.response.body.questions[4].id}}", "selectedOptionIndex": 3 }
+  ]
+}
+
+### Re-submit the SAME attempt → 400 assessment.already_completed (single-shot).
+
+### Start for a skill WITHOUT a template (e.g. "Mason") → 404 assessment.not_available.
