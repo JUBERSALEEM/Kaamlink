@@ -72,15 +72,35 @@ LATIN_TEXT = re.compile(r"[A-Za-z]{2,}")
 TEXT_ATTRS = ("Text", "Placeholder", "Message", "Title", "Description")
 ARABIC = re.compile("[\u0600-\u06FF]")
 
+def read(path: str) -> str:
+    return open(path, encoding="utf-8").read()
+
+
+# ------------------------------------------------- A1 escaped query round trip
+# Shell decodes query values only for QueryPropertyAttribute; pages that implement
+# IQueryAttributable receive the raw text. Every value a route escapes with
+# Uri.EscapeDataString must therefore be unescaped by the page that reads it.
+SOURCES = sorted(glob.glob("Features/**/*.cs", recursive=True)
+                 + glob.glob("Core/**/*.cs", recursive=True))
+SOURCE_TEXT = {path: read(path) for path in SOURCES}
+
+escaped_query_keys = set()
+for text in SOURCE_TEXT.values():
+    escaped_query_keys |= set(re.findall(r"[?&](\w+)=\{Uri\.EscapeDataString\(", text))
+
+for key in sorted(escaped_query_keys):
+    for path, text in SOURCE_TEXT.items():
+        for match in re.finditer(r'query\.TryGetValue\("' + re.escape(key) + r'"(.*?);',
+                                 text, re.S):
+            ok("Uri.UnescapeDataString" in match.group(1),
+               f"{path}: query value '{key}' is escaped into the route but never decoded "
+               f"on receipt (Shell only decodes QueryPropertyAttribute values)")
+
 # ------------------------------------------------------------ A0 typed credentials
 # Login/OTP are the only places a user types a number that locks them out if it is
 # rejected. Arabic-locale numeric keyboards emit Arabic-Indic digits (٠١٢٣...),
 # which int.TryParse / ASCII digit checks refuse - so both entry points must pass
 # typed input through DigitText.Normalize before validating or sending it.
-def read(path: str) -> str:
-    return open(path, encoding="utf-8").read()
-
-
 PHONE_INPUT = read("Core/Text/PhoneInput.cs")
 OTP_VM = read("Features/Auth/OtpViewModel.cs")
 

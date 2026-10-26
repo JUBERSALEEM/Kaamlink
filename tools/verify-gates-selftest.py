@@ -105,6 +105,12 @@ CASES = [
         ["tools/verify-ui-redesign.py"],
     ),
     (
+        "escaped route value never decoded on receipt",
+        "Features/Auth/OtpViewModel.cs",
+        ('Phone = Uri.UnescapeDataString(phoneText);', 'Phone = phoneText;'),
+        ["tools/verify-ui-redesign.py"],
+    ),
+    (
         "phone input stops normalizing Arabic-Indic digits",
         "Core/Text/PhoneInput.cs",
         ("var cleaned = CleanupRegex().Replace(DigitText.Normalize(raw).Trim(), string.Empty);",
