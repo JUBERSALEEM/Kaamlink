@@ -784,9 +784,9 @@ This section is additive; the historical counts above describe their own commit.
 | Transport | `ApiHttp.Configure` gives both HttpClients the same `BaseAddress`, 15 s timeout and JSON accept header; `SessionService` now uses `IHttpClientFactory` instead of a static client; timeouts are handled in refresh/reload/logout |
 | Error taxonomy | `client.no_internet`, `client.api_not_configured` and offline are distinct, with EN/AR copy and titles |
 | Theme | both palettes use `LinearGradientBrush` for page/card/soft-card surfaces; new tokens are contrast-checked; the theme dispatcher condition was corrected; `CollectionView` item sizing/scroll retention added on three lists |
-| Brand | `appicon.svg`, `appiconfg.svg`, `kaamlink-mark.svg`, `splash.svg` and `login-hero.svg` now share a rich cobalt/navy gradient and mint linked-K mark |
+| Brand | `appicon.svg`, `appiconfg.svg`, `kaamlink_mark.svg`, `splash.svg` and `login_hero.svg` now share a rich cobalt/navy gradient and mint linked-K mark. The two `Resources/Images` assets were renamed from hyphenated filenames because `Microsoft.Maui.Resizetizer` rejects hyphens in Android resource names |
 | Previews | `tools/render-login-preview.py` reads the shipped palette + strings to draw current light/dusk login screens; old `02-login.png` is explicitly historical |
-| New gate | `tools/verify-connectivity.py` (41 checks) plus 8 new injected defects in `verify-gates-selftest.py`; `tools/verify-all.sh` runs the whole suite |
+| New gate | `tools/verify-connectivity.py` (44 checks, incl. Android-safe image filenames) plus 9 new injected defects in `verify-gates-selftest.py`; `tools/verify-all.sh` runs the whole suite |
 | Still unverified | `dotnet build`, XamlC, real-device network journey on mobile data, Android shadow/gradient rendering, production OTP delivery and performance profiling. No public HTTPS API URL or SMS credentials were supplied |
 
 Two defects in the first draft of this work were caught by the gates themselves: the redesign
@@ -864,7 +864,7 @@ remain authoritative.
   phone field, SMS OTP action, accessible error state, and consent note. The new strings have
   EN/AR parity (325 / 325 / 325).
 * `Resources/AppIcon/appiconfg.svg` and `Resources/Splash/splash.svg` use the matching linked-K
-  mark; `Resources/Images/kaamlink-mark.svg` and `login-hero.svg` stay as separate image assets,
+  mark; `Resources/Images/kaamlink_mark.svg` and `login_hero.svg` stay as separate image assets,
   not inline image data in code.
 * **Google/Gmail authentication is not active yet.** The current API only supports
   `POST /auth/otp/request` and `POST /auth/otp/verify`; it has no Google token-verification or

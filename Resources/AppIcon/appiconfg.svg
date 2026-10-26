@@ -2,7 +2,7 @@
 <!--
     KaamLink adaptive-icon foreground: transparent background, linked-K mark
     safely inside the central 66dp visible area. Matches appicon.svg and
-    Resources/Images/kaamlink-mark.svg.
+    Resources/Images/kaamlink_mark.svg.
 -->
 <svg width="108" height="108" viewBox="0 0 108 108" xmlns="http://www.w3.org/2000/svg">
   <defs>

@@ -294,6 +294,12 @@ CASES = [
          "private bool CanReachApi => true;"),
         ["tools/verify-connectivity.py"],
     ),
+    (
+        "hyphenated Android image filename reintroduced",
+        "Features/Auth/LoginPage.xaml",
+        ('Source="kaamlink_mark.svg"', 'Source="kaamlink-mark.svg"'),
+        ["tools/verify-connectivity.py"],
+    ),
 ]
 
 

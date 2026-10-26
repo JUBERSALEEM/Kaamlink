@@ -11,6 +11,7 @@ Exit:   0 = every check passed; 1 = at least one regression.
 from __future__ import annotations
 
 import os
+import pathlib
 import re
 import sys
 
@@ -147,8 +148,8 @@ theme_service = read("Core/Presentation/Theming/ThemeService.cs")
 login_page = read("Features/Auth/LoginPage.xaml")
 appicon = read("Resources/AppIcon/appicon.svg")
 appiconfg = read("Resources/AppIcon/appiconfg.svg")
-mark = read("Resources/Images/kaamlink-mark.svg")
-hero = read("Resources/Images/login-hero.svg")
+mark = read("Resources/Images/kaamlink_mark.svg")
+hero = read("Resources/Images/login_hero.svg")
 for name, text in (("light", light), ("dusk", dusk)):
     ok('<LinearGradientBrush x:Key="ClayPageBrush"' in text
        and '<LinearGradientBrush x:Key="ClayCardBrush"' in text,
@@ -173,6 +174,40 @@ ok("linearGradient" in appicon and "linearGradient" in mark and "linearGradient"
 ok("59D6C2" in appicon and "59D6C2" in appiconfg and "59D6C2" in mark,
    "adaptive icon foreground and login mark share the mint link accent",
    "brand mark and app icon use different accent colours")
+
+section("Android resource filenames (Resizetizer)")
+# Microsoft.Maui.Resizetizer rejects uppercase letters, hyphens, hidden files and
+# names that start/end with a digit for MauiImage/MauiIcon/MauiSplashScreen items.
+# `kaamlink-mark.svg` and `login-hero.svg` produced exactly that build error.
+valid_stem = re.compile(r"[a-z](?:[a-z0-9_]*[a-z])?")
+invalid_assets: list[str] = []
+for asset_dir in ("Resources/Images", "Resources/AppIcon", "Resources/Splash"):
+    for current, _subdirs, filenames in os.walk(os.path.join(ROOT, asset_dir)):
+        for filename in filenames:
+            stem = os.path.splitext(filename)[0]
+            if not valid_stem.fullmatch(stem):
+                invalid_assets.append(os.path.relpath(os.path.join(current, filename), ROOT))
+ok(not invalid_assets,
+   "all resizetizer image/icon/splash filenames are Android-safe",
+   f"invalid Android resource filenames: {invalid_assets}")
+ok('MauiImage Include="Resources\\Images\\*"' in project,
+   "csproj includes the image directory through the standard wildcard",
+   "csproj lost the MauiImage wildcard include")
+
+# Every literal local image Source in XAML must resolve to one of those files.
+bad_sources: list[str] = []
+for xaml_path in sorted(str(p) for p in
+                        pathlib.Path(ROOT).glob("Features/**/*.xaml")):
+    rel = os.path.relpath(xaml_path, ROOT)
+    for source in re.findall(r'Source="([A-Za-z0-9_.-]+\.(?:svg|png|jpe?g|webp|gif|bmp))"',
+                             read(rel)):
+        stem = os.path.splitext(source)[0]
+        if (not valid_stem.fullmatch(stem)
+                or not os.path.isfile(os.path.join(ROOT, "Resources/Images", source))):
+            bad_sources.append(f"{rel}: {source}")
+ok(not bad_sources,
+   "every literal XAML image Source resolves to a real image asset",
+   f"XAML references missing image assets: {bad_sources}")
 
 section("Documentation")
 doc_path = "docs/connectivity-and-release-configuration.md"

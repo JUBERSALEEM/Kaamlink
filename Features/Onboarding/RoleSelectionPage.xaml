@@ -14,7 +14,7 @@
 
             <Grid ColumnDefinitions="46,*,Auto" ColumnSpacing="10">
                 <Image Grid.Column="0"
-                       Source="kaamlink-mark.svg"
+                       Source="kaamlink_mark.svg"
                        HeightRequest="42"
                        WidthRequest="42"
                        Aspect="AspectFit"

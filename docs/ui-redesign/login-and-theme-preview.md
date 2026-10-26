@@ -25,8 +25,10 @@ Layout and copy are unchanged: Google stays honestly disabled.
 ## Rich modern app icon
 
 The actual shipped assets are `Resources/AppIcon/appicon.svg`,
-`Resources/AppIcon/appiconfg.svg`, `Resources/Images/kaamlink-mark.svg` and
-`Resources/Splash/splash.svg`. This is the design preview:
+`Resources/AppIcon/appiconfg.svg`, `Resources/Images/kaamlink_mark.svg`,
+`Resources/Images/login_hero.svg` and `Resources/Splash/splash.svg`. Underscores
+are required: MAUI Resizetizer rejects hyphens in Android image resource names.
+This is the design preview:
 
 ![Rich KaamLink app icon](app-icon-upgraded-preview.png)
 
