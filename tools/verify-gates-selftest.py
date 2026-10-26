@@ -70,7 +70,7 @@ CASES = [
     (
         "Color token assigned to Brush-typed Stroke",
         "Features/Jobs/VacancyFeedPage.xaml",
-        ('Stroke="{StaticResource BorderBrush}"', 'Stroke="{StaticResource Border}"'),
+        ('Stroke="{DynamicResource BorderBrush}"', 'Stroke="{DynamicResource Border}"'),
         ["tools/verify-ui-redesign.py"],
     ),
     (
@@ -100,7 +100,7 @@ CASES = [
     ),
     (
         "icon key holding more than one glyph",
-        "Resources/Styles/Colors.xaml",
+        "Resources/Styles/Icons.xaml",
         ('<x:String x:Key="IconStar">', '<x:String x:Key="IconStar">AB'),
         ["tools/verify-ui-redesign.py"],
     ),
@@ -147,6 +147,30 @@ CASES = [
         "Features/Assessments/AssessmentRunViewModel.cs",
         ("CanExecute = nameof(CanSubmitAll)", "CanExecute = nameof(CanSubmitAllTYPO)"),
         ["tools/verify-compile-surface.py"],
+    ),
+    (
+        "colour token baked with StaticResource (theme switch would not repaint)",
+        "Features/Auth/LoginPage.xaml",
+        ('TextColor="{DynamicResource Primary}"', 'TextColor="{StaticResource Primary}"'),
+        ["tools/verify-ui-redesign.py"],
+    ),
+    (
+        "icon key referenced but not declared",
+        "Features/Auth/LoginPage.xaml",
+        ("{StaticResource IconPhone}", "{StaticResource IconPhoneTYPO}"),
+        ["tools/verify-ui-redesign.py"],
+    ),
+    (
+        "clay elevation dropped from a card style",
+        "Resources/Styles/Styles.xaml",
+        ('<Setter Property="clay:ClayMaterial.Elevation" Value="Card" />', ""),
+        ["tools/verify-ui-redesign.py"],
+    ),
+    (
+        "theme palette missing a token",
+        "Resources/Themes/ClayDusk.xaml",
+        ('    <Color x:Key="AccentSoft">#264A47</Color>\n', ""),
+        ["tools/verify-theme-contrast.py"],
     ),
     (
         "interface member dropped (the real CS1061)",

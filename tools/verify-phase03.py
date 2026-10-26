@@ -221,7 +221,8 @@ check(used_cs <= en_keys, "all C# AppStrings refs exist",
 
 section("Client: StaticResource keys resolve")
 declared = set()
-for fname in ("Resources/Styles/Colors.xaml", "Resources/Styles/Styles.xaml", "App.xaml"):
+for fname in ("Resources/Styles/Icons.xaml", "Resources/Styles/Colors.xaml",
+              "Resources/Styles/Styles.xaml", "App.xaml"):
     declared |= set(re.findall(r'x:Key="([^"]+)"', read(fname)))
 implicit = {  # MAUI framework resources always present
     "InvertedBoolConverter",

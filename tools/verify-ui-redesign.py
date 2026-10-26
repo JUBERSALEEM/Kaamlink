@@ -56,6 +56,14 @@ PAGES = sorted(glob.glob("Features/**/*.xaml", recursive=True))
 PAGE_TEXT = {p: open(p, encoding="utf-8").read() for p in PAGES}
 STYLES = open("Resources/Styles/Styles.xaml", encoding="utf-8").read()
 COLORS = open("Resources/Styles/Colors.xaml", encoding="utf-8").read()
+ICONS = open("Resources/Styles/Icons.xaml", encoding="utf-8").read()
+THEME_FILES = sorted(glob.glob("Resources/Themes/*.xaml"))
+
+# Colour/brush keys come from the (themed) palette; a page must reference them
+# with DynamicResource or the live theme switch cannot repaint it.
+PALETTE_KEYS = set()
+for _kind in ("Color", "SolidColorBrush", "LinearGradientBrush"):
+    PALETTE_KEYS |= set(re.findall(rf'<{_kind} x:Key="(\w+)"', COLORS))
 
 LEGACY_KEYS = {"Title1", "Title2", "SectionTitle", "Body", "BodySecondary", "Caption", "Card"}
 EMOJI = re.compile("[\U0001F300-\U0001FAFF\u2600-\u27BF\uFE0F]")
@@ -116,6 +124,44 @@ ok("char.IsAsciiDigit" in OTP_VM or "char.IsDigit" not in OTP_VM,
    "OtpViewModel validates digits with char.IsDigit, which accepts Arabic-Indic "
    "digits the API rejects")
 
+# ------------------------------------------------------- K theme engine wiring
+# The engine is only real if the catalogue points at files that exist, the app
+# merges a palette, and the switch is wired app-wide (not to one page).
+CATALOG = read("Core/Presentation/Theming/ThemeCatalog.cs")
+THEME_SERVICE = read("Core/Presentation/Theming/ThemeService.cs")
+APP_XAML = read("App.xaml")
+APP_CS = read("App.xaml.cs")
+MAUI_PROGRAM = read("MauiProgram.cs")
+
+catalog_sources = re.findall(r'"(Resources/[\w./]+\.xaml)"', CATALOG)
+ok(len(catalog_sources) >= 2, "ThemeCatalog: fewer than two themes registered")
+for source in catalog_sources:
+    ok(os.path.exists(source), f"ThemeCatalog: palette file '{source}' does not exist")
+
+ok(re.search(r'Source="Resources/(Styles|Themes)/[\w-]+\.xaml"', APP_XAML) is not None,
+   "App.xaml: no palette dictionary is merged")
+ok('Icons.xaml' in APP_XAML, "App.xaml: Icons.xaml is no longer merged")
+ok('MergedDictionaries' in THEME_SERVICE,
+   "ThemeService: does not swap a merged palette dictionary")
+ok('Preferences' in THEME_SERVICE, "ThemeService: does not persist the chosen theme")
+ok(MAUI_PROGRAM.count('AddSingleton<IThemeService, ThemeService>') == 1,
+   "MauiProgram: IThemeService must be registered exactly once")
+ok('_theme.Apply' in APP_CS,
+   "App.xaml.cs: the stored theme is never applied before the first page")
+ok('ClayMaterial.Refresh' in THEME_SERVICE,
+   "ThemeService: clay shadows are not refreshed after a palette swap")
+
+for style_key in ("SurfaceCard", "SurfaceCardDense", "IconTile", "IconTileLarge"):
+    # Match the whole <Style ...> element: BasedOn lives in the opening tag.
+    block = re.search(rf'<Style [^>]*x:Key="{style_key}"[\s\S]*?</Style>', STYLES)
+    body = block.group(0) if block else ""
+    # A BasedOn child inherits the depth of its base style (asserted separately).
+    ok(block is not None and ("ClayMaterial.Elevation" in body or "BasedOn" in body),
+       f"Styles.xaml: {style_key} lost its clay elevation")
+
+ok('ToggleThemeCommand' in "\n".join(PAGE_TEXT.values()),
+   "Theme: ToggleThemeCommand is never bound to a control")
+
 # ---------------------------------------------------------------- A page contract
 for page in PAGES:
     root = ET.parse(page).getroot()
@@ -135,8 +181,15 @@ for page in PAGES:
 for page, text in PAGE_TEXT.items():
     ok(not re.search(r"#[0-9A-Fa-f]{6}\b|#[0-9A-Fa-f]{3}\b", text), f"{page}: raw hex colour")
     used = set(re.findall(r"StaticResource\s+([A-Za-z0-9_]+)\}", text))
+    used |= set(re.findall(r"DynamicResource\s+([A-Za-z0-9_]+)\}", text))
     legacy = sorted(used & LEGACY_KEYS)
     ok(not legacy, f"{page}: legacy style keys {legacy}")
+
+    # Theme engine contract: colours are dynamic, everything else static.
+    baked = sorted(set(re.findall(r"StaticResource\s+([A-Za-z0-9_]+)\}", text)) & PALETTE_KEYS)
+    ok(not baked,
+       f"{page}: colour token(s) {baked} use StaticResource, which a live theme "
+       f"switch cannot repaint (use DynamicResource)")
     ok("FontSize=\"10" not in text and "FontSize=\"11" not in text, f"{page}: text below 12sp")
 
 # ---------------------------------------------------------------- C localization
@@ -264,17 +317,47 @@ if overline:
     ok("CharacterSpacing" not in overline.group(1), "Styles.xaml: OverlineText uses CharacterSpacing (breaks Arabic)")
     ok("Uppercase" not in overline.group(1), "Styles.xaml: OverlineText uppercases (breaks Arabic)")
 
-icon_keys = re.findall(r'<x:String x:Key="(Icon\w+)">([^<]*)</x:String>', COLORS)
+icon_keys = re.findall(r'<x:String x:Key="(Icon\w+)">([^<]*)</x:String>', ICONS)
+# An empty/moved icon dictionary must fail loudly instead of passing an empty loop.
+ok(len(icon_keys) >= 41,
+   f"Icons.xaml: only {len(icon_keys)} glyph(s) found, expected the full set (>= 41)")
 for key, glyph in icon_keys:
     decoded = html.unescape(glyph.strip())
     ok(len(decoded) == 1, f"Colors.xaml: {key} is not a single glyph")
+
+# A typo in an icon key renders an empty glyph (or crashes the look-up), so every
+# Icon* reference in a page or style must exist in Icons.xaml.
+icon_names = {key for key, _ in icon_keys}
+referenced_icons = set()
+for text in list(PAGE_TEXT.values()) + [STYLES]:
+    referenced_icons |= set(re.findall(r"StaticResource\s+(Icon[A-Za-z0-9_]*)", text))
+style_keys = set(re.findall(r'<Style [^>]*x:Key="(\w+)"', STYLES))
+for name in sorted(referenced_icons - icon_names - style_keys):
+    ok(False, f"Icons.xaml: '{name}' is referenced but not declared")
 
 token_keys = re.findall(r'x:Key="([A-Za-z0-9_]+)"', COLORS)
 duplicates = sorted({k for k in token_keys if token_keys.count(k) > 1})
 ok(not duplicates, f"Colors.xaml: duplicate keys {duplicates}")
 for required in ("Primary", "PrimarySoft", "Success", "Warning", "Error", "Info",
-                 "TextPrimary", "TextSecondary", "TextMuted", "CardSurface", "Border", "Divider"):
+                 "TextPrimary", "TextSecondary", "TextMuted", "CardSurface", "Border", "Divider",
+                 # clay material: without these the surfaces are flat again
+                 "ClayCardBrush", "ClayPageBrush", "ClayInsetBrush", "ClayHighlight",
+                 "ClayShadow", "PrimaryFill"):
     ok(f'x:Key="{required}"' in COLORS, f"Colors.xaml: missing token {required}")
+
+# Every theme must be a complete palette, or a switch renders a half-themed screen.
+ok(THEME_FILES, "Resources/Themes: no alternate theme palette found")
+for theme_path in THEME_FILES:
+    theme_text = open(theme_path, encoding="utf-8").read()
+    missing = sorted(set(re.findall(r'x:Key="(\w+)"', COLORS)) - set(re.findall(r'x:Key="(\w+)"', theme_text)))
+    ok(not missing, f"{theme_path}: missing palette keys {missing[:6]}")
+
+# The clay styles must actually ask for clay (a style that silently loses its
+# elevation is a flat card that still passes every other rule).
+for style_key in ("SurfaceCard", "PrimaryButton", "IconTile"):
+    block = re.search(rf'x:Key="{style_key}">([\s\S]*?)</Style>', STYLES)
+    ok(block is not None and "ClayMaterial.Elevation" in block.group(1),
+       f"Styles.xaml: {style_key} has no clay elevation")
 hardcoded_colors = re.findall(r'Value="#[0-9A-Fa-f]{3,8}"', STYLES)
 ok(not hardcoded_colors, f"Styles.xaml: raw hex values {hardcoded_colors}")
 
@@ -307,9 +390,9 @@ for page in PAGES:
 
 # Border.Stroke is Brush-typed; assigning a Color token is the wrong type.
 for page, text in PAGE_TEXT.items():
-    for token in re.findall(r'Stroke="\{StaticResource ([A-Za-z0-9_]+)\}"', text):
+    for token in re.findall(r'Stroke="\{(?:Static|Dynamic)Resource ([A-Za-z0-9_]+)\}"', text):
         ok(token.endswith("Brush"), f"{page}: Stroke bound to Color token '{token}' (needs a Brush)")
-for token in re.findall(r'Property="Stroke" Value="\{StaticResource ([A-Za-z0-9_]+)\}"', STYLES):
+for token in re.findall(r'Property="Stroke" Value="\{(?:Static|Dynamic)Resource ([A-Za-z0-9_]+)\}"', STYLES):
     ok(token.endswith("Brush"), f"Styles.xaml: Stroke bound to Color token '{token}' (needs a Brush)")
 
 # A pill with no tone must still render its capsule: the control has to establish
