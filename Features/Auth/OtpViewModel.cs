@@ -56,8 +56,12 @@ namespace KaamLink.Features.Auth
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
+            // The route carries the number escaped (?phone=%2B971...). Shell only
+            // decodes query values delivered through QueryPropertyAttribute, not
+            // through IQueryAttributable, so without this the screen would display
+            // and submit "%2B971501234567" and every OTP verification would fail.
             if (query.TryGetValue("phone", out var phone) && phone is string phoneText)
-                Phone = phoneText;
+                Phone = Uri.UnescapeDataString(phoneText);
             if (query.TryGetValue("role", out var role) && role is string roleText && roleText.Length > 0)
                 Role = roleText;
             if (query.TryGetValue("cooldown", out var cooldown)
