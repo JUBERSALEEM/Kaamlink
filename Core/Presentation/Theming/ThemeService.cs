@@ -37,25 +37,27 @@ namespace KaamLink.Core.Presentation.Theming
                     Source = new Uri(theme.PaletteSource, UriKind.Relative)
                 };
 
-                var index = IndexOfPalette(merged);
-                if (index >= 0)
-                {
-                    // Remove + insert (rather than replacing the entry) is what makes
-                    // MAUI raise the resource change that repaints DynamicResource
-                    // consumers; assigning into the slot can leave the UI stale.
-                    merged.RemoveAt(index);
-                    merged.Insert(index, replacement);
-                }
-                else
-                {
-                    // No palette merged yet (first run before App.xaml loads it).
-                    merged.Insert(0, replacement);
-                }
+                // Remove + insert (rather than assigning into the slot) is what makes
+                // MAUI raise the change that repaints DynamicResource consumers.
+                // Every catalogue palette is removed, not just the active one: if a
+                // source path ever stops matching (renamed file, leading slash), a
+                // single-palette lookup would leave a duplicate merged and the list
+                // would grow on every toggle.
+                var index = RemovePalettes(merged);
+                merged.Insert(index < 0 ? 0 : index, replacement);
 
                 CurrentThemeId = theme.Id;
                 WriteStoredThemeId(theme.Id);
                 ThemeChanged?.Invoke(this, theme.Id);
-                RefreshClayShadows();
+
+                // Deferred by one dispatcher turn so the replacement dictionary is
+                // loaded before shadows read ClayShadowBrush from it; resolving too
+                // early would give every shadow the fallback colour.
+                var dispatcher = Application.Current?.Dispatcher;
+                if (dispatcher is not null && !dispatcher.IsDispatchRequired)
+                    dispatcher.Dispatch(RefreshClayShadows);
+                else
+                    RefreshClayShadows();
             }
 
             if (MainThread.IsMainThread)
@@ -71,17 +73,38 @@ namespace KaamLink.Core.Presentation.Theming
             return next.Id;
         }
 
-        private static int IndexOfPalette(IList<ResourceDictionary> merged)
+        /// <summary>
+        /// Removes every merged dictionary that is a catalogue palette and returns
+        /// the lowest index it occupied (-1 if none) so the caller can re-insert
+        /// there and keep the merge order (icons, palette, styles) intact.
+        /// </summary>
+        private static int RemovePalettes(IList<ResourceDictionary> merged)
         {
-            for (var index = 0; index < merged.Count; index++)
+            var lowest = -1;
+            for (var index = merged.Count - 1; index >= 0; index--)
             {
-                var source = merged[index].Source?.OriginalString;
-                if (source is not null && ThemeCatalog.All.Any(theme => theme.PaletteSource == source))
-                    return index;
+                if (!IsPalette(merged[index]))
+                    continue;
+
+                merged.RemoveAt(index);
+                lowest = index;
             }
 
-            return -1;
+            return lowest;
         }
+
+        private static bool IsPalette(ResourceDictionary dictionary)
+        {
+            var source = Normalize(dictionary.Source);
+            return source is not null
+                && ThemeCatalog.All.Any(theme =>
+                    string.Equals(Normalize(theme.PaletteSource), source, StringComparison.OrdinalIgnoreCase));
+        }
+
+        private static string? Normalize(Uri? uri) => Normalize(uri?.OriginalString);
+
+        private static string? Normalize(string? source) =>
+            source?.TrimStart('/').Replace('\\', '/');
 
         private static void RefreshClayShadows()
         {
