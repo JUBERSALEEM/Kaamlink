@@ -120,7 +120,9 @@
 
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="vm:VacancyCardModel">
-                    <Border Style="{StaticResource SurfaceCardDense}" Margin="0,0,0,10">
+                    <Border Style="{StaticResource SurfaceCardDense}"
+                            Margin="0,0,0,10"
+                            SemanticProperties.Description="{Binding Title}">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding BindingContext.OpenVacancyCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                                   CommandParameter="{Binding .}" />

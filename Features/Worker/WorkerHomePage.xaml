@@ -96,7 +96,8 @@
                        Text="{x:Static strings:AppStrings.HomeQuickActions}" />
                 <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
 
-                    <Border Grid.Column="0" Style="{StaticResource SurfaceCardDense}" Padding="10">
+                    <Border Grid.Column="0" Style="{StaticResource SurfaceCardDense}" Padding="10"
+                            SemanticProperties.Description="{x:Static strings:AppStrings.HomeBrowseJobsCta}">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding BrowseJobsCommand}" />
                         </Border.GestureRecognizers>
@@ -112,7 +113,8 @@
                         </VerticalStackLayout>
                     </Border>
 
-                    <Border Grid.Column="1" Style="{StaticResource SurfaceCardDense}" Padding="10">
+                    <Border Grid.Column="1" Style="{StaticResource SurfaceCardDense}" Padding="10"
+                            SemanticProperties.Description="{x:Static strings:AppStrings.MyApplicationsTitle}">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding OpenMyApplicationsCommand}" />
                         </Border.GestureRecognizers>
@@ -128,7 +130,8 @@
                         </VerticalStackLayout>
                     </Border>
 
-                    <Border Grid.Column="2" Style="{StaticResource SurfaceCardDense}" Padding="10">
+                    <Border Grid.Column="2" Style="{StaticResource SurfaceCardDense}" Padding="10"
+                            SemanticProperties.Description="{x:Static strings:AppStrings.MyAssessmentsCta}">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding OpenMyAssessmentsCommand}" />
                         </Border.GestureRecognizers>
