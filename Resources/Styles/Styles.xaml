@@ -300,13 +300,26 @@
         <Setter Property="clay:ClayMaterial.Elevation" Value="None" />
     </Style>
 
-    <Style TargetType="Button" x:Key="CountryListButton" BasedOn="{StaticResource SecondaryButton}">
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="HeightRequest" Value="48" />
+    <!--
+        Country rows are a Border + Label, not a Button: MAUI's Button has no
+        HorizontalTextAlignment property (XC0001 on .NET 10). A Label can align
+        its text at Start while the Border keeps the 48dp tappable surface.
+    -->
+    <Style TargetType="Border" x:Key="CountryListButton">
+        <Setter Property="Background" Value="{DynamicResource ClayCardBrush}" />
+        <Setter Property="Stroke" Value="{DynamicResource BorderStrongBrush}" />
+        <Setter Property="StrokeThickness" Value="1" />
         <Setter Property="Padding" Value="12,0" />
-        <Setter Property="HorizontalTextAlignment" Value="Start" />
-        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="HeightRequest" Value="48" />
+        <Setter Property="MinimumHeightRequest" Value="48" />
+        <Setter Property="HorizontalOptions" Value="Fill" />
+        <Setter Property="VerticalOptions" Value="Center" />
         <Setter Property="clay:ClayMaterial.Elevation" Value="None" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="12" />
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style TargetType="Button" x:Key="SubtleButton">

@@ -312,6 +312,14 @@ CASES = [
         ("using System.Text.Json;\n", ""),
         ["tools/verify-compile-surface.py"],
     ),
+    (
+        "Button style uses Label-only HorizontalTextAlignment",
+        "Resources/Styles/Styles.xaml",
+        ("    <Style TargetType=\"Button\" x:Key=\"SecondaryButton\">\n",
+         "    <Style TargetType=\"Button\" x:Key=\"SecondaryButton\">\n"
+         "        <Setter Property=\"HorizontalTextAlignment\" Value=\"Start\" />\n"),
+        ["tools/verify-ui-redesign.py"],
+    ),
 ]
 
 

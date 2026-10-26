@@ -191,11 +191,20 @@
                         </CollectionView.EmptyView>
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="country:CountryPhoneOption">
-                                <Button Style="{StaticResource CountryListButton}"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectCountryCommand}"
-                                        CommandParameter="{Binding .}"
-                                        SemanticProperties.Description="{Binding PickerLabel}"
-                                        Text="{Binding PickerLabel}" />
+                                <Border Style="{StaticResource CountryListButton}"
+                                        SemanticProperties.Description="{Binding PickerLabel}">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectCountryCommand}"
+                                            CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                    <Label Style="{StaticResource BodyStrongText}"
+                                           Text="{Binding PickerLabel}"
+                                           TextColor="{DynamicResource Primary}"
+                                           HorizontalTextAlignment="Start"
+                                           VerticalTextAlignment="Center"
+                                           LineBreakMode="TailTruncation" />
+                                </Border>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>

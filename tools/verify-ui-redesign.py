@@ -383,6 +383,18 @@ for style_key in ("SurfaceCard", "PrimaryButton", "IconTile"):
 hardcoded_colors = re.findall(r'Value="#[0-9A-Fa-f]{3,8}"', STYLES)
 ok(not hardcoded_colors, f"Styles.xaml: raw hex values {hardcoded_colors}")
 
+# MAUI's Button does not expose HorizontalTextAlignment/VerticalTextAlignment.
+# Those are Label/Entry properties; a Button style or element using them fails
+# XamlC with XC0001 / XLS0431 on net10.0-android.
+for _open, body, _close in re.findall(
+        r'(<Style TargetType="Button"[^>]*>)([\s\S]*?)(</Style>)', STYLES):
+    ok('Property="HorizontalTextAlignment"' not in body
+       and 'Property="VerticalTextAlignment"' not in body,
+       "Styles.xaml: a Button style uses Label-only text alignment properties (XC0001)")
+for page, text in PAGE_TEXT.items():
+    ok(not re.search(r'<Button\b[^>]*\b(?:Horizontal|Vertical)TextAlignment=', text),
+       f"{page}: a Button element uses Label-only text alignment properties (XC0001)")
+
 # shared controls are used, not re-invented per page
 ok(sum('controls:StatusPill' in t for t in PAGE_TEXT.values()) >= 4,
    "Redesign: StatusPill not reused across pages")

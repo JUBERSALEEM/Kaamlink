@@ -879,3 +879,19 @@ remain authoritative.
   parsed and `git diff --check` passed.
 * **Build/device verification BLOCKED:** this environment has no .NET SDK, JDK, emulator or
   Android device. Static checks are not a successful build or a visual/runtime test.
+
+### 9.18 Real-compiler fixes reported after the static pass
+
+Three errors only the reviewer's Visual Studio / .NET 10 build could expose were fixed on
+this branch. Each is now covered by a static gate and an injected-defect self-test.
+
+| Error | Root cause | Fix |
+|---|---|---|
+| `Microsoft.Maui.Resizetizer` invalid file names | `kaamlink-mark.svg` and `login-hero.svg` used hyphens, which Android resource names forbid | Renamed to `kaamlink_mark.svg` / `login_hero.svg`; updated XAML, docs and gates |
+| CS0103 `JsonSerializerDefaults` | `CountryPhoneDirectoryJsonContext.cs` imported `System.Text.Json.Serialization` but not `System.Text.Json` | Added the missing import; `verify-compile-surface.py` and `verify-global-phone-directory.py` now assert STJ namespace imports |
+| XLS0431 / XC0001 `HorizontalTextAlignment` on `Button` | MAUI `Button` does not expose Label/Entry text-alignment properties | Country picker rows are now `Border` + `Label` + `TapGestureRecognizer`; `verify-ui-redesign.py` rejects text-alignment setters on Button styles/elements |
+
+Current static verification after these fixes: `bash tools/verify-all.sh` — 10 gates green,
+`verify-ui-redesign.py` 468 checks, `verify-compile-surface.py` 347 checks,
+`verify-connectivity.py` 44 checks, `verify-global-phone-directory.py` 37 checks, and
+47 injected defects detected. A real .NET build and device journey remain required.
