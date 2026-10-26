@@ -126,9 +126,11 @@
                 </VerticalStackLayout>
             </Border>
 
-            <Label Style="{StaticResource CaptionText}"
-                   HorizontalTextAlignment="Center"
-                   Text="{x:Static strings:AppStrings.OtpWrongNumberNote}" />
+            <Button Style="{StaticResource TextButton}"
+                    Command="{Binding BackCommand}"
+                    HorizontalOptions="Center"
+                    SemanticProperties.Description="{x:Static strings:AppStrings.OtpWrongNumberNote}"
+                    Text="{x:Static strings:AppStrings.OtpWrongNumberNote}" />
 
         </VerticalStackLayout>
     </ScrollView>

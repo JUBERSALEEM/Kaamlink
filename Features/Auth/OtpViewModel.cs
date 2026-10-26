@@ -1,4 +1,5 @@
 using KaamLink.Core.Api;
+using KaamLink.Core.Navigation;
 using KaamLink.Resources.Strings;
 
 namespace KaamLink.Features.Auth
@@ -208,5 +209,10 @@ namespace KaamLink.Features.Auth
         }
 
         public void Dispose() => StopTimer();
+
+        /// <summary>Back to the phone step so a mistyped number can be corrected
+        /// (the page's own copy tells the user to do exactly this).</summary>
+        [RelayCommand]
+        private Task BackAsync() => Shell.Current.GoToAsync(RoleNavigator.LoginRouteFor(Role));
     }
 }

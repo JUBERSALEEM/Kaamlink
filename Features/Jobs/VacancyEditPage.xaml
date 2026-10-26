@@ -13,17 +13,23 @@
     <!-- Vacancy create/edit. Field order, labels and validation are unchanged; only
          the presentation and the sticky Save are new. Skills stay a multi-select
          list (the API needs skill ids, and editing re-asks for them by design). -->
-    <Grid RowDefinitions="*,Auto">
+    <Grid RowDefinitions="Auto,*,Auto">
 
-        <ScrollView Grid.Row="0">
+        <!-- Pinned back action: it must not scroll away on long screens. -->
+        <Grid Grid.Row="0"
+              Style="{StaticResource AppBar}"
+              Padding="4,0">
+            <Button Style="{StaticResource TextButton}"
+                    Command="{Binding BackCommand}"
+                    HorizontalOptions="Start"
+                    MinimumWidthRequest="48"
+                    SemanticProperties.Description="{x:Static strings:AppStrings.BackCta}"
+                    Text="{x:Static strings:AppStrings.BackCta}" />
+        </Grid>
+
+        <ScrollView Grid.Row="1">
             <VerticalStackLayout Style="{StaticResource PageStack}" Spacing="14">
 
-                <Button Style="{StaticResource TextButton}"
-                        Command="{Binding BackCommand}"
-                        HorizontalOptions="Start"
-                        MinimumWidthRequest="48"
-                        SemanticProperties.Description="{x:Static strings:AppStrings.BackCta}"
-                        Text="{x:Static strings:AppStrings.BackCta}" />
                 <Label SemanticProperties.HeadingLevel="Level1"
                        Style="{StaticResource TitleText}"
                        Text="{Binding PageTitle}" />
@@ -204,7 +210,7 @@
             </VerticalStackLayout>
         </ScrollView>
 
-        <Grid Grid.Row="1"
+        <Grid Grid.Row="2"
               Style="{StaticResource BottomDock}"
               IsVisible="{Binding IsLoaded}">
             <Button Style="{StaticResource PrimaryButton}"

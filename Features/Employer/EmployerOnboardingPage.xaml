@@ -12,17 +12,20 @@
     <!-- Company registration. The review explainer is the first thing an employer
          reads: the submit button says "Submit for review" and the copy never
          implies instant verification. -->
-    <Grid RowDefinitions="*,Auto">
+    <Grid RowDefinitions="Auto,*,Auto">
 
-        <ScrollView Grid.Row="0">
+        <!-- Pinned back action: leaving registration loses nothing (Submit is the commit). -->
+        <Grid Grid.Row="0" Style="{StaticResource AppBar}" Padding="4,0">
+            <Button Style="{StaticResource TextButton}"
+                    Command="{Binding BackCommand}"
+                    HorizontalOptions="Start"
+                    MinimumWidthRequest="48"
+                    SemanticProperties.Description="{x:Static strings:AppStrings.BackCta}"
+                    Text="{x:Static strings:AppStrings.BackCta}" />
+        </Grid>
+
+        <ScrollView Grid.Row="1">
             <VerticalStackLayout Style="{StaticResource PageStack}" Spacing="14">
-
-                <Button Style="{StaticResource TextButton}"
-                        Command="{Binding BackCommand}"
-                        HorizontalOptions="Start"
-                        MinimumWidthRequest="48"
-                        SemanticProperties.Description="{x:Static strings:AppStrings.BackCta}"
-                        Text="{x:Static strings:AppStrings.BackCta}" />
 
                 <VerticalStackLayout Spacing="6">
                     <Label SemanticProperties.HeadingLevel="Level1"
@@ -130,7 +133,7 @@
             </VerticalStackLayout>
         </ScrollView>
 
-        <Grid Grid.Row="1" Style="{StaticResource BottomDock}">
+        <Grid Grid.Row="2" Style="{StaticResource BottomDock}">
             <Button Style="{StaticResource PrimaryButton}"
                     Command="{Binding SubmitCommand}"
                     IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}, FallbackValue=True}"

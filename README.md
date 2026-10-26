@@ -34,8 +34,8 @@ with employers (factories, workshops, contractors, SMEs, warehouses) — built a
 EN/AR, 48dp targets, truthful states):** audit, 23 mockups, design-system spec and the
 implementation/verification report live in [docs/ui-redesign/](docs/ui-redesign).
 Static gates: `tools/verify-phase03.py` (103), `verify-phase04.py` (105),
-`verify-phase05.py` (88), `verify-bindings.py` (335 compiled bindings),
-`verify-ui-redesign.py` (293). **The redesign has not been built or run: this environment
+`verify-phase05.py` (88), `verify-bindings.py` (345 compiled bindings),
+`verify-ui-redesign.py` (323). **The redesign has not been built or run: this environment
 has no .NET/Android SDK** — see §4 of the report.
 
 **Want to run it? → [docs/first-boot-guide.md](docs/first-boot-guide.md)**

@@ -102,8 +102,8 @@ All commands were run in this workspace, in this order, at the end of the work.
 | Phase 3 (design system, tokens, routes, DI, DTO contract) | `python3 tools/verify-phase03.py` | **103 checks, 0 failures** |
 | Phase 4 (jobs core) | `python3 tools/verify-phase04.py` | **105 checks, 0 failures** |
 | Phase 5 (assessments + localization parity) | `python3 tools/verify-phase05.py` | **88 checks, 0 failures** |
-| Compiled bindings (new) | `python3 tools/verify-bindings.py` | **335 bindings across 15 pages, 0 unresolved** |
-| Redesign gate (new) | `python3 tools/verify-ui-redesign.py` | **293 checks, 0 failures** |
+| Compiled bindings (new) | `python3 tools/verify-bindings.py` | **345 bindings across 15 pages, 0 unresolved** |
+| Redesign gate (new) | `python3 tools/verify-ui-redesign.py` | **323 checks, 0 failures** |
 | XAML well-formedness | `xml.etree.ElementTree` parse of all 15 pages | all parse |
 | Localization parity | resx/Designer inventory | **313 / 313 / 313** (EN / AR / Designer) |
 
@@ -127,7 +127,7 @@ plus **feature parity**: every `[RelayCommand]` in every view model must still b
 somewhere. It was validated by removing a command binding (the gate failed and named the
 dropped command) and by reintroducing a hardcoded string (also failed).
 
-### Bugs found and fixed by these gates
+### Bugs found and fixed during implementation (1–5 by the gates, 6–9 by review)
 
 1. **Silent no-op buttons (runtime).** `MyAssessmentsPage` and `AssessmentRunPage` bound
    their item-level commands through
@@ -149,7 +149,19 @@ dropped command) and by reintroducing a hardcoded string (also failed).
    glyph; it now follows `ResultState` (soft tone + matching glyph).
 5. **Keyboard could cover the sticky action dock.** `MainActivity` now declares
    `WindowSoftInputMode = AdjustResize`.
-6. **Arabic-hostile section labels.** Section eyebrows were 10.5sp, uppercased and
+6. **The OTP screen told the user to go back and gave them no way to do it.** Its
+   footnote says "Wrong number? Go back to edit it", but the page hides the Shell nav
+   bar. That footnote is now the back action itself (`OtpViewModel.BackAsync` →
+   `RoleNavigator.LoginRouteFor(Role)`), so the instruction and the control agree.
+7. **Back actions scrolled away.** On the long screens (vacancy detail, editor,
+   assessment runner, my applications, employer onboarding) the back action sat inside
+   the scrolling content. It is now a pinned 52dp app bar row on every secondary screen.
+8. **Feed showed verification as a text checkmark glued to the company name**
+   (`"Gulf Steel Works ✓"`), which is not an icon, not localizable, and not readable as
+   a state by a screen reader. The feed card now renders a `StatusPill` from the server's
+   `CompanyVerificationState` and shows skills as chips. The redesign gate now fails on any
+   text glyph (`✓ ✔ ★ ● ▪`) in a page or in a display string.
+9. **Arabic-hostile section labels.** Section eyebrows were 10.5sp, uppercased and
    letter-spaced — uppercase means nothing in Arabic and letter spacing breaks Arabic
    joining. They are now 12sp semibold with no transform, and the design-system spec was
    corrected to match.
@@ -171,7 +183,7 @@ network flows behave. Those need a build and a device (see §4).
 | Emulator / physical device run | **BLOCKED** | no SDK, no emulator, no device |
 | Screenshot comparison against mockups | **NOT PERFORMED** | requires a running app; the 23 mockups in `docs/ui-redesign/mockups/` remain the visual reference, not a proof of the built UI |
 | XAML well-formedness | PASS | all 15 pages parse as XML |
-| XamlC binding resolution | PASS (static) | `tools/verify-bindings.py`, 335 bindings |
+| XamlC binding resolution | PASS (static) | `tools/verify-bindings.py`, 345 bindings |
 
 No build was attempted and failed for a code reason; the toolchain is simply absent. **No
 claim of a passing build or a working app is made anywhere in this report.**
@@ -224,6 +236,7 @@ down; the device in Arabic (`ar-AE`) mirrors layouts.
 | Back navigation | Added as explicit in-page actions. The routing model (absolute routes, no stack) is untouched. |
 | Edit re-asks for skills | Pre-existing, documented V1 limitation: the employer vacancy list endpoint does not return skill ids, so the editor requires a fresh selection rather than silently clobbering. Preserved as designed. |
 | Feed result count | The old page bound the raw collection count (`Items.Count` with `StringFormat='{0}'`) as a bare number. It is now a localized "Results" label above the list; no count is invented. |
+| Verification pill on feed | The old feed appended "✓" to the company name; the card now shows the localized "Verified company" pill only when the server reports `Verified`. No unverified employer is ever badged. |
 | Removed pagination button state | The feed keeps `LoadMoreCommand` behind `HasMore`, unchanged in behaviour, restyled as a secondary button plus a footer note. |
 | Amber `colorAccent` | Android's stale amber accent is now the teal accent token so platform widgets do not flash a third colour. |
 | No skeletons/shimmer | Loading uses spinners + a labelled panel. Decided against decorative shimmer for low-end performance and honesty (no fake content shapes). |
@@ -272,7 +285,7 @@ MauiProgram.cs                             Lucide font registration
 Platforms/Android/MainActivity.cs          AdjustResize
 Platforms/Android/Resources/values/colors.xml, KaamLink.csproj, AppIcon, Splash
                                            brand surfaces re-coloured to the new blue
-tools/{verify-bindings,verify-ui-redesign}.py          new gates (335 bindings / 293 checks)
+tools/{verify-bindings,verify-ui-redesign}.py          new gates (345 bindings / 323 checks)
 tools/add-strings.py                       resx + Designer + AR writer used for every new key
 docs/ui-redesign/00,01,02,03               audit, mockup catalogue, design system, this report
 ```
