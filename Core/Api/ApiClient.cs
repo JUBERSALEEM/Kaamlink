@@ -69,6 +69,9 @@ namespace KaamLink.Core.Api
             public const string RateLimited = "rate.limit_exceeded";
             public const string ProfileNotFound = "worker.profile_not_found";
             public const string OtpInvalid = "auth.otp_invalid";
+            public const string OtpNotFoundOrExpired = "auth.otp_not_found_or_expired";
+            public const string OtpLocked = "auth.otp_locked";
+            public const string OtpResendCooldown = "auth.otp_resend_cooldown";
             public const string PhoneInvalid = "auth.phone_invalid";
             public const string AlreadyApplied = "jobs.already_applied";
             public const string ProfileRequired = "worker.profile_required";
@@ -248,13 +251,45 @@ namespace KaamLink.Core.Api
             {
                 throw ApiException.Offline(exception);
             }
+            catch (OperationCanceledException exception) when (!ct.IsCancellationRequested)
+            {
+                // HttpClient's own timeout surfaces as TaskCanceledException even
+                // though nobody cancelled us. Callers only handle ApiException, so
+                // leaving it uncaught crashed the app on slow networks instead of
+                // showing the offline message. A genuine caller cancellation is
+                // still allowed to propagate.
+                throw ApiException.Offline(exception);
+            }
 
             using (response)
             {
                 if (!response.IsSuccessStatusCode)
                     throw await ToApiExceptionAsync(response, ct);
 
-                return await response.Content.ReadFromJsonAsync(responseTypeInfo, ct);
+                try
+                {
+                    var payload = await response.Content.ReadFromJsonAsync(responseTypeInfo, ct);
+
+                    // A body of literal "null" deserializes to null; every caller
+                    // immediately dereferences the result.
+                    if (payload is null && !typeof(TResponse).IsValueType)
+                        throw new ApiException(
+                            $"{typeof(TResponse).Name}: response body was empty.",
+                            (int)response.StatusCode,
+                            code: null);
+
+                    return payload;
+                }
+                catch (System.Text.Json.JsonException exception)
+                {
+                    // A 2xx with an unexpected/empty body (captive portal, proxy,
+                    // contract drift) must degrade to a localized error, not crash.
+                    throw new ApiException(
+                        "The server returned an unexpected response.",
+                        (int)response.StatusCode,
+                        code: null,
+                        exception);
+                }
             }
         }
 

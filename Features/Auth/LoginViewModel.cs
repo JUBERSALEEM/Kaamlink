@@ -85,6 +85,14 @@ namespace KaamLink.Features.Auth
             return exception.Code switch
             {
                 ApiClient.Codes.RateLimited => AppStrings.ErrorTooManyAttempts,
+                // The backend emits these for a wrong/expired code and for a
+                // throttled or locked challenge; without them the user saw the
+                // generic "something went wrong" and had no idea what to do next.
+                ApiClient.Codes.OtpInvalid => AppStrings.ErrorInvalidCode,
+                ApiClient.Codes.OtpNotFoundOrExpired => AppStrings.ErrorInvalidCode,
+                ApiClient.Codes.OtpLocked => AppStrings.ErrorTooManyAttempts,
+                ApiClient.Codes.OtpResendCooldown => AppStrings.ErrorTooManyAttempts,
+                ApiClient.Codes.PhoneInvalid => AppStrings.ErrorInvalidPhone,
                 _ => AppStrings.ErrorGeneric
             };
         }

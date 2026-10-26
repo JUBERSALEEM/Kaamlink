@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using KaamLink.Core.Api;
 using KaamLink.Core.Navigation;
 using KaamLink.Core.Presentation;
+using KaamLink.Core.Text;
 using KaamLink.Resources.Strings;
 
 namespace KaamLink.Features.Jobs
@@ -158,9 +159,17 @@ namespace KaamLink.Features.Jobs
             if (IsBusy || _companyId == Guid.Empty)
                 return;
 
-            var salaryMinOk = string.IsNullOrWhiteSpace(SalaryMinText) || int.TryParse(SalaryMinText, out _);
-            var salaryMaxOk = string.IsNullOrWhiteSpace(SalaryMaxText) || int.TryParse(SalaryMaxText, out _);
-            if (!salaryMinOk || !salaryMaxOk || !int.TryParse(HeadcountText, out var headcount))
+            // Parse once into the values that are persisted: re-parsing at build
+            // time could drift from what was validated. Digits are normalized
+            // first so Arabic-Indic input from an Arabic keyboard is accepted.
+            var salaryMinText = DigitText.Normalize(SalaryMinText).Trim();
+            var salaryMaxText = DigitText.Normalize(SalaryMaxText).Trim();
+            var salaryMinOk = string.IsNullOrWhiteSpace(salaryMinText)
+                || int.TryParse(salaryMinText, out _);
+            var salaryMaxOk = string.IsNullOrWhiteSpace(salaryMaxText)
+                || int.TryParse(salaryMaxText, out _);
+            if (!salaryMinOk || !salaryMaxOk
+                || !int.TryParse(DigitText.Normalize(HeadcountText).Trim(), out var headcount))
             {
                 HasError = true;
                 ErrorMessage = AppStrings.FieldInvalidNumber;
@@ -178,8 +187,8 @@ namespace KaamLink.Features.Jobs
                     Description = string.IsNullOrWhiteSpace(Description) ? null : Description.Trim(),
                     Emirate = SelectedEmirate.Value,
                     Area = string.IsNullOrWhiteSpace(Area) ? null : Area.Trim(),
-                    SalaryMinAed = int.TryParse(SalaryMinText, out var min) ? min : null,
-                    SalaryMaxAed = int.TryParse(SalaryMaxText, out var max) ? max : null,
+                    SalaryMinAed = int.TryParse(salaryMinText, out var min) ? min : null,
+                    SalaryMaxAed = int.TryParse(salaryMaxText, out var max) ? max : null,
                     Headcount = headcount,
                     SkillIds = SelectedSkills.OfType<SkillItemDto>().Select(s => s.Id).ToList()
                 };

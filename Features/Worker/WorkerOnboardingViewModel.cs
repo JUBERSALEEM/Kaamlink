@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using KaamLink.Core.Api;
 using KaamLink.Core.Presentation;
 using KaamLink.Resources.Strings;
+using KaamLink.Core.Text;
 
 namespace KaamLink.Features.Worker
 {
@@ -228,7 +229,9 @@ namespace KaamLink.Features.Worker
             if (SelectedSkill is null)
                 return;
 
-            if (!int.TryParse(YearsText.Trim(), out var years) || years is < 0 or > 50)
+            // Arabic-locale numeric keyboards emit Arabic-Indic digits; int.TryParse
+            // only reads ASCII, so normalize before parsing.
+            if (!int.TryParse(DigitText.Normalize(YearsText).Trim(), out var years) || years is < 0 or > 50)
             {
                 ShowError(AppStrings.ErrorYearsInvalid);
                 return;
@@ -353,7 +356,9 @@ namespace KaamLink.Features.Worker
         // ---- helpers ----
 
         private static int? ParseSalary(string text) =>
-            int.TryParse(text.Trim(), out var value) && value >= 0 ? value : null;
+            int.TryParse(DigitText.Normalize(text).Trim(), out var value) && value >= 0
+                ? value
+                : null;
 
         internal static string MapApiError(ApiException exception)
         {

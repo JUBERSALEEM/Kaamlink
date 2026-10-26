@@ -1,4 +1,5 @@
 using KaamLink.Core.Api;
+using KaamLink.Core.Text;
 using KaamLink.Core.Navigation;
 using KaamLink.Resources.Strings;
 
@@ -85,8 +86,10 @@ namespace KaamLink.Features.Auth
             if (IsBusy)
                 return;
 
-            var code = Code.Trim();
-            if (code.Length != 6 || !code.All(char.IsDigit))
+            // The API expects six ASCII digits; an Arabic-locale numeric keyboard
+            // produces Arabic-Indic digits that would otherwise be rejected.
+            var code = DigitText.Normalize(Code).Trim();
+            if (code.Length != 6 || !code.All(char.IsAsciiDigit))
             {
                 ShowError(AppStrings.ErrorInvalidCode);
                 return;
@@ -104,13 +107,8 @@ namespace KaamLink.Features.Auth
             }
             catch (ApiException exception)
             {
-                ShowError(exception.Code switch
-                {
-                    ApiClient.Codes.OtpInvalid => AppStrings.ErrorInvalidCode,
-                    ApiClient.Codes.RateLimited => AppStrings.ErrorTooManyAttempts,
-                    _ when exception.IsOffline => AppStrings.ErrorOffline,
-                    _ => AppStrings.ErrorGeneric
-                });
+                // One shared mapping table for every auth error surface.
+                ShowError(LoginViewModel.MapError(exception));
             }
             finally
             {

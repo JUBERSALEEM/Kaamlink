@@ -15,7 +15,10 @@ namespace KaamLink.Core.Text
             if (string.IsNullOrWhiteSpace(raw))
                 return null;
 
-            var cleaned = CleanupRegex().Replace(raw.Trim(), string.Empty);
+            // Arabic-Indic / Extended Arabic-Indic digits become ASCII first: the
+            // digit checks below and the E.164 pattern are ASCII-only, and the API
+            // contract expects ASCII E.164.
+            var cleaned = CleanupRegex().Replace(DigitText.Normalize(raw).Trim(), string.Empty);
 
             if (cleaned.StartsWith("00", StringComparison.Ordinal))
                 cleaned = "+" + cleaned[2..];

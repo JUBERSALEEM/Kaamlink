@@ -2,6 +2,7 @@ using KaamLink.Core.Api;
 using KaamLink.Core.Navigation;
 using KaamLink.Core.Presentation;
 using KaamLink.Resources.Strings;
+using KaamLink.Core.Text;
 
 namespace KaamLink.Features.Employer
 {
@@ -74,7 +75,9 @@ namespace KaamLink.Features.Employer
                     Category = SelectedCategory.Value,
                     Emirate = SelectedEmirate.Value,
                     Area = string.IsNullOrWhiteSpace(Area) ? null : Area.Trim(),
-                    TradeLicenseNumber = string.IsNullOrWhiteSpace(TradeLicenseNumber) ? null : TradeLicenseNumber.Trim()
+                    TradeLicenseNumber = string.IsNullOrWhiteSpace(TradeLicenseNumber)
+                        ? null
+                        : DigitText.Normalize(TradeLicenseNumber).Trim()
                 });
 
                 await _session.ReloadUserAsync();
