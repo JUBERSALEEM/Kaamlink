@@ -83,6 +83,8 @@
     <SolidColorBrush x:Key="TextMutedBrush" Color="{StaticResource TextMuted}" />
     <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource Error}" />
     <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource Success}" />
+    <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource Warning}" />
+    <SolidColorBrush x:Key="InfoBrush" Color="{StaticResource Info}" />
 
     <!-- ================= Icon glyphs (Lucide, ISC) =================
          Single codepoints from Resources/Fonts/lucide.ttf, verified against the

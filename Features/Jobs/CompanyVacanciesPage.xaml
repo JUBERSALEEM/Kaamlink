@@ -22,10 +22,18 @@
                     MinimumWidthRequest="48"
                     SemanticProperties.Description="{x:Static strings:AppStrings.BackCta}"
                     Text="{x:Static strings:AppStrings.BackCta}" />
+            <!-- The company name arrives in the query string; if a deep link or a cold
+                 back-stack omits it, fall back to the page's own name instead of
+                 rendering an empty heading. -->
             <Label SemanticProperties.HeadingLevel="Level1"
                    Style="{StaticResource TitleText}"
+                   IsVisible="{Binding HasCompanyName}"
                    Text="{Binding CompanyName}" />
+            <Label Style="{StaticResource SectionText}"
+                   IsVisible="{Binding HasCompanyName, Converter={StaticResource InvertedBoolConverter}}"
+                   Text="{x:Static strings:AppStrings.CompanyVacanciesTitle}" />
             <Label Style="{StaticResource CaptionText}"
+                   IsVisible="{Binding HasCompanyName}"
                    Text="{x:Static strings:AppStrings.CompanyVacanciesTitle}" />
         </VerticalStackLayout>
 
@@ -78,7 +86,7 @@
                                     <BoxView Style="{StaticResource DividerLine}" />
 
                                     <Button Style="{StaticResource TextButton}"
-                                            Command="{Binding BindingContext.OpenApplicationsCommand, Source={x:Reference Page}}"
+                                            Command="{Binding BindingContext.OpenApplicationsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                             CommandParameter="{Binding .}"
                                             HorizontalOptions="Start"
                                             SemanticProperties.Description="{x:Static strings:AppStrings.VacancyApplicationsTitle}"
@@ -91,21 +99,21 @@
                                                 JustifyContent="Start"
                                                 AlignItems="Start">
                                         <Button Style="{StaticResource SubtleButton}"
-                                                Command="{Binding BindingContext.ActivateCommand, Source={x:Reference Page}}"
+                                                Command="{Binding BindingContext.ActivateCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                                 CommandParameter="{Binding .}"
                                                 IsVisible="{Binding CanActivate}"
                                                 Margin="0,0,8,8"
                                                 SemanticProperties.Description="{x:Static strings:AppStrings.ActivateCta}"
                                                 Text="{x:Static strings:AppStrings.ActivateCta}" />
                                         <Button Style="{StaticResource SubtleButton}"
-                                                Command="{Binding BindingContext.PauseCommand, Source={x:Reference Page}}"
+                                                Command="{Binding BindingContext.PauseCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                                 CommandParameter="{Binding .}"
                                                 IsVisible="{Binding CanPause}"
                                                 Margin="0,0,8,8"
                                                 SemanticProperties.Description="{x:Static strings:AppStrings.PauseCta}"
                                                 Text="{x:Static strings:AppStrings.PauseCta}" />
                                         <Button Style="{StaticResource DangerButton}"
-                                                Command="{Binding BindingContext.CloseCommand, Source={x:Reference Page}}"
+                                                Command="{Binding BindingContext.CloseCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                                 CommandParameter="{Binding .}"
                                                 IsVisible="{Binding CanClose}"
                                                 Margin="0,0,8,8"

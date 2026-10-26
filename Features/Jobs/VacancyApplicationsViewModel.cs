@@ -56,6 +56,9 @@ namespace KaamLink.Features.Jobs
         [ObservableProperty]
         private bool _isLoaded;
 
+        /// <summary>Re-entrancy latch for one-shot server mutations (not bound to UI).</summary>
+        private bool _isWorking;
+
         [ObservableProperty]
         private bool _hasError;
 
@@ -166,16 +169,18 @@ namespace KaamLink.Features.Jobs
 
         private async Task DecideAsync(ApplicantRowModel? row, string target)
         {
-            if (row is null || IsBusy)
+            // Latched, not IsBusy: a second tap (or a tap on another decision button)
+            // must not send a second decision for the same applicant.
+            if (row is null || IsBusy || _isWorking)
                 return;
 
+            _isWorking = true;
             HasError = false;
             ErrorMessage = null;
             try
             {
                 await _api.ChangeApplicationStatusAsync(_companyId, _vacancyId, row.Id, target);
-                IsBusy = false; // allow the refresh through LoadAsync's guard
-                await LoadAsync();
+                await LoadAsync(); // reload from the server: the list is its truth
             }
             catch (ApiException exception) when (SessionErrors.IsExpiredSession(exception))
             {
@@ -185,6 +190,10 @@ namespace KaamLink.Features.Jobs
             {
                 HasError = true;
                 ErrorMessage = exception.IsOffline ? AppStrings.ErrorOffline : AppStrings.ErrorGeneric;
+            }
+            finally
+            {
+                _isWorking = false;
             }
         }
 

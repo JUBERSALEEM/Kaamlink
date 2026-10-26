@@ -55,7 +55,7 @@
                         <Border Grid.Column="1"
                                 Style="{StaticResource PillBorder}"
                                 BackgroundColor="{StaticResource WarningSoft}"
-                                Stroke="{StaticResource Warning}"
+                                Stroke="{StaticResource WarningBrush}"
                                 VerticalOptions="Center">
                             <Label Style="{StaticResource PillText}"
                                    TextColor="{StaticResource Warning}"
@@ -86,7 +86,7 @@
                                             <BindableLayout.ItemTemplate>
                                                 <DataTemplate x:DataType="vm:OptionRowModel">
                                                     <Border BackgroundColor="{StaticResource CardSurface}"
-                                                            Stroke="{StaticResource Border}"
+                                                            Stroke="{StaticResource BorderBrush}"
                                                             StrokeThickness="1"
                                                             Padding="12">
                                                         <Border.StrokeShape>
@@ -101,7 +101,7 @@
                                                             </DataTrigger>
                                                         </Border.Triggers>
                                                         <Border.GestureRecognizers>
-                                                            <TapGestureRecognizer Command="{Binding BindingContext.SelectOptionCommand, Source={x:Reference Page}}"
+                                                            <TapGestureRecognizer Command="{Binding BindingContext.SelectOptionCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                                                                   CommandParameter="{Binding .}" />
                                                         </Border.GestureRecognizers>
                                                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
@@ -110,7 +110,7 @@
                                                                     WidthRequest="22"
                                                                     Padding="0"
                                                                     StrokeThickness="1"
-                                                                    Stroke="{StaticResource BorderStrong}"
+                                                                    Stroke="{StaticResource BorderStrongBrush}"
                                                                     BackgroundColor="{Binding IsSelected, Converter={StaticResource SelectedOptionBackground}}"
                                                                     VerticalOptions="Start">
                                                                 <Border.StrokeShape>

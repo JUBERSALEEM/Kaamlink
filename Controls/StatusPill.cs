@@ -58,6 +58,11 @@ namespace KaamLink.Controls
 
             _label.SetDynamicResource(Label.TextColorProperty, "TextSecondary");
             _icon.SetDynamicResource(Label.TextColorProperty, "TextSecondary");
+
+            // Establish the neutral capsule up front: callers that never set a Tone
+            // (e.g. the "self-declared" skill pills) must still get the outline and
+            // the soft fill, not bare floating text.
+            ApplyTone();
         }
 
         // ---------------------------------------------------------------- Text
@@ -126,7 +131,9 @@ namespace KaamLink.Controls
 
             if (tone is null)
             {
-                _border.SetDynamicResource(Border.StrokeProperty, "Border");
+                // Stroke is Brush-typed: the Color token "Border" would be the wrong
+                // type here, so resolve the matching brush token.
+                _border.SetDynamicResource(Border.StrokeProperty, "BorderBrush");
                 _label.SetDynamicResource(Label.TextColorProperty, "TextSecondary");
                 _icon.SetDynamicResource(Label.TextColorProperty, "TextSecondary");
             }

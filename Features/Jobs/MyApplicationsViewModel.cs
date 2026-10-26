@@ -32,6 +32,9 @@ namespace KaamLink.Features.Jobs
         [ObservableProperty]
         private bool _isLoaded;
 
+        /// <summary>Re-entrancy latch so one application cannot be withdrawn twice.</summary>
+        private bool _isWorking;
+
         [ObservableProperty]
         private bool _hasError;
 
@@ -89,9 +92,10 @@ namespace KaamLink.Features.Jobs
         [RelayCommand]
         private async Task WithdrawAsync(ApplicationRowModel? row)
         {
-            if (row is null || IsBusy)
+            if (row is null || IsBusy || _isWorking)
                 return;
 
+            _isWorking = true;
             try
             {
                 await _api.WithdrawApplicationAsync(row.Id);
@@ -105,6 +109,10 @@ namespace KaamLink.Features.Jobs
             {
                 HasError = true;
                 ErrorMessage = exception.IsOffline ? AppStrings.ErrorOffline : AppStrings.ErrorGeneric;
+            }
+            finally
+            {
+                _isWorking = false;
             }
         }
 

@@ -36,6 +36,9 @@ namespace KaamLink.Features.Jobs
         [ObservableProperty]
         private bool _isLoaded;
 
+        /// <summary>Re-entrancy latch for one-shot status changes (not bound to UI).</summary>
+        private bool _isWorking;
+
         [ObservableProperty]
         private bool _hasError;
 
@@ -47,6 +50,11 @@ namespace KaamLink.Features.Jobs
 
         [ObservableProperty]
         private string _companyName = string.Empty;
+
+        /// <summary>False when the route arrived without a company name (deep link).</summary>
+        public bool HasCompanyName => !string.IsNullOrWhiteSpace(CompanyName);
+
+        partial void OnCompanyNameChanged(string value) => OnPropertyChanged(nameof(HasCompanyName));
 
         public ObservableCollection<EmployerVacancyRowModel> Items { get; } = [];
 
@@ -118,9 +126,12 @@ namespace KaamLink.Features.Jobs
 
         private async Task ChangeStatusAsync(EmployerVacancyRowModel? row, string target)
         {
-            if (row is null || IsBusy)
+            // Latched, not IsBusy: a double tap must not send the same status change
+            // twice (e.g. closing a vacancy two times in a row).
+            if (row is null || IsBusy || _isWorking)
                 return;
 
+            _isWorking = true;
             HasError = false;
             ErrorMessage = null;
             try
@@ -140,6 +151,10 @@ namespace KaamLink.Features.Jobs
                     ApiClient.Codes.CompanyNotVerified => AppStrings.ErrorCompanyNotVerified,
                     _ => exception.IsOffline ? AppStrings.ErrorOffline : AppStrings.ErrorGeneric
                 };
+            }
+            finally
+            {
+                _isWorking = false;
             }
         }
 

@@ -230,7 +230,7 @@
                                                 HeightRequest="48"
                                                 WidthRequest="48"
                                                 Padding="0"
-                                                Command="{Binding BindingContext.RemoveSkillCommand, Source={x:Reference Page}}"
+                                                Command="{Binding BindingContext.RemoveSkillCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                                 CommandParameter="{Binding .}"
                                                 SemanticProperties.Description="{x:Static strings:AppStrings.RemoveSkillCta}"
                                                 Text="{StaticResource IconClose}" />

@@ -165,7 +165,7 @@
     <!-- ===================== Surfaces ===================== -->
     <Style TargetType="Border" x:Key="SurfaceCard">
         <Setter Property="BackgroundColor" Value="{StaticResource CardSurface}" />
-        <Setter Property="Stroke" Value="{StaticResource Border}" />
+        <Setter Property="Stroke" Value="{StaticResource BorderBrush}" />
         <Setter Property="StrokeThickness" Value="1" />
         <Setter Property="Padding" Value="16" />
         <Setter Property="StrokeShape">
@@ -323,7 +323,7 @@
     <!-- ===================== Field chrome ===================== -->
     <Style TargetType="Border" x:Key="FieldBox">
         <Setter Property="BackgroundColor" Value="{StaticResource CardSurface}" />
-        <Setter Property="Stroke" Value="{StaticResource BorderStrong}" />
+        <Setter Property="Stroke" Value="{StaticResource BorderStrongBrush}" />
         <Setter Property="StrokeThickness" Value="1" />
         <Setter Property="Padding" Value="12,0" />
         <Setter Property="StrokeShape">
@@ -351,7 +351,7 @@
     <Style TargetType="Border" x:Key="PillBorder">
         <Setter Property="Padding" Value="9,2" />
         <Setter Property="StrokeThickness" Value="1" />
-        <Setter Property="Stroke" Value="{StaticResource Border}" />
+        <Setter Property="Stroke" Value="{StaticResource BorderBrush}" />
         <Setter Property="BackgroundColor" Value="{StaticResource CardSurfaceAlt}" />
         <Setter Property="VerticalOptions" Value="Start" />
         <Setter Property="HorizontalOptions" Value="Start" />

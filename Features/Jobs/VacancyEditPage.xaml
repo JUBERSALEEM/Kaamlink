@@ -167,7 +167,7 @@
                                             Margin="0,0,0,6"
                                             StrokeThickness="1"
                                             BackgroundColor="{StaticResource CardSurface}"
-                                            Stroke="{StaticResource Border}">
+                                            Stroke="{StaticResource BorderBrush}">
                                         <Border.StrokeShape>
                                             <RoundRectangle CornerRadius="10" />
                                         </Border.StrokeShape>

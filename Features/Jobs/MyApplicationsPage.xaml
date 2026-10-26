@@ -87,7 +87,7 @@
                                     <BoxView Style="{StaticResource DividerLine}"
                                              IsVisible="{Binding CanWithdraw}" />
                                     <Button Style="{StaticResource DangerButton}"
-                                            Command="{Binding BindingContext.WithdrawCommand, Source={x:Reference Page}}"
+                                            Command="{Binding BindingContext.WithdrawCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                             CommandParameter="{Binding .}"
                                             HorizontalOptions="Start"
                                             IsVisible="{Binding CanWithdraw}"

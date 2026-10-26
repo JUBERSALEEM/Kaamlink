@@ -226,6 +226,78 @@ ok(sum('controls:StatePanel' in t for t in PAGE_TEXT.values()) >= 6,
 ok(sum('controls:NoticeBanner' in t for t in PAGE_TEXT.values()) >= 4,
    "Redesign: NoticeBanner not reused across pages")
 
+# ---------------------------------------------------------------- J markup hazards
+# x:Reference inside a DataTemplate depends on XAML name scopes, which do not cross
+# the template boundary reliably (and .NET 10 broke explicit-source bindings in
+# CollectionView item templates). Reach the page VM with RelativeSource instead.
+for page in PAGES:
+    root = ET.parse(page).getroot()
+
+    def walk_templates(el, inside=False):
+        inside = inside or el.tag.split("}")[-1] == "DataTemplate"
+        for attr_name, attr_value in el.attrib.items():
+            if inside and "x:Reference" in attr_value:
+                ok(False, f"{page}: x:Reference inside a DataTemplate "
+                          f"({attr_name.split('}')[-1]}) - use "
+                          f"Source={{RelativeSource AncestorType={{x:Type ContentPage}}}}")
+        for child in el:
+            walk_templates(child, inside)
+
+    walk_templates(root)
+
+# Border.Stroke is Brush-typed; assigning a Color token is the wrong type.
+for page, text in PAGE_TEXT.items():
+    for token in re.findall(r'Stroke="\{StaticResource ([A-Za-z0-9_]+)\}"', text):
+        ok(token.endswith("Brush"), f"{page}: Stroke bound to Color token '{token}' (needs a Brush)")
+for token in re.findall(r'Property="Stroke" Value="\{StaticResource ([A-Za-z0-9_]+)\}"', STYLES):
+    ok(token.endswith("Brush"), f"Styles.xaml: Stroke bound to Color token '{token}' (needs a Brush)")
+
+# A pill with no tone must still render its capsule: the control has to establish
+# the neutral state itself rather than waiting for a Tone to be bound.
+pill = open("Controls/StatusPill.cs", encoding="utf-8").read()
+ok("ApplyTone();" in pill.split("private void ApplyTone()")[0],
+   "Controls/StatusPill.cs: constructor does not apply the neutral tone (toneless pills render bare)")
+ok('"BorderBrush"' in pill,
+   "Controls/StatusPill.cs: default stroke must use the BorderBrush (Brush-typed) token")
+
+# Converter/type agreement: a converter's contract is easy to violate silently
+# (e.g. InvertedBoolConverter returns `value is not true`, so feeding it a string
+# is always true). Each converter declares the type it accepts.
+CONVERTER_INPUTS = {
+    "InvertedBoolConverter": "bool",
+    "StringHasContent": "string",
+    "CountEmpty": "int",
+    "CountPositive": "int",
+}
+EXPECTED_TYPES = {
+    "bool": {"bool"},
+    "string": {"string"},
+    "int": {"int", "long"},
+}
+for page, text in PAGE_TEXT.items():
+    root = ET.parse(page).getroot()
+    page_type = (attr(root, "DataType") or "").split(":")[-1]
+
+    def walk_converters(el, scope):
+        nonlocal_scope = scope
+        for raw in el.attrib.values():
+            m = re.match(r"\{Binding\s+([A-Za-z0-9_.]+).*?Converter=\{StaticResource\s+(\w+)\}", raw)
+            if not m:
+                continue
+            path, converter = m.group(1), m.group(2)
+            expected = CONVERTER_INPUTS.get(converter)
+            if not expected:
+                continue
+            actual = vb.member_type(scope, path)
+            if actual is None:
+                continue          # unknown type: unresolved rather than wrong
+            ok(actual in EXPECTED_TYPES[expected],
+               f"{page}: {converter} expects {expected} but '{path}' is {actual}")
+        for child in el:
+            walk_converters(child, attr(child, "DataType") or scope)
+
+    walk_converters(root, page_type)
+
 # ---------------------------------------------------------------- I feature parity
 # A command nobody binds is a feature the redesign dropped. Every [RelayCommand]
 # must be referenced from XAML or from code-behind.

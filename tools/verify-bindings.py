@@ -37,6 +37,7 @@ FRAMEWORK_MEMBERS = {
 }
 
 TYPES: dict[str, set[str]] = {}
+MEMBER_TYPES: dict[str, dict[str, str]] = {}
 ALIASES: dict[str, str] = {}
 
 
@@ -91,10 +92,18 @@ def collect_types() -> None:
             # member names are additive per type name, so over-collection only
             # makes the checker more lenient (never a false failure).
             body = text[decl.end():]
+            types_here = MEMBER_TYPES.setdefault(name, {})
             for prop in PROP_RE.finditer(body):
                 members.add(prop.group("name"))
+                types_here[prop.group("name")] = prop.group("type").strip()
             for obs in OBS_RE.finditer(body):
-                members.add(pascal(obs.group("name")))
+                member = pascal(obs.group("name"))
+                members.add(member)
+                declared = re.search(
+                    r"private\s+(?P<t>[\w<>?\[\],\.\s]+?)\s+_" + re.escape(obs.group("name")),
+                    text[decl.end():])
+                if declared:
+                    types_here[member] = declared.group("t").strip()
             for relay in RELAY_RE.finditer(body):
                 # CommunityToolkit.Mvvm drops the Async suffix: LoadAsync -> LoadCommand
                 cmd = re.sub(r"Async$", "", relay.group("name"))
@@ -142,6 +151,26 @@ def collection_item_type(type_name: str, member_path: str) -> str | None:
     return COLLECTIONS.get(type_name, {}).get(member)
 
 
+def member_type(type_name: str, path: str) -> str | None:
+    """Declared type of a binding path on a type, or None when unknown.
+
+    Handles the two shapes the pages use: `Prop` and `Collection.Count`.
+    """
+    type_name = re.sub(r"^[\w.]+:", "", type_name or "").split(".")[-1]
+    parts = [p for p in path.split(".") if p]
+    if not parts:
+        return None
+    current = MEMBER_TYPES.get(type_name, {}).get(parts[0])
+    if current is None:
+        return None
+    for extra in parts[1:]:
+        if extra == "Count" and current.startswith(("ObservableCollection", "IReadOnlyList", "List", "IList")):
+            current = "int"
+        else:
+            return None
+    return current
+
+
 def type_members(name: str) -> set[str]:
     name = name.replace("{x:Type", "").replace("}", "").replace(" ", "").strip()
     name = re.sub(r"^[\w.]+:", "", name)      # vm:VacancyFeedViewModel -> VacancyFeedViewModel
@@ -158,24 +187,33 @@ def binding_value(raw: str) -> str:
 
 
 def parse_markup(raw: str) -> tuple[str, dict[str, str]]:
-    """Return (extension, {'positional': ..., key: value}) for a markup extension."""
+    """Return (extension, args) for a markup extension.
+
+    Handles both `{Binding Title}` and `{Binding Path=Title, Source=...}`: the
+    first comma-free token is the extension name, and the remainder of the head
+    chunk may itself be a named argument.
+    """
     raw = binding_value(raw)
     if not raw:
         return "", {}
     parts = split_args(raw)
     head = parts[0].strip()
-    # "{Binding Title}" -> extension "Binding", positional argument "Title"
     m = re.match(r"(?P<ext>[\w.:]+)(?:\s+(?P<rest>.*))?$", head)
     ext = m.group("ext") if m else head
     rest = (m.group("rest") or "").strip() if m else ""
+
     args: dict[str, str] = {}
-    positional = [rest] if rest else []
-    for chunk in parts[1:]:
-        if "=" in chunk:
-            k, v = chunk.split("=", 1)
-            args[k.strip()] = v.strip()
+    positional: list[str] = []
+    for chunk in ([rest] if rest else []) + parts[1:]:
+        chunk = chunk.strip()
+        if not chunk:
+            continue
+        # a top-level '=' makes it a named argument, even inside the head chunk
+        key, _, value = chunk.partition("=")
+        if _ and "=" in chunk:
+            args[key.strip()] = value.strip()
         else:
-            positional.append(chunk.strip())
+            positional.append(chunk)
     if positional:
         args["<pos>"] = positional[0]
     return ext, args
@@ -289,6 +327,8 @@ def main() -> int:
                         if not m:
                             continue
                         effective_scope = m.group(1).split(":")[-1]
+                        if effective_scope in ("ContentPage", "Page"):
+                            effective_scope = root_type or ""
                     else:
                         continue          # {Binding .} against an explicit source
                 elif ancestor:

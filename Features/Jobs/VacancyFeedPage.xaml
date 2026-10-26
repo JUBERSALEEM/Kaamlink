@@ -70,6 +70,18 @@
                             SelectedItem="{Binding SelectedEmirate}" />
                 </Border>
             </Grid>
+
+            <!-- Outside the list: a failed page after results already exist must
+                 still be visible (EmptyView only renders when the list is empty). -->
+            <VerticalStackLayout IsVisible="{Binding HasError}" Spacing="8">
+                <controls:NoticeBanner Kind="danger"
+                                       Title="{x:Static strings:AppStrings.CommonErrorTitle}"
+                                       Message="{Binding ErrorMessage}" />
+                <Button Style="{StaticResource SecondaryButton}"
+                        Command="{Binding SearchCommand}"
+                        SemanticProperties.Description="{x:Static strings:AppStrings.RetryCta}"
+                        Text="{x:Static strings:AppStrings.RetryCta}" />
+            </VerticalStackLayout>
         </VerticalStackLayout>
 
         <!-- Results -->
@@ -91,16 +103,6 @@
 
             <CollectionView.EmptyView>
                 <VerticalStackLayout Spacing="10" Padding="0,20,0,0">
-                    <controls:NoticeBanner Kind="danger"
-                                           IsVisible="{Binding HasError}"
-                                           Title="{x:Static strings:AppStrings.CommonErrorTitle}"
-                                           Message="{Binding ErrorMessage}" />
-                    <Button Style="{StaticResource SecondaryButton}"
-                            IsVisible="{Binding HasError}"
-                            Command="{Binding SearchCommand}"
-                            SemanticProperties.Description="{x:Static strings:AppStrings.RetryCta}"
-                            Text="{x:Static strings:AppStrings.RetryCta}" />
-
                     <controls:StatePanel Kind="empty"
                                          IsVisible="{Binding IsEmpty}"
                                          Glyph="{StaticResource IconBriefcase}"
@@ -120,7 +122,7 @@
                 <DataTemplate x:DataType="vm:VacancyCardModel">
                     <Border Style="{StaticResource SurfaceCardDense}" Margin="0,0,0,10">
                         <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding BindingContext.OpenVacancyCommand, Source={x:Reference Page}}"
+                            <TapGestureRecognizer Command="{Binding BindingContext.OpenVacancyCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                                   CommandParameter="{Binding .}" />
                         </Border.GestureRecognizers>
                         <VerticalStackLayout Spacing="8">
@@ -180,7 +182,7 @@
                                         <Border Margin="0,0,6,6"
                                                 Padding="10,4"
                                                 BackgroundColor="{StaticResource CardSurface}"
-                                                Stroke="{StaticResource Border}"
+                                                Stroke="{StaticResource BorderBrush}"
                                                 StrokeThickness="1">
                                             <Border.StrokeShape>
                                                 <RoundRectangle CornerRadius="11" />

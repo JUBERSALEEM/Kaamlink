@@ -69,25 +69,35 @@ namespace KaamLink.Features.Jobs
         [RelayCommand]
         private async Task SearchAsync()
         {
-            _page = 1;
+            // Never clear the list while a request is in flight: the in-flight page
+            // would repopulate it with results for the previous query.
+            if (IsBusy)
+                return;
+
             Items.Clear();
-            await LoadPageAsync();
+            IsEmpty = false;
+            await LoadPageAsync(reset: true);
         }
 
         [RelayCommand]
         private async Task LoadMoreAsync()
         {
-            if (!HasMore || IsBusy)
+            if (IsBusy || !HasMore)
                 return;
-            _page += 1;
-            await LoadPageAsync();
+
+            await LoadPageAsync(reset: false);
         }
 
-        private async Task LoadPageAsync()
+        /// <summary>
+        /// Fetches one page. The page cursor only advances after a successful
+        /// response, so a failed "load more" does not silently skip a page of jobs.
+        /// </summary>
+        private async Task LoadPageAsync(bool reset)
         {
             if (IsBusy)
                 return;
 
+            var requestedPage = reset ? 1 : _page + 1;
             IsBusy = true;
             HasError = false;
             ErrorMessage = null;
@@ -97,12 +107,13 @@ namespace KaamLink.Features.Jobs
                     string.IsNullOrEmpty(SelectedEmirate.Value) ? null : SelectedEmirate.Value,
                     skillId: null,
                     SearchText,
-                    _page,
+                    requestedPage,
                     PageSize);
 
                 foreach (var vacancy in result.Items)
                     Items.Add(Map(vacancy));
 
+                _page = requestedPage;      // advance only after the server answered
                 HasMore = result.HasMore;
                 IsEmpty = Items.Count == 0;
                 ResultsCount = Items.Count;
@@ -122,6 +133,7 @@ namespace KaamLink.Features.Jobs
                         AppStrings.ErrorOnboardingIncomplete,
                     _ => exception.IsOffline ? AppStrings.ErrorOffline : AppStrings.ErrorGeneric
                 };
+                IsEmpty = Items.Count == 0;
             }
             finally
             {

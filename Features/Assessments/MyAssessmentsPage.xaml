@@ -84,7 +84,7 @@
                                            Text="{x:Static strings:AppStrings.AssessmentNotAvailable}" />
 
                                     <Button Style="{StaticResource SubtleButton}"
-                                            Command="{Binding BindingContext.OpenAssessmentCommand, Source={x:Reference Page}}"
+                                            Command="{Binding BindingContext.OpenAssessmentCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                             CommandParameter="{Binding .}"
                                             HorizontalOptions="Start"
                                             IsVisible="{Binding Available}"

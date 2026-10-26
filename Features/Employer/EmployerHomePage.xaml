@@ -120,7 +120,7 @@
                                     </Border>
 
                                     <Button Style="{StaticResource SecondaryButton}"
-                                            Command="{Binding BindingContext.ManageVacanciesCommand, Source={x:Reference Page}}"
+                                            Command="{Binding BindingContext.ManageVacanciesCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                             CommandParameter="{Binding .}"
                                             SemanticProperties.Description="{x:Static strings:AppStrings.ManageVacanciesCta}"
                                             Text="{x:Static strings:AppStrings.ManageVacanciesCta}" />

@@ -102,8 +102,8 @@ All commands were run in this workspace, in this order, at the end of the work.
 | Phase 3 (design system, tokens, routes, DI, DTO contract) | `python3 tools/verify-phase03.py` | **103 checks, 0 failures** |
 | Phase 4 (jobs core) | `python3 tools/verify-phase04.py` | **105 checks, 0 failures** |
 | Phase 5 (assessments + localization parity) | `python3 tools/verify-phase05.py` | **88 checks, 0 failures** |
-| Compiled bindings (new) | `python3 tools/verify-bindings.py` | **345 bindings across 15 pages, 0 unresolved** |
-| Redesign gate (new) | `python3 tools/verify-ui-redesign.py` | **323 checks, 0 failures** |
+| Compiled bindings (new) | `python3 tools/verify-bindings.py` | **347 bindings across 15 pages, 0 unresolved** |
+| Redesign gate (new) | `python3 tools/verify-ui-redesign.py` | **350 checks, 0 failures** |
 | XAML well-formedness | `xml.etree.ElementTree` parse of all 15 pages | all parse |
 | Localization parity | resx/Designer inventory | **312 / 312 / 312** (EN / AR / Designer) |
 
@@ -166,6 +166,34 @@ dropped command) and by reintroducing a hardcoded string (also failed).
    joining. They are now 12sp semibold with no transform, and the design-system spec was
    corrected to match.
 
+### Bug-fix pass (post-review audit)
+
+A dedicated bug hunt after the redesign landed found eight defects. Two were
+*pre-existing* logic bugs in the flows being restyled, two were introduced by the
+redesign itself, and four were runtime-breakage risks in the markup/controls.
+
+| # | Defect | Impact | Fix | Now guarded by |
+|---|---|---|---|---|
+| 1 | 14 item-level commands used `x:Reference` to the page **inside a `DataTemplate`** | XAML name scopes do not cross the template boundary; on .NET 10 explicit-source bindings inside `CollectionView` item templates are broken, so card taps, apply, withdraw, hire/reject, vacancy actions and remove-skill would do **nothing** | `Source={RelativeSource AncestorType={x:Type ContentPage}}` | gate rule J |
+| 2 | `StatusPill` assigned the **Color** token `Border` to `Border.Stroke` (a `Brush` property) | Wrong type on a bindable property; stroke unreliable | Uses `BorderBrush`; every `Stroke=` in the app now takes a `*Brush` token | gate rule J |
+| 3 | `StatusPill` never ran its tone logic at construction | Any pill without a `Tone` (worker-home skill states) rendered as **bare text** — no outline, no fill | `ApplyTone()` in the constructor | gate rule J |
+| 4 | Feed advanced its page cursor **before** the request | A failed "load more" silently skipped a page of jobs forever | Cursor advances only after a successful response | — (logic) |
+| 5 | Search cleared the list before checking `IsBusy` | Tapping search during an in-flight load wiped the results and the in-flight page then repopulated them from the old query | Guard first, clear second | — (logic) |
+| 6 | Feed error surface lived inside `CollectionView.EmptyView` | A failure after results existed was **invisible** (EmptyView only renders when empty) | Banner + retry moved to the pinned header | — (logic) |
+| 7 | Three mutation flows checked `IsBusy` but never set it (pre-existing) | Double-tap sent **duplicate** hire / reject / withdraw / status-change requests | Private `_isWorking` latch (not bound to UI, so no spinner flash) | — (logic) |
+| 8 | Company-vacancy header rendered an empty heading without `companyName` (pre-existing) | Deep link / cold stack showed a blank title | `HasCompanyName` drives the heading or the page's own name | gate rule: converter/type |
+
+Two gate defects were fixed as part of this pass:
+
+* `verify-bindings.py` treated `Path=X` as a positional path and could not map
+  `AncestorType=ContentPage` back to the page view model, so after fix 1 it silently
+  **skipped** all 14 bindings. It now parses named arguments properly and resolves
+  `ContentPage` to the page VM; a deliberate typo in one of them fails the gate again.
+* The first attempt at fix 8 bound `InvertedBoolConverter` to a **string** property.
+  That converter returns `value is not true`, which is always `true` for a string, so
+  the fallback heading would have rendered permanently. Caught before commit, and the
+  gate now type-checks the input of every bool/count/string converter it knows.
+
 ### What the gates do **not** prove
 
 They are static text/XML analyses. They cannot prove the app compiles, that XAML property
@@ -183,7 +211,7 @@ network flows behave. Those need a build and a device (see §4).
 | Emulator / physical device run | **BLOCKED** | no SDK, no emulator, no device |
 | Screenshot comparison against mockups | **NOT PERFORMED** | requires a running app; the 23 mockups in `docs/ui-redesign/mockups/` remain the visual reference, not a proof of the built UI |
 | XAML well-formedness | PASS | all 15 pages parse as XML |
-| XamlC binding resolution | PASS (static) | `tools/verify-bindings.py`, 345 bindings |
+| XamlC binding resolution | PASS (static) | `tools/verify-bindings.py`, 347 bindings |
 
 No build was attempted and failed for a code reason; the toolchain is simply absent. **No
 claim of a passing build or a working app is made anywhere in this report.**
@@ -285,7 +313,7 @@ MauiProgram.cs                             Lucide font registration
 Platforms/Android/MainActivity.cs          AdjustResize
 Platforms/Android/Resources/values/colors.xml, KaamLink.csproj, AppIcon, Splash
                                            brand surfaces re-coloured to the new blue
-tools/{verify-bindings,verify-ui-redesign}.py          new gates (345 bindings / 323 checks)
+tools/{verify-bindings,verify-ui-redesign}.py          new gates (347 bindings / 350 checks)
 tools/add-strings.py                       resx + Designer + AR writer used for every new key
 docs/ui-redesign/00,01,02,03               audit, mockup catalogue, design system, this report
 ```
@@ -297,6 +325,9 @@ never force-pushed and each commit is a self-contained, verifier-green group):
 UI redesign 1/2: design system, tokens, Lucide icons, shared controls, audit + mockups + docs
 UI redesign 2/2: all 15 screens rebuilt, explicit back navigation, a11y/type pass,
                  static binding + redesign gates, implementation report
+UI redesign: pinned back actions, OTP escape hatch, data-driven verification badge
+UI redesign: avoid pluralised result counts, drop the unused format key
+UI redesign: fix 8 defects found in the post-review bug hunt (see the table above)
 ```
 
 The redesign work is split into two reviewable commits because a mid-work environment
