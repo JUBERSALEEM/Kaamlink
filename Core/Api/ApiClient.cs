@@ -261,6 +261,7 @@ namespace KaamLink.Core.Api
             }
             catch (HttpRequestException exception)
             {
+                LogTransportFailure(request, exception);
                 throw ApiException.Offline(exception);
             }
             catch (OperationCanceledException exception) when (!ct.IsCancellationRequested)
@@ -270,6 +271,7 @@ namespace KaamLink.Core.Api
                 // leaving it uncaught crashed the app on slow networks instead of
                 // showing the offline message. A genuine caller cancellation is
                 // still allowed to propagate.
+                LogTransportFailure(request, exception);
                 throw ApiException.Offline(exception);
             }
 
@@ -304,6 +306,17 @@ namespace KaamLink.Core.Api
                 }
             }
         }
+
+        /// <summary>
+        /// Debug builds only: names the host that was actually attempted. "No
+        /// connection" on the login screen is almost always the dev API not
+        /// listening where the app expects it, and the URL is invisible from the UI.
+        /// </summary>
+        [System.Diagnostics.Conditional("DEBUG")]
+        private void LogTransportFailure(HttpRequestMessage request, Exception exception) =>
+            Console.WriteLine(
+                $"[KaamLink] {request.Method} {request.RequestUri} failed: " +
+                $"{exception.GetType().Name}: {exception.Message} (base address: {_http.BaseAddress})");
 
         private static async Task<ApiException> ToApiExceptionAsync(
             HttpResponseMessage response, CancellationToken ct)
