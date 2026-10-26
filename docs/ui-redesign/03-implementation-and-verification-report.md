@@ -357,28 +357,30 @@ scope was **verify and fix, not redesign**: no screen was restyled, no route or 
 and nothing below is copied from an earlier section — every table entry comes from a command
 that was executed in this workspace against the tree described here.
 
-Verification started at `7daf6af` (the tip of the bug-fix pass); the defects it found are fixed
-in the commits below, and the report itself was written mid-pass (case D9 was found after
-`c8be061`, which is why it appears as a later fix rather than in the first table row):
+Verification started at `7daf6af` (the tip of the bug-fix pass). The defects it found are fixed
+in the code commits below; the documentation was written as the pass progressed, which is why
+the report commits are interleaved (D9 was found after `c8be061`, so it lands as a later fix):
 
 | Commit | Subject |
 |---|---|
 | `c4b9486` | a11y: announce tappable cards and quick actions to screen readers |
 | `dd88869` | fix: accept Arabic-Indic digits, harden API failures, unify auth errors |
 | `5c65a14` | gate: prove tap-target semantics and digit handling; add a negative-test harness |
-| `c8be061` | docs: post-fix release verification results (this section) |
+| `c8be061` | docs: post-fix release verification results (first version of this section) |
 | `a8c7517` | fix: decode the phone query parameter (OTP verification was blocked) |
 | `067d06a` | gate: require escaped route values to be decoded by their consumer |
+| `03b46b4` | docs: record the D9 login-blocker fix and the final gate counts |
+| `00692cc` | docs: release-build endpoint and refresh-failure risks (R8, R9) |
 
 ### 9.1 Git state — checked, not assumed
 
 ```
 $ git rev-parse --abbrev-ref HEAD          arena/44c99984-kaamlink
 $ git rev-parse HEAD                       067d06a25ecac88d135842f393b52d0d746fcef1
-                                              (the commit the gates below were run against;
-                                               this document is the next commit)
+                                              (the code commit the gates below were run against;
+                                               the documentation commits follow it)
 $ git merge-base --is-ancestor de54334 HEAD   -> true (base is an ancestor)
-$ git rev-list --count de54334..HEAD       11   (5 redesign + 5 verification + this section)
+$ git rev-list --count de54334..HEAD       13   (5 redesign + 5 verification + 3 documentation)
 $ git status --porcelain                   clean before each commit
 $ git rev-list --left-right --count HEAD...origin/arena/44c99984-kaamlink   0  0 after the final push
 $ git diff --shortstat de54334..HEAD       87 files changed, 9510 insertions(+), 1152 deletions(-)
