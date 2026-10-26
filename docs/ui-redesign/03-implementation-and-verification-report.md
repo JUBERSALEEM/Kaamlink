@@ -2,7 +2,8 @@
 
 Status: **implementation complete, static verification green, build/runtime verification BLOCKED (no SDK or device in
 this environment).** A dedicated release-verification pass was run afterwards and is recorded in [§9](#9-post-fix-release-verification-gate);
-it found and fixed eight defects, and it does not change the build/runtime verdict.
+it found and fixed nine defects — one of them a login blocker — and it does not change the
+build/runtime verdict.
 Branch: `arena/44c99984-kaamlink`. Base commit: `de54334`. Reports for the earlier phases:
 `00-repository-and-screen-audit.md`, `01-mockup-catalog.md`, `02-design-system-specification.md`.
 
@@ -356,26 +357,31 @@ scope was **verify and fix, not redesign**: no screen was restyled, no route or 
 and nothing below is copied from an earlier section — every table entry comes from a command
 that was executed in this workspace against the tree described here.
 
-Verification started at `7daf6af` (the tip of the bug-fix pass) and the defects it found are
-fixed in three commits on top of it:
+Verification started at `7daf6af` (the tip of the bug-fix pass); the defects it found are fixed
+in the commits below, and the report itself was written mid-pass (case D9 was found after
+`c8be061`, which is why it appears as a later fix rather than in the first table row):
 
 | Commit | Subject |
 |---|---|
 | `c4b9486` | a11y: announce tappable cards and quick actions to screen readers |
 | `dd88869` | fix: accept Arabic-Indic digits, harden API failures, unify auth errors |
 | `5c65a14` | gate: prove tap-target semantics and digit handling; add a negative-test harness |
-| *(this file)* | docs: post-fix release verification results |
+| `c8be061` | docs: post-fix release verification results (this section) |
+| `a8c7517` | fix: decode the phone query parameter (OTP verification was blocked) |
+| `067d06a` | gate: require escaped route values to be decoded by their consumer |
 
 ### 9.1 Git state — checked, not assumed
 
 ```
 $ git rev-parse --abbrev-ref HEAD          arena/44c99984-kaamlink
-$ git rev-parse HEAD                       5c65a14b9726ad41a135b4408027e0caa0e651e7
+$ git rev-parse HEAD                       067d06a25ecac88d135842f393b52d0d746fcef1
+                                              (the commit the gates below were run against;
+                                               this document is the next commit)
 $ git merge-base --is-ancestor de54334 HEAD   -> true (base is an ancestor)
-$ git rev-list --count de54334..HEAD       8   (5 redesign + 3 verification)
-$ git status --porcelain                   clean before the report edit
-$ git rev-list --left-right --count HEAD...origin/arena/44c99984-kaamlink   0  0 at 7daf6af
-$ git diff --shortstat de54334..HEAD       87 files changed, 9181 insertions(+), 1151 deletions(-)
+$ git rev-list --count de54334..HEAD       11   (5 redesign + 5 verification + this section)
+$ git status --porcelain                   clean before each commit
+$ git rev-list --left-right --count HEAD...origin/arena/44c99984-kaamlink   0  0 after the final push
+$ git diff --shortstat de54334..HEAD       87 files changed, 9510 insertions(+), 1152 deletions(-)
 ```
 
 Diff audit, per area (looking for unintended edits, missing files and business-logic drift):
@@ -404,16 +410,17 @@ report `tail`'s status instead):
 | 2 | `python3 tools/verify-phase04.py` | **0** | `105 checks, 0 failures — ALL STATIC CHECKS PASSED` |
 | 3 | `python3 tools/verify-phase05.py` | **0** | `88 checks, 0 failures — ALL STATIC CHECKS PASSED` |
 | 4 | `python3 tools/verify-bindings.py` | **0** | `15 pages, 314 types, 349 compiled bindings checked` |
-| 5 | `python3 tools/verify-ui-redesign.py` | **0** | `375 checks, 0 failures — ALL REDESIGN CHECKS PASSED` |
-| 6 | `python3 tools/verify-gates-selftest.py` | **0** | `all 17 injected defects were detected; tree restored clean` |
+| 5 | `python3 tools/verify-ui-redesign.py` | **0** | `381 checks, 0 failures — ALL REDESIGN CHECKS PASSED` |
+| 6 | `python3 tools/verify-gates-selftest.py` | **0** | `all 18 injected defects were detected; tree restored clean` |
 | 7 | `python3 tools/add-strings.py --check` | **0** | `OK — en=312 ar=312 designer=312` |
 
-**Why the counts moved** (350 → 375 redesign checks, 347 → 349 bindings). Nothing was dropped;
+**Why the counts moved** (350 → 381 redesign checks, 347 → 349 bindings). Nothing was dropped;
 the new rules are additive, and the gate was hardened *after* §3 was written:
 
 * +16 for a strict `x:DataType` rule and an escape-aware glyph scan (§9.5 D1/D2);
 * +5 for the tappable-element semantics rule (D4);
 * +4 for the typed-credential rule (D5);
+* +6 for the escaped-query round-trip rule (D9);
 * +2 bindings from the two `SemanticProperties.Description="{Binding …}"` added in `c4b9486`,
   +1 type because `DigitText` is now a scannable type.
 
@@ -433,6 +440,7 @@ source, state mutation and navigation result.
 | 3 | **Save a vacancy and leave the editor** | `SaveAsync` (after `dd88869`) normalizes digits, parses once, validates, then sends those exact values; new vs edit chosen by `_vacancyId == Guid.Empty`; success → `ReturnToListAsync()` → absolute `companyvacancies?companyId=…&companyName=…`, the same route that produced the page, so the list reloads from `OnAppearing` | **PASS** |
 | 4 | **Return from every secondary screen** | Scripted audit of every page that exposes a `BackCommand`: 11 targets resolve to a registered route constant. `Otp → RoleNavigator.LoginRouteFor(Role)` (role preserved), `AssessmentRun → MyAssessments`, `VacancyDetail/…` → parents, editor/applicants → `CompanyVacancies` with both query keys. `WorkerOnboarding` backs up by decrementing `Step` and hides Back on step 1 — correct, not a dead button | **PASS** |
 | 5 | **OTP → back to fix the phone number** | `OtpViewModel.BackAsync` → `RoleNavigator.LoginRouteFor(Role)` → `login?role=worker\|employer`; `LoginViewModel.ApplyQueryAttributes` restores the role chip, and the `OnDisappearing` hook disposes the cooldown timer so a re-entry starts clean rather than stacking timers | **PASS** |
+| 5b | **Login → OTP hand-off (found by this gate)** | `LoginViewModel.SendCodeAsync` normalizes the number, calls the API, then routes `OtpRouteFor(phone, role, cooldown)` which escapes the value (`?phone=%2B971…`). Shell delivers query values to `IQueryAttributable` **undecoded**, so before `a8c7517` the OTP screen held `%2B971501234567`, showed it to the user, and sent it to `VerifyOtpAsync` — every login would have failed phone validation. Now decoded on receipt like every other escaped route value | **PASS after `a8c7517`** |
 | 6 | **Failed vs passed result** | `ResultPassed` drives two distinct icons (`IconCheckCircle` / `IconX`), two localized titles, two notes, and `ResultState` = `AssessmentVerified` / `Rejected` feeds the color converters — both token names exist in both tables. Score line is `{correct} of {total}` + percent, server-provided | **PASS** |
 | 7 | **Employer verification from real data** | `EmployerHomeViewModel` reads the companies from `GetMyCompaniesAsync`; each card carries the server's `VerificationState` string, its localized label via `EnumDisplay.VerificationState`, `IsPending`, and a reason line only when the API returned one. Three banners are bound to `Pending` / `Verified` / `Rejected` via `StringEquals`. Wire values confirmed against the backend, which projects `company.VerificationState.ToString()` into a `string` DTO field — so the client's enum-name literals match exactly (and the API never emits an ordinal) | **PASS** |
 
@@ -507,14 +515,24 @@ client mapped only `auth.otp_invalid` and `rate.limit_exceeded`, so a locked-out
 told "something went wrong". `LoginViewModel.MapError` is now the single auth table and maps
 all of them to existing localized strings (no new keys, no new wording).
 
-**Gate harness added.** `tools/verify-gates-selftest.py` injects 17 realistic defects one at a
+**D9 — the phone number was never decoded, so login could not complete (blocker).** The MAUI
+documentation is explicit that query-string values are URL-decoded *only* when they arrive via
+`QueryPropertyAttribute`; pages implementing `IQueryAttributable` receive the raw text. The
+codebase already knew this — `companyName`, `skillName` and `title` are all escaped by their
+producer and unescaped by their consumer — but `OtpViewModel` assigned `%2B971501234567`
+straight to `Phone`. That value is displayed as "code sent to …" and passed to
+`VerifyOtpAsync`, so **every** OTP verification would have failed validation and no user could
+have signed in. Fixed in `a8c7517`; the gate now enforces the producer/consumer round trip for
+every escaped query key (D9 rule, +6 checks), with an 18th injected-defect case.
+
+**Gate harness added.** `tools/verify-gates-selftest.py` injects 18 realistic defects one at a
 time (typo'd binding, typo'd command, dropped command binding, hardcoded text, emoji icon,
 `\u2605` in C#, `&#x2605;` in XAML, multi-glyph icon key, `x:Reference` in a template,
 Color-on-`Stroke`, wrong converter type, undeclared resource key, missing AR translation,
 `x:DataType="{x:Null}"`, a skeleton with no `x:DataType`, a tappable element with no
-description, and both digit-normalization regressions), runs the responsible gate, and
-requires a non-zero exit. Every mutation is applied to a temporary copy and restored; the
-harness prints the restored-clean state. **Result: 17 / 17 detected.**
+description, the un-decoded `phone` parameter, and both digit-normalization regressions), runs
+the responsible gate, and requires a non-zero exit. Every mutation is applied to a temporary
+copy and restored; the harness prints the restored-clean state. **Result: 18 / 18 detected.**
 
 ### 9.6 Android build — BLOCKED (exact dependency list)
 
@@ -618,7 +636,7 @@ path to converting the BLOCKED/PARTIAL rows below into PASS:
 | All five existing gates + localization parity, re-run at this commit | **PASS** (103 / 105 / 88 / 349 bindings / 375 checks, exit 0 each) |
 | Negative tests prove the gates still detect defects | **PASS** (17 / 17 injected, tree restored) |
 | Each previously reported bug traced to source, state change and navigation result | **PASS** (7 / 7) |
-| Defects found in this pass fixed, with the tree green afterwards | **PASS** (8 defects: D1–D8) |
+| Defects found in this pass fixed, with the tree green afterwards | **PASS** (9 defects: D1–D9, including the D9 login blocker) |
 | Android build | **BLOCKED** — no SDK/JDK/Android SDK and no egress to obtain them (§9.6) |
 | Runtime, navigation, forms, TalkBack, RTL rendering, screenshots | **BLOCKED** — no emulator or device (§9.7) |
 | Small-screen and large-font behaviour | **PARTIAL** — designed for it, never measured |
