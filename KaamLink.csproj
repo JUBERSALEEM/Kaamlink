@@ -43,6 +43,23 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
 	</PropertyGroup>
 
+	<!--
+		Sideloading a Debug build.
+		Debug uses Fast Deployment: the managed assemblies are kept OUT of the .apk and
+		pushed over adb by `-t:Install`. A .apk built that way installs on a phone and
+		then crashes on launch ("No assemblies found"), which looks like a broken app
+		rather than a deployment choice (dotnet/android#12011).
+
+		  dotnet build KaamLink.csproj -c Debug -f net10.0-android -p:KaamLinkStandaloneApk=true
+		  adb install -r bin\Debug\net10.0-android\com.kaamlink.app-Signed.apk
+
+		gives a self-contained Debug .apk that runs on its own. Leave it off for the
+		normal deploy loop, where Fast Deployment is much faster.
+	-->
+	<PropertyGroup Condition="'$(KaamLinkStandaloneApk)' == 'true'">
+		<EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<!--
 			Repo-root guard: this single project lives at the repository root, so the SDK's

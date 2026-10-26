@@ -407,6 +407,39 @@ for path in sorted(glob.glob("Core/**/*.cs", recursive=True)
                 if re.search(forbidden, body_line):
                     ok(False, f"{path}:{offset}: '{variable}' {why}")
 
+# ---------------------------- L. Android network policy vs. the hosts the app uses
+# "The app has no internet" is either a missing permission or a cleartext host the
+# platform blocks. Both are cross-file facts a compiler never sees, so check them.
+MANIFEST = read("Platforms/Android/AndroidManifest.xml")
+SECURITY_CONFIG = read("Platforms/Android/Resources/xml/network_security_config.xml")
+API_CONFIG = read("Core/Api/ApiConfig.cs")
+
+ok("android.permission.INTERNET" in MANIFEST,
+   "AndroidManifest: INTERNET permission missing - every request fails on device")
+ok("android.permission.ACCESS_NETWORK_STATE" in MANIFEST,
+   "AndroidManifest: ACCESS_NETWORK_STATE permission missing - connectivity checks lie")
+ok('android:networkSecurityConfig="@xml/network_security_config"' in MANIFEST,
+   "AndroidManifest: the cleartext policy is not applied")
+
+ok(re.search(r'<base-config[^>]*cleartextTrafficPermitted="false"', SECURITY_CONFIG) is not None,
+   "network_security_config: cleartext must stay off by default (TLS everywhere else)")
+
+cleartext_block = re.search(
+    r'<domain-config[^>]*cleartextTrafficPermitted="true"[^>]*>([\s\S]*?)</domain-config>',
+    SECURITY_CONFIG)
+cleartext_hosts = set(re.findall(r'<domain[^>]*>\s*([^<\s]+)\s*</domain>',
+                                 cleartext_block.group(1) if cleartext_block else ""))
+
+# Every plain-HTTP base URL the app can be built with must be reachable under the policy,
+# otherwise those builds fail every single request at runtime (a physical-device build
+# pointed at 10.0.2.2 was exactly this bug).
+http_hosts = sorted(set(re.findall(r"http://([A-Za-z0-9.\-]+):\d+/", API_CONFIG)))
+ok(bool(http_hosts), "ApiConfig: no plain-HTTP dev host declared (expected the dev loop URLs)")
+for dev_host in http_hosts:
+    ok(dev_host in cleartext_hosts,
+       f"ApiConfig: '{dev_host}' is used over http but is not permitted cleartext in "
+       f"network_security_config.xml - every request from that build fails at runtime")
+
 # ------------------------------------------------------------------------------ report
 print()
 if failures:

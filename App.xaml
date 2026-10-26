@@ -25,7 +25,9 @@
                 <!-- Icons never change with a theme, so they sit outside the palette. -->
                 <ResourceDictionary Source="Resources/Styles/Icons.xaml" />
                 <!-- The palette below is the ONLY themeable dictionary: IThemeService
-                     replaces it in place when the user switches theme. -->
+                     removes it and merges the chosen one when the user switches theme.
+                     Merged dictionaries own disjoint keys, so merge order cannot
+                     change which value a key resolves to (gate-enforced). -->
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>

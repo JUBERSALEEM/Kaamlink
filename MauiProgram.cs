@@ -14,6 +14,18 @@ namespace KaamLink
     {
         public static MauiApp CreateMauiApp()
         {
+            // Diagnostics: without this, a crash on a phone is just "the app closed".
+            // Both lines land in logcat next to the transport-failure log, so
+            // `adb logcat | grep KaamLink` shows the stack trace.
+            AppDomain.CurrentDomain.UnhandledException += (_, args) =>
+                Console.WriteLine($"[KaamLink] UNHANDLED EXCEPTION: {args.ExceptionObject}");
+
+            TaskScheduler.UnobservedTaskException += (_, args) =>
+            {
+                Console.WriteLine($"[KaamLink] UNOBSERVED TASK EXCEPTION: {args.Exception}");
+                args.SetObserved();
+            };
+
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()

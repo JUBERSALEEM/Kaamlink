@@ -19,8 +19,25 @@ namespace KaamLink
 
         protected override Window CreateWindow(IActivationState? activationState)
         {
-            _theme.Apply(_theme.CurrentThemeId);
+            ApplyStoredTheme();
             return new Window(new AppShell());
+        }
+
+        /// <summary>
+        /// The theme is cosmetic; the palette merged by App.xaml is always a complete,
+        /// valid theme. If applying a stored one fails, the app must still start with
+        /// the default palette rather than crash before it has a window.
+        /// </summary>
+        private void ApplyStoredTheme()
+        {
+            try
+            {
+                _theme.Apply(_theme.CurrentThemeId);
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"[KaamLink] theme apply failed, using default palette: {exception}");
+            }
         }
     }
 }

@@ -173,6 +173,18 @@ CASES = [
         ["tools/verify-theme-contrast.py"],
     ),
     (
+        "dev host that the Android cleartext policy blocks (the real \"no internet\")",
+        "Core/Api/ApiConfig.cs",
+        ('"http://localhost:8080/"', '"http://192.168.1.10:8080/"'),
+        ["tools/verify-compile-surface.py"],
+    ),
+    (
+        "INTERNET permission dropped from the manifest",
+        "Platforms/Android/AndroidManifest.xml",
+        ('\t<uses-permission android:name="android.permission.INTERNET" />\n', ""),
+        ["tools/verify-compile-surface.py"],
+    ),
+    (
         "IList member used on an ICollection framework property (the real CS1501)",
         "Core/Presentation/Theming/ThemeService.cs",
         ("                merged.Add(replacement);",

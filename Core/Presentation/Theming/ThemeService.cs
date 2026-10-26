@@ -32,6 +32,21 @@ namespace KaamLink.Core.Presentation.Theming
 
             void Swap()
             {
+                try
+                {
+                    SwapCore();
+                }
+                catch (Exception exception)
+                {
+                    // Both callers are startup paths (CreateWindow) and the UI thread.
+                    // A failed palette load must degrade to the currently merged
+                    // palette, never take the process down.
+                    Console.WriteLine($"[KaamLink] theme '{theme.Id}' could not be applied: {exception}");
+                }
+            }
+
+            void SwapCore()
+            {
                 // MergedDictionaries is ICollection<ResourceDictionary> in .NET MAUI -
                 // no indexer, no Insert, no RemoveAt. So the replacement is appended
                 // rather than placed back in the palette's slot. That is safe only
@@ -103,14 +118,24 @@ namespace KaamLink.Core.Presentation.Theming
 
         private static void RefreshClayShadows()
         {
-            var application = Application.Current;
-            if (application is null)
-                return;
-
-            foreach (var window in application.Windows)
+            try
             {
-                if (window.Page is { } page)
-                    ClayMaterial.Refresh(page);
+                var application = Application.Current;
+                if (application is null)
+                    return;
+
+                foreach (var window in application.Windows)
+                {
+                    if (window.Page is { } page)
+                        ClayMaterial.Refresh(page);
+                }
+            }
+            catch (Exception exception)
+            {
+                // Runs on the dispatcher after a switch, so an escaping exception
+                // would be an unhandled UI-thread crash. A missed shadow refresh is
+                // cosmetic and must stay cosmetic.
+                Console.WriteLine($"[KaamLink] clay shadow refresh failed: {exception}");
             }
         }
 

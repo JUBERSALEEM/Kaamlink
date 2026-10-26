@@ -642,7 +642,7 @@ path to converting the BLOCKED/PARTIAL rows below into PASS:
 | R5 | 66 backend error codes, 13 mapped | unusual failures surface as the localized generic message | intentional (`Detail` is never shown); extend `ApiClient.Codes` + `MapError` as needed |
 | R6 | Assessment abandonment leaves a server-side attempt open | the backend decides its lifetime; the client shows the next state from the API | verified the UI reports `assessment.not_available` / `already_completed` correctly |
 | R7 | `ApplyQueryAttributes` starts the assessment with `_ = StartAsync()` | any exception type not derived from `ApiException` inside the task would be unobserved | `StartAsync` wraps its whole body in `try/finally` and all API failures now surface as `ApiException` (D6) |
-| R8 | A **Release** build has no real endpoint: `ApiConfig.BaseUrl` is `https://replace-me-when-environments-exist.kaamlink.invalid/` (DEBUG uses `http://10.0.2.2:8080/`, and `network_security_config.xml` allows cleartext to the emulator loopback only) | a Release APK cannot reach any API, so it is not shippable regardless of the UI work | hosting/staging is explicitly a later phase; a release candidate needs the real base URL first |
+| R8 | A **Release** build has no real endpoint: `ApiConfig.BaseUrl` is `https://replace-me-when-environments-exist.kaamlink.invalid/` (DEBUG resolves at runtime to `http://10.0.2.2:8080/` on an emulator and `http://localhost:8080/` on a phone, and `network_security_config.xml` allows cleartext to exactly those hosts) | a Release APK cannot reach any API, so it is not shippable regardless of the UI work | hosting/staging is explicitly a later phase; a release candidate needs the real base URL first |
 | R9 | A 401 whose silent refresh fails for a *transient* reason (offline, 5xx) still surfaces as 401, so the view model routes to the welcome screen | the user appears signed out on a network blip (tokens are kept, so a restart recovers) | pre-existing session contract (`RefreshAsync` returns a bool); distinguishing "session over" from "could not refresh" needs an `ISessionService` change and was deliberately out of scope for a UI pass |
 
 ### 9.11 Release readiness — verdict
@@ -777,3 +777,27 @@ gate silently lost its 41 icon checks when the icons moved (an empty scan passes
 first clay styles set `Button` gradients that Android does not reliably paint — buttons now use
 solid clay fills with a light border, and the gradient is reserved for `Border` surfaces where
 it is known to render.
+
+### 9.15 Field report: install, crash, and connectivity (fixed)
+
+Four symptoms came back from a real phone/Visual Studio session. Only some were the app; each was
+traced to a cause, and the two that were ours are fixed and gated.
+
+| Symptom | Root cause | Action |
+|---|---|---|
+| "Internet connection is not working in app" | **Our bug.** `ApiConfig.BaseUrl` was the `const` `http://10.0.2.2:8080/` — the emulator's alias for the host. That address does not exist on a physical phone, and the comment claiming `adb reverse` fixed it was wrong: `adb reverse` maps the *phone's* `localhost`, not `10.0.2.2`. Every request from a phone was guaranteed to fail | Base URL now resolves at runtime from `DeviceInfo.DeviceType` (`10.0.2.2` emulator / `localhost` phone). Gate rule L fails the build if a plain-HTTP host the app uses is not permitted cleartext, or if INTERNET/ACCESS_NETWORK_STATE or the security config is missing |
+| App closes immediately after install (force close) | **Deployment, not code.** Debug builds use Fast Deployment: assemblies are kept out of the `.apk` and pushed over adb by `-t:Install`. A manually installed Debug `.apk` therefore starts with no assemblies and dies (dotnet/android#12011) | `-p:KaamLinkStandaloneApk=true` produces a self-contained Debug APK; the guide documents `adb uninstall` + `adb install` and both alternatives (`-t:Install`, `-t:Run`) |
+| "App not installed" / Play Protect calls it harmful | Debug APK signed with the local debug key and sideloaded, or a partial APK left by the failed build | Documented: uninstall first, install the `-Signed.apk` built from a *successful* build, Play Protect "Install anyway" |
+| `XAGR7028` / `XAGR7019` on `obj\…\lp\<n>\jl\res\…` | Build infrastructure: the extracted resource tree for library projects was half-written (interrupted build) or locked (Visual Studio design-time build, MSBuild, antivirus) | Close VS, end `MSBuild.exe`/`dotnet.exe`, delete `obj` and `bin`, add a Defender exclusion; documented in the guide |
+
+Hardening that came out of it, all independent of the diagnoses above:
+
+* **Theme can no longer abort startup.** `App.CreateWindow` wraps theme application; `ThemeService`
+  wraps the palette swap and the dispatched shadow refresh. A shadow refresh failing on the UI
+  thread would otherwise have been an unhandled exception — a real crash path I introduced.
+* **A crash is now diagnosable**: `AppDomain.UnhandledException` and
+  `TaskScheduler.UnobservedTaskException` log `[KaamLink] UNHANDLED EXCEPTION: …`, next to the
+  existing transport log, so `adb logcat | grep KaamLink` shows the stack.
+
+Still **BLOCKED**: nothing here has been compiled or run (no SDK/JDK/device in this environment).
+The connectivity fix is validated only by the source-level facts above and by gate rule L.
