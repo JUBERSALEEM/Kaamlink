@@ -3,7 +3,8 @@
 Status: **implementation complete, static verification green, build/runtime verification BLOCKED (no SDK or device in
 this environment).** A dedicated release-verification pass was run afterwards and is recorded in [§9](#9-post-fix-release-verification-gate);
 it found and fixed ten defects — one a login blocker and one a build blocker reported by the
-real compiler — and it does not change the build/runtime verdict (§9.12).
+real compiler — and it does not change the build/runtime verdict (§9.12). The first emulator run
+then closed the build question and opened a smaller one (§9.13).
 Branch: `arena/44c99984-kaamlink`. Base commit: `de54334`. Reports for the earlier phases:
 `00-repository-and-screen-audit.md`, `01-mockup-catalog.md`, `02-design-system-specification.md`.
 
@@ -579,13 +580,17 @@ The first build is also the first real XamlC pass: `verify-bindings.py` approxim
 compiler, but only XamlC can confirm there are no `XFC0045` errors. Treat any `XFC0045`
 warning as a defect in this redesign.
 
-### 9.7 Runtime, device and screenshot verification — BLOCKED
+### 9.7 Runtime, device and screenshot verification — PARTIAL
 
-No SDK, no emulator, no attached device, and no way to obtain them here, so **no runtime claim
-is made anywhere in this report**. Static analysis is not runtime success. Specifically still
-unproven: whether the app launches; whether the two journeys complete against a live API;
-every back action; keyboard behaviour on forms; TalkBack traversal order; font scaling; RTL
-mirroring; and any pixel-level comparison with `docs/ui-redesign/mockups/`.
+This environment has no SDK, emulator or device, so nothing here runs the app. The first real
+runtime evidence came from the reviewer's machine instead (§9.13): the app **compiled, deployed
+and launched on a Pixel 7 API 36 emulator**, rendered the login screen correctly, and rendered
+the offline error state correctly when the API was unreachable. That is one screen, one state.
+
+Still unproven — and this list is what the verdict is short of: whether the two journeys
+complete against a live API; every back action; keyboard behaviour on forms; TalkBack
+traversal order; font scaling; RTL mirroring; and any pixel-level comparison with
+`docs/ui-redesign/mockups/`.
 
 For a machine with a device, run this script and attach the screenshots — it is the shortest
 path to converting the BLOCKED/PARTIAL rows below into PASS:
@@ -648,9 +653,9 @@ path to converting the BLOCKED/PARTIAL rows below into PASS:
 | All gates + localization parity, re-run at this commit | **PASS** (103 / 105 / 88 / 349 bindings / 381 redesign checks / 301 compile-surface checks, exit 0 each) |
 | Negative tests prove the gates still detect defects | **PASS** (26 / 26 injected, tree restored) |
 | Each previously reported bug traced to source, state change and navigation result | **PASS** (7 / 7) |
-| Defects found in this pass fixed, with the tree green afterwards | **PASS** (10 defects: D1–D10, including the D9 login blocker and the D10 build blocker) |
+| Defects found in this pass fixed, with the tree green afterwards | **PASS** (11 defects: D1–D11, including the D9 login blocker, the D10 build blocker and the D11 contradictory error title) |
 | Android build | **BLOCKED** — no SDK/JDK/Android SDK and no egress to obtain them (§9.6). The reviewer's Visual Studio build reached the compiler and found one interface defect, now fixed (§9.12) |
-| Runtime, navigation, forms, TalkBack, RTL rendering, screenshots | **BLOCKED** — no emulator or device (§9.7) |
+| Runtime, navigation, forms, TalkBack, RTL rendering, screenshots | **PARTIAL** — the app was built, deployed and launched on a Pixel 7 API 36 emulator; login screen and its offline state verified visually (§9.13). Journeys, TalkBack, RTL rendering and screenshots of the other 14 screens still unverified |
 | Release configuration can reach a real backend | **BLOCKED** — `ApiConfig.BaseUrl` (Release) is an intentional `.invalid` placeholder; a release APK would have no API to talk to (R8) |
 | Small-screen and large-font behaviour | **PARTIAL** — designed for it, never measured |
 | Performance on a low-end device | **PARTIAL** — virtualised feed, no raster assets, never profiled |
@@ -696,6 +701,45 @@ name collisions, `partial void On…Changed` types, `[RelayCommand]` return type
 resolution, generic constraints, nullable flow analysis, or XamlC. The only way to be certain
 there is no second compile error is to run `dotnet build` (§9.6). The verdict below stays
 PARTIAL for that reason.
+
+### 9.13 First runtime evidence, and one defect it exposed
+
+A real Android emulator (Pixel 7, API 36) ran the Debug build and displayed the login screen.
+Tapping **Send code** produced the offline banner. That single screenshot proved four things
+and disproved one assumption:
+
+| Observation | Meaning |
+|---|---|
+| The app compiled and deployed | the `IApiClient` fix (§9.12) is sufficient to build; no further compile error blocked startup |
+| Role gating, typography, spacing, icon font and the brand surface render | the design system works on a real device, not only in XAML |
+| Keyboard/entry and the primary button behave | the login form is interactive |
+| The error surface renders rather than crashing or hanging | the offline path introduced in D6 behaves (no `TaskCanceledException` escape) |
+| **Contradiction:** title said "Check the number" while the body said "No connection" | a defect — the banner title is static and blames the user's input for a transport failure (**D11**) |
+
+**D11 (fixed).** `LoginPage` hardcoded `LoginPhoneErrorTitle` ("Check the number") and `OtpPage`
+hardcoded `OtpErrorTitle` ("That code isn't right") above a bound body, so a network failure
+read as a wrong phone number or a wrong code — exactly the confusing state in the screenshot.
+Both view models now expose an `ErrorTitle` that is `AppStrings.ErrorOfflineTitle`
+("No connection" / "لا يوجد اتصال", new key, EN+AR) when `ApiException.IsOffline`, and the
+screen's own title otherwise. The banner bindings moved from `x:Static` to `{Binding ErrorTitle}`.
+
+**The connection failure itself was environmental, not a defect.** The client requests
+`http://10.0.2.2:8080/api/v1/auth/otp/request` (emulator → host loopback) and the backend serves
+exactly `api/v1/auth` + `otp/request` on port 8080 in both Docker (`ports: 8080:8080`) and its
+Dockerfile (`ASPNETCORE_URLS=http://+:8080`). Nothing was listening there. Two changes make that
+failure fast to diagnose and prevent one common cause of it:
+
+* `backend/src/KaamLink.Api/Properties/launchSettings.json` — there was none, so starting the
+  API from Visual Studio bound Kestrel's default port (5000–5300) instead of 8080, which looks
+  identical from the app's point of view. The profile now pins `http://localhost:8080`.
+* Debug builds log every transport failure with the URL actually attempted
+  (`[KaamLink] POST http://10.0.2.2:8080/… failed: …`), visible in `adb logcat -s DOTNET`.
+  `docs/first-boot-guide.md` now documents both, plus the `docker compose ps` / `curl /health/ready`
+  checks in the order that isolates the cause.
+
+**What this does not change:** one successful launch is not runtime verification of fifteen
+screens. §9.11 stays **PARTIAL**, and the remaining runtime rows stay BLOCKED until the journey
+script in §9.7 has actually been executed.
 
 What that means in plain terms: the code is in the best statically verifiable state this
 environment allows — the branch is clean and forward-only, the gates are green *and* proven to

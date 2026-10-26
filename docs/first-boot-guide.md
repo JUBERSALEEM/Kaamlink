@@ -43,6 +43,14 @@ curl -s http://localhost:8080/health/ready    # → Healthy
 curl -s http://localhost:8080/api/v1/skills/catalog -o /dev/null -w '%{http_code}\n'   # → 401 (auth required — correct)
 ```
 
+**Running the API from Visual Studio instead of Docker:** `backend/src/KaamLink.Api`
+ships a `launchSettings.json` profile that pins `http://localhost:8080`, the same port
+compose publishes, so F5 and the app agree — pick the **KaamLink.Api** profile and keep
+the `Now listening on: http://localhost:8080` line in view. A different port (Kestrel's
+default 5000–5300) is the most common reason the app reports "No connection" while the
+API looks healthy in the browser. You still need PostgreSQL running (compose is the
+simplest way to get it).
+
 **Keep the compose terminal visible.** The OTP "SMS" is the logging sandbox in this
 phase (`Otp:Provider=log`): the 6-digit code is printed in the API logs every time
 you tap "Send code". A real SMS provider is a later-phase, paid integration (§35).
@@ -138,7 +146,8 @@ the reason is then visible to the employer.
 
 | Symptom | Likely cause → fix |
 |---|---|
-| "No connection. Check your network…" on Send code | Backend not running → `docker compose up`; on a physical phone you forgot `adb reverse tcp:8080 tcp:8080` |
+| "No connection" on Send code | The app reached *no* server, so this is always the transport, never the phone number. In order: (1) is the API up? `curl -s http://localhost:8080/health/ready` → `Healthy`; (2) `docker compose ps` shows `kaamlink-api` **running** (not restarting); (3) if you started the API from Visual Studio, use the pinned **KaamLink.Api** profile — it binds 8080, a Kestrel default (5000–5300) will not work; (4) physical phone → `adb reverse tcp:8080 tcp:8080` |
+| Which URL did the app actually try? | Debug builds log every transport failure: `adb logcat -s DOTNET | grep KaamLink` (PowerShell: `adb logcat -s DOTNET | Select-String KaamLink`) → `[KaamLink] POST http://10.0.2.2:8080/api/v1/auth/otp/request failed: …`. Emulator images see the host as **10.0.2.2**, a physical phone via `adb reverse` as **localhost** — neither can use the other's address |
 | Cleartext HTTP blocked | You're on a Release build (not supported yet) — build Debug |
 | No OTP code arrives | By design: read it from the API logs (sandbox SMS) |
 | **`NU1101/NU1102` "Unable to find package …" on many/all packages** | Wrong/incomplete NuGet sources or SDK — diagnose below (§6a) |
