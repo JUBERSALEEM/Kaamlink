@@ -20,7 +20,7 @@ namespace KaamLink.Features.Onboarding
         {
             _session = session;
             _theme = theme;
-            SyncThemeAffordance();
+            SyncThemeAffordance(_theme.CurrentThemeId);
         }
 
         /// <summary>
@@ -31,10 +31,6 @@ namespace KaamLink.Features.Onboarding
         [ObservableProperty]
         private string _themeToggleLabel = AppStrings.ThemeSwitchToDusk;
 
-        /// <summary>True when the dusk palette is active (drives the sun/moon swap).</summary>
-        [ObservableProperty]
-        private bool _isDusk;
-
         [ObservableProperty]
         private bool _isBusy;
 
@@ -44,6 +40,9 @@ namespace KaamLink.Features.Onboarding
             if (_sessionRestored)
                 return;
             _sessionRestored = true;
+
+            if (_session.IsAuthenticated)
+                return;
 
             IsBusy = true;
             try
@@ -59,15 +58,15 @@ namespace KaamLink.Features.Onboarding
         [RelayCommand]
         private void ToggleTheme()
         {
-            _theme.Toggle();
-            SyncThemeAffordance();
+            var nextThemeId = _theme.Toggle();
+            SyncThemeAffordance(nextThemeId);
         }
 
-        private void SyncThemeAffordance()
+        private void SyncThemeAffordance(string themeId)
         {
-            var dusk = _theme.CurrentThemeId == ThemeCatalog.ClayDusk;
-            IsDusk = dusk;
-            ThemeToggleLabel = dusk ? AppStrings.ThemeSwitchToLight : AppStrings.ThemeSwitchToDusk;
+            ThemeToggleLabel = themeId == ThemeCatalog.ClayDusk
+                ? AppStrings.ThemeSwitchToLight
+                : AppStrings.ThemeSwitchToDusk;
         }
 
         [RelayCommand]

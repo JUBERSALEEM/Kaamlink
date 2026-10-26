@@ -1,0 +1,7 @@
+Phone country/calling-code metadata notice
+
+Resources/Raw/country-calling-codes.json contains a reduced region/calling-code/national-prefix index generated from libphonenumber-js 1.13.15 metadata. The numbering-plan metadata is derived from Google's libphonenumber project and is distributed under Apache License 2.0; see Apache-2.0-libphonenumber.txt. The libphonenumber-js project is MIT licensed; this app uses only its bundled metadata as a source, not its JavaScript runtime. Metadata can change as numbering plans evolve; refresh this file from an updated libphonenumber-js metadata release and rerun phone normalization tests.
+
+Sources:
+- https://github.com/catamphetamine/libphonenumber-js
+- https://github.com/google/libphonenumber

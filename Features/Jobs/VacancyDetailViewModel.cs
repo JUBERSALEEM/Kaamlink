@@ -118,7 +118,7 @@ namespace KaamLink.Features.Jobs
             }
             catch (ApiException exception) when (SessionErrors.IsExpiredSession(exception))
             {
-                await SessionErrors.RouteToWelcomeAsync();
+                await SessionErrors.RouteToLoginAsync();
             }
             catch (ApiException exception)
             {
@@ -149,7 +149,7 @@ namespace KaamLink.Features.Jobs
             }
             catch (ApiException exception) when (SessionErrors.IsExpiredSession(exception))
             {
-                await SessionErrors.RouteToWelcomeAsync();
+                await SessionErrors.RouteToLoginAsync();
             }
             catch (ApiException exception)
             {

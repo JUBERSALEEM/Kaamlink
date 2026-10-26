@@ -15,10 +15,9 @@
         because a missing token shows up as a half-themed screen.
       * Pages/setters reference these keys through {DynamicResource ...} so a
         theme switch repaints the live app. Never hard-code a hex in a page.
-      * Clay depth is not a shadow colour alone: each surface is a soft vertical
-        gradient (light falls from above) with a 1.5dp light edge, and the shadow
-        is a wide, low-opacity cast of a desaturated blue. Contrast for every
-        text pair is measured in the theme spec §3.
+      * Soft-clay surfaces use calm tonal fills, explicit component edges, and a
+        restrained cast shadow. Brand action fills retain their gradient. Palette
+        contrast is measured by tools/verify-theme-contrast.py.
 -->
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
@@ -71,40 +70,40 @@
     <Color x:Key="Gray400">#A9B2CC</Color>
     <Color x:Key="Gray500">#7883A3</Color>
     <Color x:Key="Gray600">#525C7A</Color>
-    <Color x:Key="Gray700">#3A4460</Color>
+    <Color x:Key="Gray700">#34475C</Color>
     <Color x:Key="Gray800">#232B45</Color>
-    <Color x:Key="Gray900">#171F36</Color>
+    <Color x:Key="Gray900">#172638</Color>
 
     <!-- ================= Surfaces ================= -->
-    <Color x:Key="PageBackground">#EEF0FA</Color>
-    <Color x:Key="PageBackgroundTop">#F5F3FD</Color>
-    <Color x:Key="PageBackgroundBottom">#E3E8F8</Color>
-    <Color x:Key="CardSurface">#F9FAFE</Color>
-    <Color x:Key="CardSurfaceTop">#FFFFFF</Color>
-    <Color x:Key="CardSurfaceBottom">#E9EDF9</Color>
-    <Color x:Key="CardSurfaceAlt">#E5EAF7</Color>
-    <Color x:Key="CardSurfaceAltTop">#EFF2FB</Color>
-    <Color x:Key="CardSurfaceAltBottom">#DCE2F2</Color>
-    <Color x:Key="Border">#D7DDEF</Color>
+    <Color x:Key="PageBackground">#E9EDF4</Color>
+    <Color x:Key="PageBackgroundTop">#EFF2F6</Color>
+    <Color x:Key="PageBackgroundBottom">#E1E7EF</Color>
+    <Color x:Key="CardSurface">#E9EDF4</Color>
+    <Color x:Key="CardSurfaceTop">#F6F8FB</Color>
+    <Color x:Key="CardSurfaceBottom">#E0E6EE</Color>
+    <Color x:Key="CardSurfaceAlt">#E0E6EE</Color>
+    <Color x:Key="CardSurfaceAltTop">#EEF1F6</Color>
+    <Color x:Key="CardSurfaceAltBottom">#D6DEE8</Color>
+    <Color x:Key="Border">#C2CCD9</Color>
     <!-- Input outlines need 3:1 non-text contrast (WCAG 1.4.11). -->
-    <Color x:Key="BorderStrong">#7C88A8</Color>
-    <Color x:Key="Divider">#DFE4F2</Color>
+    <Color x:Key="BorderStrong">#6E8198</Color>
+    <Color x:Key="Divider">#CDD6E1</Color>
     <Color x:Key="Scrim">#66171F36</Color>
 
     <!-- ================= Clay material ================= -->
     <!-- Light edge along the top of every clay surface. -->
-    <Color x:Key="ClayHighlight">#FFFFFF</Color>
+    <Color x:Key="ClayHighlight">#F6F8FB</Color>
     <!-- Slightly darker edge along the bottom, so the surface reads as pressed clay. -->
-    <Color x:Key="ClayEdgeLow">#C9D1E8</Color>
+    <Color x:Key="ClayEdgeLow">#BEC9D7</Color>
     <!-- Cast shadow: desaturated blue, applied at low opacity over the page. -->
-    <Color x:Key="ClayShadow">#6E7BA8</Color>
-    <Color x:Key="ClayShadowDeep">#4F5C86</Color>
-    <Color x:Key="ClayInset">#DFE4F3</Color>
+    <Color x:Key="ClayShadow">#9AA9BA</Color>
+    <Color x:Key="ClayShadowDeep">#617287</Color>
+    <Color x:Key="ClayInset">#D7DFE9</Color>
 
     <!-- ================= Text ================= -->
-    <Color x:Key="TextPrimary">#171F36</Color>
-    <Color x:Key="TextSecondary">#3A4460</Color>
-    <Color x:Key="TextMuted">#5C6784</Color>
+    <Color x:Key="TextPrimary">#172638</Color>
+    <Color x:Key="TextSecondary">#34475C</Color>
+    <Color x:Key="TextMuted">#50637A</Color>
     <Color x:Key="TextOnPrimary">#FFFFFF</Color>
     <Color x:Key="TextDisabled">#98A1BC</Color>
 
@@ -126,22 +125,11 @@
     <SolidColorBrush x:Key="ClayEdgeLowBrush" Color="{StaticResource ClayEdgeLow}" />
 
     <!-- Clay gradients: light from above, so the top of every surface is lighter. -->
-    <LinearGradientBrush x:Key="ClayPageBrush" StartPoint="0,0" EndPoint="0,1">
-        <GradientStop Color="{StaticResource PageBackgroundTop}" Offset="0.0" />
-        <GradientStop Color="{StaticResource PageBackgroundBottom}" Offset="1.0" />
-    </LinearGradientBrush>
+    <SolidColorBrush x:Key="ClayPageBrush" Color="{StaticResource PageBackground}" />
 
-    <LinearGradientBrush x:Key="ClayCardBrush" StartPoint="0,0" EndPoint="0.35,1">
-        <GradientStop Color="{StaticResource CardSurfaceTop}" Offset="0.0" />
-        <GradientStop Color="{StaticResource CardSurface}" Offset="0.45" />
-        <GradientStop Color="{StaticResource CardSurfaceBottom}" Offset="1.0" />
-    </LinearGradientBrush>
+    <SolidColorBrush x:Key="ClayCardBrush" Color="{StaticResource CardSurface}" />
 
-    <LinearGradientBrush x:Key="ClayCardSoftBrush" StartPoint="0,0" EndPoint="0.35,1">
-        <GradientStop Color="{StaticResource CardSurfaceAltTop}" Offset="0.0" />
-        <GradientStop Color="{StaticResource CardSurfaceAlt}" Offset="0.55" />
-        <GradientStop Color="{StaticResource CardSurfaceAltBottom}" Offset="1.0" />
-    </LinearGradientBrush>
+    <SolidColorBrush x:Key="ClayCardSoftBrush" Color="{StaticResource CardSurfaceAlt}" />
 
     <!-- Primary clay: saturated, still with a lighter top so it looks moulded. -->
     <LinearGradientBrush x:Key="ClayPrimaryBrush" StartPoint="0,0" EndPoint="0,1">
@@ -157,30 +145,18 @@
     </LinearGradientBrush>
 
     <!-- Soft tinted wells for icon tiles and quiet buttons. -->
-    <LinearGradientBrush x:Key="ClayPrimarySoftBrush" StartPoint="0,0" EndPoint="0,1">
-        <GradientStop Color="{StaticResource CardSurfaceTop}" Offset="0.0" />
-        <GradientStop Color="{StaticResource PrimarySoft}" Offset="1.0" />
-    </LinearGradientBrush>
+    <SolidColorBrush x:Key="ClayPrimarySoftBrush" Color="{StaticResource PrimarySoft}" />
 
-    <LinearGradientBrush x:Key="ClayAccentSoftBrush" StartPoint="0,0" EndPoint="0,1">
-        <GradientStop Color="{StaticResource CardSurfaceTop}" Offset="0.0" />
-        <GradientStop Color="{StaticResource AccentSoft}" Offset="1.0" />
-    </LinearGradientBrush>
+    <SolidColorBrush x:Key="ClayAccentSoftBrush" Color="{StaticResource AccentSoft}" />
 
     <!-- Inset well (fields, progress tracks): shadow at the top, light at the base. -->
-    <LinearGradientBrush x:Key="ClayInsetBrush" StartPoint="0,0" EndPoint="0,1">
-        <GradientStop Color="{StaticResource ClayInset}" Offset="0.0" />
-        <GradientStop Color="{StaticResource CardSurface}" Offset="1.0" />
-    </LinearGradientBrush>
+    <SolidColorBrush x:Key="ClayInsetBrush" Color="{StaticResource ClayInset}" />
 
     <LinearGradientBrush x:Key="ClaySoftBrush" StartPoint="0,0" EndPoint="0,1">
         <GradientStop Color="{StaticResource PrimarySoft}" Offset="0.0" />
         <GradientStop Color="{StaticResource PrimarySoftDeep}" Offset="1.0" />
     </LinearGradientBrush>
 
-    <LinearGradientBrush x:Key="ClayBarBrush" StartPoint="0,0" EndPoint="0,1">
-        <GradientStop Color="{StaticResource PageBackgroundTop}" Offset="0.0" />
-        <GradientStop Color="{StaticResource PageBackground}" Offset="1.0" />
-    </LinearGradientBrush>
+    <SolidColorBrush x:Key="ClayBarBrush" Color="{StaticResource PageBackground}" />
 
 </ResourceDictionary>

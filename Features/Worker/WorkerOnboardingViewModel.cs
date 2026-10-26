@@ -143,7 +143,7 @@ namespace KaamLink.Features.Worker
             }
             catch (ApiException exception) when (SessionErrors.IsExpiredSession(exception))
             {
-                await SessionErrors.RouteToWelcomeAsync();
+                await SessionErrors.RouteToLoginAsync();
             }
             catch (ApiException exception)
             {
@@ -209,7 +209,7 @@ namespace KaamLink.Features.Worker
             }
             catch (ApiException exception) when (SessionErrors.IsExpiredSession(exception))
             {
-                await SessionErrors.RouteToWelcomeAsync();
+                await SessionErrors.RouteToLoginAsync();
             }
             catch (ApiException exception)
             {
@@ -274,7 +274,7 @@ namespace KaamLink.Features.Worker
             }
             catch (ApiException exception) when (SessionErrors.IsExpiredSession(exception))
             {
-                await SessionErrors.RouteToWelcomeAsync();
+                await SessionErrors.RouteToLoginAsync();
             }
             catch (ApiException exception)
             {
@@ -334,7 +334,7 @@ namespace KaamLink.Features.Worker
             }
             catch (ApiException exception) when (SessionErrors.IsExpiredSession(exception))
             {
-                await SessionErrors.RouteToWelcomeAsync();
+                await SessionErrors.RouteToLoginAsync();
             }
             catch (ApiException exception)
             {

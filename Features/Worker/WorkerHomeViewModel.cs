@@ -90,7 +90,7 @@ namespace KaamLink.Features.Worker
             }
             catch (ApiException exception) when (SessionErrors.IsExpiredSession(exception))
             {
-                await SessionErrors.RouteToWelcomeAsync();
+                await SessionErrors.RouteToLoginAsync();
             }
             catch (ApiException exception)
             {
@@ -169,7 +169,7 @@ namespace KaamLink.Features.Worker
         private async Task LogoutAsync()
         {
             await _session.LogoutAsync();
-            await Shell.Current.GoToAsync(AppRoutes.Absolute(AppRoutes.Welcome));
+            await Shell.Current.GoToAsync(AppRoutes.Absolute(AppRoutes.Login));
         }
     }
 }

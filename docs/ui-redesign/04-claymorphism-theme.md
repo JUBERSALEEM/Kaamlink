@@ -1,227 +1,93 @@
-# KaamLink — Claymorphism theme and theme engine
+# KaamLink — accessible soft-clay theme and theme engine
 
-Status: **implemented, statically verified, not yet seen on a device.** Every claim below is
-checked by a gate listed in §7; runtime appearance is still unverified (§9).
+**Status:** design and source updates are implemented; the static contrast/redesign gates pass. Runtime appearance and theme switching have **not** been tested on a device in this environment.
 
-Companion documents: `02-design-system-specification.md` (typography, spacing, control
-inventory — still current) and `03-implementation-and-verification-report.md` (the redesign
-and its verification). This document covers the **visual material** and the **engine**.
+See [`05-neumorphic-soft-ui-research.md`](05-neumorphic-soft-ui-research.md) for the research, rationale and references. This is an accessible soft-UI hybrid, not a shadow-only implementation or a claim that “neumorphism” is a platform standard.
 
----
+## 1. Visual recipe
 
-## 1. What "clay" means here, concretely
-
-Claymorphism is soft, matte, moulded plastic. In this app it is built from four ingredients,
-not from one drop shadow:
-
-| Ingredient | Implementation | Where |
+| Ingredient | Implementation | Location |
 |---|---|---|
-| **Lit gradient** — surfaces are lighter at the top, as if lit from above | `LinearGradientBrush` tokens (`ClayCardBrush`, `ClayPageBrush`, `ClayInsetBrush`, …) | `Resources/Styles/Colors.xaml` |
-| **Soft cast shadow** — wide, low opacity, desaturated blue | `Shadow` with `Radius` 10–34 and `Opacity` 0.22–0.34 | `Core/Presentation/Clay/ClayMaterial.cs` |
-| **Light edge** — a 1–1.5dp highlight stroke on the moulded surfaces | `ClayHighlight` stroke on cards, tiles, pills, fields | `Resources/Styles/Styles.xaml` |
-| **Generous radii** — 18–26dp on surfaces, 999 on pills | `RoundRectangle CornerRadius` / `Button.CornerRadius` | styles + pages |
+| Tonal surfaces | Cool grey-blue page, near-tone cards; equivalent charcoal dusk palette | `Resources/Styles/Colors.xaml`, `Resources/Themes/ClayDusk.xaml` |
+| Soft depth | One restrained low-opacity cast shadow per elevated view | `Core/Presentation/Clay/ClayMaterial.cs` |
+| Identifiable edges | Explicit 1dp card/field stroke and stronger native-button outlines; shadows are not the sole boundary | `Resources/Styles/Styles.xaml` |
+| Action/state | Saturated primary actions, visible 0.97 scale pressed state, disabled opacity; outlined secondary buttons | `Resources/Styles/Styles.xaml` |
+| Touch/accessibility | Native `Button` controls, text labels, semantic descriptions, 44dp+ theme/country controls and 48dp country rows | pages + styles |
+| Theme repaint | Palette keys are `DynamicResource`; `ThemeService` swaps dictionaries and refreshes shadows | `Core/Presentation/Theming/` |
 
-Deliberate restraint (unchanged from the redesign rules): no oversized headings, no neon, no
-glassy blur, no per-icon floating shadows, no gradients on text. Clay is a *material*, the
-layout stays quiet and premium.
+The current page/card surfaces are solid tonal surfaces. Gradient fills are retained for brand actions; the app does not claim a multi-shadow primitive, because MAUI `VisualElement` exposes one `Shadow` object per view.
 
-**Press feedback.** Buttons move through `VisualStateManager`: `Pressed` → `Scale 0.97` +
-`Opacity 0.94`, `Disabled` → `Opacity 0.45`. That reads as soft material being pushed in.
+## 2. Elevation
 
----
+`ClayMaterial.Elevation` creates a fresh `Shadow` per element (a shadow instance is not shared through a style). Current casts are intentionally restrained:
 
-## 2. Why an attached property instead of a shadow in the style
-
-A `Shadow` object belongs to one element. Putting one in a `Style` setter would share a single
-instance across every card, tile and button that uses the style — the wrong ownership model,
-and the kind of thing that shows up as "shadows randomly missing on some screens".
-
-`ClayMaterial.Elevation` is an attached property; its change handler builds a **fresh**
-`Shadow` per element:
-
-```xml
-<Setter Property="clay:ClayMaterial.Elevation" Value="Card" />   <!-- in the style -->
+```text
+Pill:   offset (3, 4),  radius 12, opacity 0.18
+Card:   offset (5, 7),  radius 20, opacity 0.22
+Raised: offset (7, 10), radius 26, opacity 0.26
 ```
 
-```csharp
-// Core/Presentation/Clay/ClayMaterial.cs
-ClayElevation.Pill   → offset 4,  radius 10, opacity 0.22   // pills, chips, small buttons
-ClayElevation.Card   → offset 10, radius 26, opacity 0.30   // cards, panels
-ClayElevation.Raised → offset 14, radius 34, opacity 0.34   // primary buttons, bottom docks
+The brush comes from `ClayShadowBrush`. `ThemeService` refreshes live-tree shadows after replacing the palette, because a `Shadow` is not itself a `DynamicResource`.
+
+## 3. Theme engine
+
+```text
+"clay"      → Resources/Styles/Colors.xaml
+"clay-dusk" → Resources/Themes/ClayDusk.xaml
+Preference  → "kaamlink.theme"
 ```
 
-Colours come from the active palette (`ClayShadowBrush`), so the shadow follows the theme.
+`App` resolves the saved theme before creating the Shell. `IThemeService.Toggle()` returns the next theme id; the login and role-choice screens use native `Button`s and update their localized action label from that id. `DynamicResource` updates palette-bound colours in the live visual tree. Theme dictionaries retain a parity of resource keys and types, enforced by `tools/verify-ui-redesign.py`.
 
----
+## 4. Current palettes
 
-## 3. The engine
+### Clay (default)
 
-```
-ThemeCatalog.All                    ordered list of themes: id + palette dictionary path
-  "clay"       → Resources/Styles/Colors.xaml
-  "clay-dusk"  → Resources/Themes/ClayDusk.xaml
-
-IThemeService / ThemeService        applies a palette, persists the choice
-  Apply(themeId)                    swaps the merged palette dictionary, refreshes shadows
-  Toggle()                          next theme in the catalogue
-  CurrentThemeId, ThemeChanged      state + notification
-  Preferences "kaamlink.theme"      survives restarts
-```
-
-**Startup.** `App` receives `IThemeService` through DI and calls `_theme.Apply(CurrentThemeId)`
-in `CreateWindow`, before the shell is built, so a dusk-theme user never sees a light flash.
-
-**Switching.** `ThemeService.Apply` removes every merged dictionary that is a catalogue palette
-(by normalised `Source`, plus the instance it merged itself) and then appends the replacement.
-*All* of them are removed, not just the active one, so a path that stops matching cannot leave a
-duplicate merged.
-
-`Application.Resources.MergedDictionaries` is `ICollection<ResourceDictionary>` in .NET MAUI, not
-`IList` — there is no indexer, no `Insert` and no `RemoveAt` on it, so "replace in the same slot"
-is not available. Appending is only sound because **no key is defined by more than one merged
-dictionary** (icons, palette and styles are disjoint sets), which means merge *order* can never
-decide a value. That is enforced by the gate, not left to memory: a duplicated key between two
-merged dictionaries fails `verify-ui-redesign.py`. Remove + insert (rather than assigning into
-the slot) is what makes MAUI raise the resource change that repaints every `DynamicResource`
-consumer. On the next dispatcher turn it walks the live visual tree and re-applies clay
-shadows (`ClayMaterial.Refresh`), because a `Shadow` object is not a `DynamicResource` — and a
-turn of delay guarantees the replacement dictionary has loaded before a shadow reads
-`ClayShadowBrush` from it.
-
-**Why colours are `DynamicResource` everywhere.** A theme switch can only repaint values that
-were bound dynamically. Since the redesign, every colour/brush token in every page and style
-is `{DynamicResource …}`; `{StaticResource …}` is reserved for styles, icons and converters.
-`tools/verify-ui-redesign.py` fails if a page bakes a palette token statically — that was a
-real gap in the first draft of this work, now a rule with a negative test.
-
-**A theme is a palette, never a layout.** `Styles.xaml` and all 15 pages are shared by both
-themes; the only per-theme file is the dictionary. Key parity and resource-kind order are
-enforced, so a new theme cannot silently drop a token.
-
-### Adding a theme
-
-1. Copy `Resources/Themes/ClayDusk.xaml` to `Resources/Themes/<Name>.xaml`.
-2. Replace every colour value. Keep **every key** — the gate compares key sets and resource
-   kinds, and `tools/verify-theme-contrast.py` measures the text pairs.
-3. Add one line to `ThemeCatalog.All`.
-4. Run `python3 tools/verify-theme-contrast.py` and `python3 tools/verify-ui-redesign.py`.
-
-No page, style or view-model change is needed.
-
----
-
-## 4. Palettes
-
-### 4.1 Clay (default, light)
-
-| Role | Token | Value |
-|---|---|---|
-| Page | `PageBackgroundTop/Bottom` | `#F5F3FD` → `#E3E8F8` |
-| Card | `CardSurfaceTop/Surface/Bottom` | `#FFFFFF` → `#F9FAFE` → `#E9EDF9` |
-| Quiet surface | `CardSurfaceAltTop/Alt/Bottom` | `#EFF2FB` → `#E5EAF7` → `#DCE2F2` |
-| Brand fill | `PrimaryFillTop/Fill/Bottom` | `#2E74C6` → `#0B57A4` → `#084A8C` |
-| Brand accent (text/icon) | `Primary` | `#0B57A4` |
-| Accent fill | `AccentFillTop/Fill/Bottom` | `#1B8078` → `#0B6660` → `#095651` |
-| Ink | `TextPrimary` / `TextSecondary` / `TextMuted` | `#171F36` / `#3A4460` / `#5C6784` |
-| Edge | `ClayHighlight` / `ClayEdgeLow` | `#FFFFFF` / `#C9D1E8` |
-| Shadow | `ClayShadow` | `#6E7BA8` |
-
-### 4.2 Clay Dusk (alternate, dark)
-
-Dark clay inverts the depth cue: the top of a surface is only *slightly* lighter, the base is
-much darker, and the cast shadow is black at a higher opacity.
-
-| Role | Token | Value |
-|---|---|---|
-| Page | `PageBackgroundTop/Bottom` | `#252C49` → `#161B2C` |
-| Card | `CardSurfaceTop/Surface/Bottom` | `#3A4364` → `#2C3450` → `#242A44` |
-| Brand accent (text/icon) | `Primary` | `#9CC2F0` |
-| Brand fill (buttons) | `PrimaryFillTop/Fill/Bottom` | `#3A72BC` → `#2E62A8` → `#234C86` |
-| Ink | `TextPrimary` / `TextSecondary` / `TextMuted` | `#F3F5FF` / `#C9D0E8` / `#A5AECB` |
-| Shadow | `ClayShadow` | `#000000` |
-
-**Why `Primary` and `PrimaryFill` are separate tokens.** On a dark theme, the accent used for
-*text and icons* must be light (to sit on dark clay), while a *filled button* must stay
-saturated enough for white text. One token cannot satisfy both, so the palette exposes
-`Primary` (accent) and `PrimaryFill*` (fill). In the light theme they hold the same blue.
-
----
-
-## 5. Contrast
-
-`tools/verify-theme-contrast.py` measures 26 text/UI pairs per palette against WCAG AA
-(4.5:1 text, 3:1 non-text) and fails the build otherwise.
-
-| Theme | Pairs | Failing | Lowest measured |
-|---|---|---|---|
-| Clay | 26 | 0 | 3.11:1 (`BorderStrong` on `PageBackground`, needs 3.0) |
-| Clay Dusk | 26 | 0 | 4.41:1 (`BorderStrong` on `CardSurface`, needs 3.0) |
-
-Tight pairs worth knowing when editing the palettes:
-
-* `BorderStrong` on `PageBackground`: **3.11:1** (light) against a 3.0 floor — the
-  tightest value in either theme; an input outline is the first thing a palette edit breaks.
-* `TextOnPrimary` on the lit top of a primary button: **4.74:1** (light) / **4.87:1** (dusk).
-* `TextMuted` on `CardSurfaceAlt`: **4.68:1** (light) — little headroom for a lighter tint.
-* `TextOnPrimary` on `AccentFillTop`: **4.55:1** — the lowest text value in the dusk theme.
-
-Darkening a soft tint or lightening a muted ink will break these first.
-
----
-
-## 6. What changed for the theme
-
-```
-Resources/Styles/Colors.xaml      palette (clay light) + clay brushes; icons removed
-Resources/Styles/Icons.xaml       NEW — 43 Lucide glyphs, theme-independent
-Resources/Styles/Styles.xaml      clay recipes; colours via DynamicResource; clay elevation
-Resources/Themes/ClayDusk.xaml    NEW — alternate dark palette, same key set
-Core/Presentation/Clay/           NEW — ClayMaterial attached property + ClayElevation
-Core/Presentation/Theming/        NEW — ThemeCatalog, IThemeService, ThemeService
-App.xaml / App.xaml.cs            merge Icons; apply the stored theme before the shell
-MauiProgram.cs                    register IThemeService (singleton, once)
-Features/Onboarding/*             theme toggle (pill) on the entry screen + its command
-Controls/{NoticeBanner,StatePanel}  theme-reactive colours, clay radii/elevation
-Features/**/*.xaml                46 colour refs → DynamicResource; panel radii on the clay scale
-```
-
-`Resources/Strings/AppStrings.*` gained 3 keys (315 EN/AR/Designer, parity checked):
-`ThemeSwitchToDusk`, `ThemeSwitchToLight`, `ErrorOfflineTitle`.
-
----
-
-## 7. How this is verified
-
-| Gate | What it proves |
+| Role | Current value(s) |
 |---|---|
-| `verify-theme-contrast.py` | key parity + resource kinds across palettes, 26 contrast pairs each (55 checks) |
-| `verify-ui-redesign.py` §K | catalogue files exist, palette merged, icons merged, service registered once, theme applied at startup, shadows refreshed on switch, no `Insert`/`RemoveAt`/indexer on the merged collection, merged dictionaries own disjoint keys, card/tile styles keep clay elevation, toggle command bound |
-| `verify-ui-redesign.py` §B | no page bakes a palette token with `StaticResource`; no raw hex; no legacy style keys |
-| `verify-ui-redesign.py` (icons) | every `Icon*` reference exists; the icon file cannot be empty |
-| `verify-bindings.py` | the new theme bindings (`ThemeToggleLabel`, `IsDusk`, `ToggleThemeCommand`) resolve |
-| `verify-compile-surface.py` | the new types are reachable from every file that uses them; a local that holds `MergedDictionaries` never uses `Insert`/`RemoveAt`/an indexer |
-| `verify-gates-selftest.py` | 31 injected defects, including “colour baked with StaticResource”, “icon key missing”, “clay elevation dropped”, “theme palette missing a token”, “IList member on an ICollection property” |
+| Page | `PageBackground #E9EDF4` |
+| Card | `CardSurface #E9EDF4`; `CardSurfaceTop #F6F8FB` retained for token compatibility |
+| Quiet surface | `CardSurfaceAlt #E0E6EE` |
+| Primary fill (top/body/base) | `#2E74C6 / #0B57A4 / #084A8C` |
+| Accent fill (top/body/base) | `#1B8078 / #0B6660 / #095651` |
+| Ink (primary/secondary/muted) | `#172638 / #34475C / #50637A` |
+| Strong outline | `#6E8198` |
+| Shadow | `#9AA9BA` |
 
----
+### Clay Dusk
 
-## 8. What the real compiler rejected
+| Role | Current value(s) |
+|---|---|
+| Page | `PageBackground #202731` |
+| Card | `CardSurface #242C36` |
+| Quiet surface | `CardSurfaceAlt #29333E` |
+| Primary fill (top/body/base) | `#3A72BC / #2E62A8 / #234C86` |
+| Accent fill (top/body/base) | `#17847A / #106B63 / #0B544E` |
+| Ink (primary/secondary/muted) | `#F1F4F7 / #D6DEE7 / #B8C4D0` |
+| Strong outline | `#9AAABD` |
+| Shadow | `#10151B` |
 
-The first build on a Windows machine with the .NET 10 Android workload rejected two lines in
-`ThemeService.cs` — `CS1503` (argument of type `ICollection<ResourceDictionary>` passed to
-`IList<ResourceDictionary>`) and `CS1501` (`Insert` does not exist) — because the swap was written
-against `IList`. Both are fixed by the append strategy above. This is the case the regex gates
-cannot see, so `verify-compile-surface.py` now refuses `Insert`/`RemoveAt`/indexer usage on any
-local that holds `MergedDictionaries`, and `verify-gates-selftest.py` injects exactly that defect.
+`Primary` is an accent for text/icons; `PrimaryFill*` is the filled-button ramp. In dusk they must differ: a text accent needs to be light, while white-on-fill needs a saturated darker fill.
 
-## 9. What is still unverified
+## 5. Static contrast result
 
-* **Appearance on a device.** No emulator or device in this environment: gradients, shadow
-  softness and the pressed state have never been rendered. Shadow rendering on Android depends
-  on the element having a background — every clay surface does, but this needs eyes on it.
-* **Live switch timing.** Whether MAUI repaints every `DynamicResource` consumer within the
-  same frame after the dictionary swap is not measurable here; the mechanism (remove + insert)
-  is the documented one, and the shadow refresh is explicit.
-* **Dark theme legibility of the brand gradient** — contrast is measured, perceived softness is
-  not.
-* Anything the real compiler or XamlC rejects: `verify-compile-surface.py` is a proxy, not a
-  compiler.
+Latest `python3 tools/verify-theme-contrast.py` result: **55 checks, 0 failures across both palettes**. Text pairs are checked at 4.5:1 and control outlines at 3:1 by the repository's palette gate. The checker is a static palette calculation, not a substitute for rendered/device review.
+
+Useful latest sample ratios:
+
+| Pair | Clay | Dusk |
+|---|---:|---:|
+| `TextOnPrimary` / `PrimaryFillTop` | 4.74:1 | 4.87:1 |
+| `TextOnPrimary` / `AccentFillTop` | 4.77:1 | 4.55:1 |
+| `BorderStrong` / `CardSurface` | 3.40:1 | 5.95:1 |
+| `BorderStrong` / `PageBackground` | 3.40:1 | 6.35:1 |
+
+## 6. Reproducible static checks
+
+```bash
+python3 tools/verify-theme-contrast.py
+python3 tools/verify-ui-redesign.py
+python3 tools/verify-global-phone-directory.py
+```
+
+All three passed for the current workspace. A MAUI build, Android launch, live theme switch, Arabic/RTL layout, larger-font review, and screenshot review remain unverified because the .NET/Android runtime toolchain is unavailable here.

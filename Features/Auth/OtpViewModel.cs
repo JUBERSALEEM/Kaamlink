@@ -32,7 +32,7 @@ namespace KaamLink.Features.Auth
         private string _phone = string.Empty;
 
         [ObservableProperty]
-        private string _role = RoleNavigator.Worker;
+        private string _role = string.Empty;
 
         [ObservableProperty]
         private string _code = string.Empty;

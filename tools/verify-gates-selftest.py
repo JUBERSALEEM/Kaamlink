@@ -24,6 +24,12 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # (case name, file, literal old -> new, gate command)
 CASES = [
     (
+        "app cold start bypasses sign-in",
+        "AppShell.xaml",
+        ('Route="login"', 'Route="welcome"'),
+        ["tools/verify-compile-surface.py"],
+    ),
+    (
         "misspelled binding path",
         "Features/Worker/WorkerHomePage.xaml",
         ("{Binding CompletenessText}", "{Binding CompletenessTextTYPO}"),
@@ -113,8 +119,8 @@ CASES = [
     (
         "phone input stops normalizing Arabic-Indic digits",
         "Core/Text/PhoneInput.cs",
-        ("var cleaned = CleanupRegex().Replace(DigitText.Normalize(raw).Trim(), string.Empty);",
-         "var cleaned = CleanupRegex().Replace(raw.Trim(), string.Empty);"),
+        ("var cleaned = SeparatorsRegex().Replace(DigitText.Normalize(raw).Trim(), string.Empty);",
+         "var cleaned = SeparatorsRegex().Replace(raw.Trim(), string.Empty);"),
         ["tools/verify-ui-redesign.py"],
     ),
     (
@@ -157,7 +163,7 @@ CASES = [
     (
         "icon key referenced but not declared",
         "Features/Auth/LoginPage.xaml",
-        ("{StaticResource IconPhone}", "{StaticResource IconPhoneTYPO}"),
+        ("{StaticResource IconAlertCircle}", "{StaticResource IconAlertCircleTYPO}"),
         ["tools/verify-ui-redesign.py"],
     ),
     (
@@ -169,7 +175,7 @@ CASES = [
     (
         "theme palette missing a token",
         "Resources/Themes/ClayDusk.xaml",
-        ('    <Color x:Key="AccentSoft">#264A47</Color>\n', ""),
+        ('    <Color x:Key="AccentSoft">#263E3D</Color>\n', ""),
         ["tools/verify-theme-contrast.py"],
     ),
     (
