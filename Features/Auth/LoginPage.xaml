@@ -78,7 +78,7 @@
                             <VerticalStackLayout Grid.Column="1" Spacing="2">
                                 <Label Style="{StaticResource SmallStrongText}"
                                        TextColor="{StaticResource Error}"
-                                       Text="{x:Static strings:AppStrings.LoginPhoneErrorTitle}" />
+                                       Text="{Binding ErrorTitle}" />
                                 <Label Style="{StaticResource SmallText}"
                                        Text="{Binding ErrorMessage}" />
                             </VerticalStackLayout>

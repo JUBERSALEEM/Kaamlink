@@ -523,5 +523,6 @@ namespace KaamLink.Resources.Strings
         public static string VacancyEditSkillsSection => ResourceManager.GetString(nameof(VacancyEditSkillsSection), Culture)!;
         public static string VacancyEditSkillsHint => ResourceManager.GetString(nameof(VacancyEditSkillsHint), Culture)!;
         public static string CompanyVacanciesEmptyTitle => ResourceManager.GetString(nameof(CompanyVacanciesEmptyTitle), Culture)!;
+        public static string ErrorOfflineTitle => ResourceManager.GetString(nameof(ErrorOfflineTitle), Culture)!;
     }
 }

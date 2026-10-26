@@ -46,6 +46,13 @@ namespace KaamLink.Features.Auth
         [ObservableProperty]
         private bool _hasError;
 
+        /// <summary>
+        /// Banner title. Kept separate from the body so a network failure is not
+        /// reported as "That code isn't right" when the code was never checked.
+        /// </summary>
+        [ObservableProperty]
+        private string _errorTitle = AppStrings.OtpErrorTitle;
+
         [ObservableProperty]
         private int _secondsRemaining;
 
@@ -112,7 +119,9 @@ namespace KaamLink.Features.Auth
             catch (ApiException exception)
             {
                 // One shared mapping table for every auth error surface.
-                ShowError(LoginViewModel.MapError(exception));
+                ShowError(
+                    LoginViewModel.MapError(exception),
+                    LoginViewModel.MapErrorTitle(exception, AppStrings.OtpErrorTitle));
             }
             finally
             {
@@ -137,7 +146,9 @@ namespace KaamLink.Features.Auth
             }
             catch (ApiException exception)
             {
-                ShowError(LoginViewModel.MapError(exception));
+                ShowError(
+                    LoginViewModel.MapError(exception),
+                    LoginViewModel.MapErrorTitle(exception, AppStrings.OtpErrorTitle));
             }
             finally
             {
@@ -198,8 +209,9 @@ namespace KaamLink.Features.Auth
             _cooldownTimer = null;
         }
 
-        private void ShowError(string message)
+        private void ShowError(string message, string? title = null)
         {
+            ErrorTitle = title ?? AppStrings.OtpErrorTitle;
             ErrorMessage = message;
             HasError = true;
         }

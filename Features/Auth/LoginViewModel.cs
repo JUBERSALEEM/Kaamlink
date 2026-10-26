@@ -32,6 +32,13 @@ namespace KaamLink.Features.Auth
         [ObservableProperty]
         private bool _hasError;
 
+        /// <summary>
+        /// Banner title. The body alone is not enough: "Check the number" over a
+        /// network failure told the user their input was wrong when it was fine.
+        /// </summary>
+        [ObservableProperty]
+        private string _errorTitle = AppStrings.LoginPhoneErrorTitle;
+
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
             if (query.TryGetValue("role", out var role) && role is string roleText && roleText.Length > 0)
@@ -61,7 +68,7 @@ namespace KaamLink.Features.Auth
             }
             catch (ApiException exception)
             {
-                ShowError(MapError(exception));
+                ShowError(MapError(exception), MapErrorTitle(exception, AppStrings.LoginPhoneErrorTitle));
             }
             finally
             {
@@ -77,6 +84,13 @@ namespace KaamLink.Features.Auth
         [RelayCommand]
         private async Task BackToRolesAsync() =>
             await Shell.Current.GoToAsync(AppRoutes.Absolute(AppRoutes.Welcome));
+
+        /// <summary>
+        /// A connectivity failure must not be attributed to what the user typed,
+        /// so it gets its own title; every other case keeps the screen's own title.
+        /// </summary>
+        internal static string MapErrorTitle(ApiException exception, string inputTitle) =>
+            exception.IsOffline ? AppStrings.ErrorOfflineTitle : inputTitle;
 
         internal static string MapError(ApiException exception)
         {
@@ -97,8 +111,9 @@ namespace KaamLink.Features.Auth
             };
         }
 
-        private void ShowError(string message)
+        private void ShowError(string message, string? title = null)
         {
+            ErrorTitle = title ?? AppStrings.LoginPhoneErrorTitle;
             ErrorMessage = message;
             HasError = true;
         }

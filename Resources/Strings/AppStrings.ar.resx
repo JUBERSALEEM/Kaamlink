@@ -1006,4 +1006,7 @@
   <data name="CompanyVacanciesEmptyTitle" xml:space="preserve">
     <value>لا توجد وظائف بعد</value>
   </data>
+  <data name="ErrorOfflineTitle" xml:space="preserve">
+    <value>لا يوجد اتصال</value>
+  </data>
 </root>

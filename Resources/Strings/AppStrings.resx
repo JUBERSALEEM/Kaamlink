@@ -1018,4 +1018,7 @@
   <data name="CompanyVacanciesEmptyTitle" xml:space="preserve">
     <value>No vacancies yet</value>
   </data>
+  <data name="ErrorOfflineTitle" xml:space="preserve">
+    <value>No connection</value>
+  </data>
 </root>
