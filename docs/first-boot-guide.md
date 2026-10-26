@@ -88,17 +88,27 @@ Cleartext HTTP to `10.0.2.2` / `localhost` is explicitly allowed by
 `Platforms/Android/Resources/xml/network_security_config.xml` — for these two
 dev addresses only. Nothing else runs without TLS.
 
-**Installing an APK file directly (sideloading).** A normal Debug build uses *Fast
-Deployment*: the managed assemblies stay **out of the `.apk`** and are pushed over adb by
-`-t:Install`. Copying that `.apk` to a phone installs it and then it **closes immediately on
-launch** — the runtime has no assemblies. That is a deployment choice, not a bug in the app
-(dotnet/android#12011). For a self-contained `.apk`:
+**Installing an APK file directly (sideloading).** Two traps, both about *which* `.apk`:
 
-```bash
+* A normal Debug build uses *Fast Deployment*: the managed assemblies stay **out of the
+  `.apk`** and are pushed over adb by `-t:Install`. That file installs and then **closes
+  immediately on launch** (dotnet/android#12011).
+* A Visual Studio deploy builds for the **selected device only**. Deploy to an x86_64
+  emulator and the `.apk` it leaves behind contains only x86_64 — a real phone then says
+  **"app not compatible"** / `INSTALL_FAILED_NO_MATCHING_ABIS`.
+
+`-p:KaamLinkStandaloneApk=true` fixes both: assemblies embedded, and one universal `.apk`
+for `arm`, `arm64`, `x86`, `x64`.
+
+```powershell
 dotnet build KaamLink.csproj -c Debug -f net10.0-android -p:KaamLinkStandaloneApk=true
 adb uninstall com.kaamlink.app          # ignore "not installed"
-adb install -r bin/Debug/net10.0-android/com.kaamlink.app-Signed.apk
+adb install -r (Get-ChildItem -Recurse bin\Debug\net10.0-android -Filter com.kaamlink.app-Signed.apk | Select-Object -First 1).FullName
 ```
+
+Android version support is not a constraint: **minSdk 21 (Android 5.0) through Android 17+**,
+with no upper bound — Android installs and runs apps built for older target SDKs. `targetSdk`
+is 36; only the Play Store imposes target-SDK rules, and only for store uploads.
 
 Play Protect will warn that a sideloaded Debug APK "may be harmful" — it is signed with your
 local debug key and did not come from Play, which is expected. Choose **More details → Install
@@ -177,6 +187,7 @@ the reason is then visible to the employer.
 | `Microsoft.Maui.Controls` not found / `maui-android` workload errors | Workload missing — `dotnet workload install maui-android` (repair: `dotnet workload repair`) |
 | App restores to sign-in after a phone restart | Keystore session lost/unavailable → sign in again (refresh token rotation is server-side and correct) |
 | `docker compose up` port conflict 5432/8080 | Stop the local Postgres/other service on those ports or remap in compose |
+| **"App not compatible with your phone"** | The `.apk` has no native code for the phone's CPU — almost always an APK left by a Visual Studio deploy to an emulator (x86_64 only). Build with `-p:KaamLinkStandaloneApk=true` (all ABIs). Check with `adb shell getprop ro.product.cpu.abi` vs `unzip -l <apk> "lib/*"` |
 | **"App not installed"** when installing on the phone | Usually a stale or partial APK, or a signature clash with an older install. Uninstall first (`adb uninstall com.kaamlink.app`), confirm the build actually succeeded, then install the `-Signed.apk` |
 | **Play Protect: "app may be harmful"** | Expected for a sideloaded Debug APK (local debug key, not from Play). **More details → Install anyway** |
 | **App installs, then closes immediately** | Fast Deployment built an APK with no assemblies inside it. Rebuild with `-p:KaamLinkStandaloneApk=true`, or deploy with `-t:Install` (see §2) |

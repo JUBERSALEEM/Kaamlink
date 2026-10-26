@@ -179,6 +179,13 @@ CASES = [
         ["tools/verify-compile-surface.py"],
     ),
     (
+        "single-ABI APK (the real \"app not compatible\")",
+        "KaamLink.csproj",
+        ("<RuntimeIdentifiers>android-arm;android-arm64;android-x86;android-x64</RuntimeIdentifiers>",
+         "<RuntimeIdentifiers>android-x64</RuntimeIdentifiers>"),
+        ["tools/verify-compile-surface.py"],
+    ),
+    (
         "INTERNET permission dropped from the manifest",
         "Platforms/Android/AndroidManifest.xml",
         ('\t<uses-permission android:name="android.permission.INTERNET" />\n', ""),

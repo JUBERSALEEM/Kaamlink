@@ -801,3 +801,34 @@ Hardening that came out of it, all independent of the diagnoses above:
 
 Still **BLOCKED**: nothing here has been compiled or run (no SDK/JDK/device in this environment).
 The connectivity fix is validated only by the source-level facts above and by gate rule L.
+
+### 9.16 "Not compatible" on a phone — ABI, not Android version
+
+The phone refused the app as incompatible while asking for support up to Android 17. The app has
+**no maximum Android version**: `minSdkVersion` 21 / `targetSdk` 36, and Android installs and runs
+apps built for older target SDKs on newer releases, so Android 17 was never the blocker.
+
+The real cause is the **CPU architecture inside the `.apk`**. A Visual Studio deploy builds only
+for the device selected in the deploy dropdown; deploying to an x86_64 emulator leaves an
+x86_64-only `.apk`, and an ARM phone rejects it (`INSTALL_FAILED_NO_MATCHING_ABIS`, shown to the
+user as "app not compatible").
+
+Fixed in `KaamLink.csproj`: `-p:KaamLinkStandaloneApk=true` now also sets
+`RuntimeIdentifiers=android-arm;android-arm64;android-x86;android-x64`, `AndroidPackageFormats=apk`
+(an `.aab` cannot be installed on a phone) and `AndroidCreatePackagePerAbi=false`, on top of the
+existing `EmbedAssembliesIntoApk`. One universal, self-contained `.apk` — no emulator ABIs, no
+missing assemblies.
+
+Notes that shaped the change:
+
+* `AndroidSupportedAbis` is dead since .NET 6; RIDs are the supported mechanism (dotnet/android
+  build-properties). The gate fails if it reappears.
+* On .NET 11 (CoreCLR) the workload ships no `android-arm` / `android-x86` packs
+  (dotnet/android#12172); the csproj comment says to drop those two RIDs at that point. They are
+  kept now because V1 targets affordable older handsets.
+* The 16 KB page-size guidance is a RELRO hardening nuance on this SDK (`Microsoft.Android.Sdk
+  36.1.69`, dotnet/android#13051), not an install gate: the reporter's app ran on a 16 KB device.
+  Not treated as the cause.
+
+Gate rule M now fails the build if the sideload switch loses embedded assemblies, loses the
+universal ABI list, or can emit an `.aab`; the self-test injects a single-ABI APK and detects it.

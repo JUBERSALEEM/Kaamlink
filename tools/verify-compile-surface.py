@@ -440,6 +440,35 @@ for dev_host in http_hosts:
        f"ApiConfig: '{dev_host}' is used over http but is not permitted cleartext in "
        f"network_security_config.xml - every request from that build fails at runtime")
 
+# ------------------------------ M. sideloadable APK: every ABI, assemblies inside
+# "App not compatible" on a phone is an ABI fact, and "installs then closes" is a Fast
+# Deployment fact. Both live in the csproj, and both have bitten this project already.
+PROJECT = read("KaamLink.csproj")
+sideload = re.search(
+    r"<PropertyGroup Condition=\"'\$\(KaamLinkStandaloneApk\)' == 'true'\">([\s\S]*?)</PropertyGroup>",
+    PROJECT)
+ok(sideload is not None,
+   "csproj: the KaamLinkStandaloneApk switch is gone - there is no documented way to build "
+   "an installable APK")
+sideload_body = sideload.group(1) if sideload else ""
+
+ok("<EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>" in sideload_body,
+   "csproj: standalone APK does not embed assemblies - it installs and then crashes "
+   "(Fast Deployment, dotnet/android#12011)")
+
+ok("<AndroidPackageFormats>apk</AndroidPackageFormats>" in sideload_body,
+   "csproj: standalone switch may emit an .aab, which cannot be installed on a phone")
+
+abis = re.search(r"<RuntimeIdentifiers>([^<]+)</RuntimeIdentifiers>", sideload_body)
+rids = {rid.strip() for rid in abis.group(1).split(";")} if abis else set()
+for required in ("android-arm64", "android-arm"):
+    ok(required in rids,
+       f"csproj: standalone APK omits {required} - phones that need it report "
+       f"'app not compatible'")
+
+ok("AndroidSupportedAbis" not in PROJECT,
+   "csproj: AndroidSupportedAbis is not supported since .NET 6 (use RuntimeIdentifiers)")
+
 # ------------------------------------------------------------------------------ report
 print()
 if failures:

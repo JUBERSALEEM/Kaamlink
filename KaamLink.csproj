@@ -58,6 +58,21 @@
 	-->
 	<PropertyGroup Condition="'$(KaamLinkStandaloneApk)' == 'true'">
 		<EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+
+		<!--
+			One .apk for every phone: ARM 32/64-bit and x86/x64. A Visual Studio deploy
+			builds ONLY for the selected device, so deploying to an x86_64 emulator leaves
+			an x86_64-only .apk behind and the phone correctly answers "app not compatible"
+			(and `adb install` reports INSTALL_FAILED_NO_MATCHING_ABIS).
+			android-arm is kept because V1 targets affordable, older handsets (min API 21).
+			.NET 11 note: the CoreCLR workload ships no android-arm / android-x86 packs
+			(dotnet/android#12172); drop those two RIDs when the project moves to .NET 11.
+		-->
+		<RuntimeIdentifiers>android-arm;android-arm64;android-x86;android-x64</RuntimeIdentifiers>
+
+		<!-- A Release build defaults to an .aab, which cannot be installed on a phone. -->
+		<AndroidPackageFormats>apk</AndroidPackageFormats>
+		<AndroidCreatePackagePerAbi>false</AndroidCreatePackagePerAbi>
 	</PropertyGroup>
 
 	<ItemGroup>
