@@ -1,4 +1,5 @@
 using KaamLink.Core.Api;
+using KaamLink.Core.Presentation.Theming;
 using KaamLink.Features.Assessments;
 using KaamLink.Features.Auth;
 using KaamLink.Features.Employer;
@@ -21,7 +22,7 @@ namespace KaamLink
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                     // Icon glyphs (Lucide, ISC licence — Resources/Fonts/lucide-LICENSE.txt).
-                    // Single codepoint per icon; keys live in Colors.xaml (IconXxx) so a
+                    // Single codepoint per icon; keys live in Icons.xaml (IconXxx) so a
                     // page never inlines a private-use glyph.
                     fonts.AddFont("lucide.ttf", "Lucide");
                 });
@@ -43,6 +44,10 @@ namespace KaamLink
         /// </summary>
         private static void RegisterServices(IServiceCollection services)
         {
+            // Theme: one instance for the app lifetime; App applies the stored
+            // palette before the shell is built, pages read it for the toggle.
+            services.AddSingleton<IThemeService, ThemeService>();
+
             // Core: session + api
             services.AddSingleton<ITokenStore, SecureStorageTokenStore>();
             services.AddSingleton<SessionService>();

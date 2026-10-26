@@ -1009,4 +1009,10 @@
   <data name="ErrorOfflineTitle" xml:space="preserve">
     <value>لا يوجد اتصال</value>
   </data>
+  <data name="ThemeSwitchToDusk" xml:space="preserve">
+    <value>الوضع الليلي</value>
+  </data>
+  <data name="ThemeSwitchToLight" xml:space="preserve">
+    <value>الوضع النهاري</value>
+  </data>
 </root>

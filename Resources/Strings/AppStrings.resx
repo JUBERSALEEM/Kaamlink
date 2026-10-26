@@ -1021,4 +1021,10 @@
   <data name="ErrorOfflineTitle" xml:space="preserve">
     <value>No connection</value>
   </data>
+  <data name="ThemeSwitchToDusk" xml:space="preserve">
+    <value>Dusk mode</value>
+  </data>
+  <data name="ThemeSwitchToLight" xml:space="preserve">
+    <value>Day mode</value>
+  </data>
 </root>

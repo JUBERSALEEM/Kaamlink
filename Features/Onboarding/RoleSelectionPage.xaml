@@ -16,7 +16,7 @@
                              Spacing="16">
 
             <!-- Brand row -->
-            <Grid ColumnDefinitions="Auto,*"
+            <Grid ColumnDefinitions="Auto,*,Auto"
                   ColumnSpacing="10">
                 <Border Grid.Column="0"
                         Style="{StaticResource IconTileLarge}"
@@ -29,9 +29,34 @@
                 <Label Grid.Column="1"
                        Style="{StaticResource SectionText}"
                        FontSize="18"
-                       TextColor="{StaticResource Primary}"
+                       TextColor="{DynamicResource Primary}"
                        Text="{x:Static strings:AppStrings.AppName}"
                        VerticalOptions="Center" />
+                <!-- Theme control: a clay pill that switches the whole app palette.
+                     Tap target carries a description, and the moon/sun glyph states
+                     which mode the tap moves to. -->
+                <Border Grid.Column="2"
+                        Style="{StaticResource PillBorder}"
+                        Padding="12,6"
+                        VerticalOptions="Center"
+                        SemanticProperties.Description="{Binding ThemeToggleLabel}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ToggleThemeCommand}" />
+                    </Border.GestureRecognizers>
+                    <HorizontalStackLayout Style="{StaticResource PillContent}" Spacing="6">
+                        <Label Style="{StaticResource PillIcon}"
+                               FontSize="14"
+                               IsVisible="{Binding IsDusk, Converter={StaticResource InvertedBoolConverter}}"
+                               Text="{StaticResource IconMoon}" />
+                        <Label Style="{StaticResource PillIcon}"
+                               FontSize="14"
+                               IsVisible="{Binding IsDusk}"
+                               Text="{StaticResource IconSun}" />
+                        <Label Style="{StaticResource PillText}"
+                               FontSize="12.5"
+                               Text="{Binding ThemeToggleLabel}" />
+                    </HorizontalStackLayout>
+                </Border>
             </Grid>
 
             <!-- Hero -->
@@ -55,11 +80,11 @@
                           ColumnSpacing="12">
                         <Border Grid.Column="0"
                                 Style="{StaticResource IconTileLarge}"
-                                BackgroundColor="{StaticResource AccentSoft}"
+                                BackgroundColor="{DynamicResource AccentSoft}"
                                 VerticalOptions="Start">
                             <Label Style="{StaticResource IconGlyph}"
                                    FontSize="22"
-                                   TextColor="{StaticResource Accent}"
+                                   TextColor="{DynamicResource Accent}"
                                    Text="{StaticResource IconHardHat}"
                                    HorizontalOptions="Center" />
                         </Border>
@@ -91,7 +116,7 @@
                                 VerticalOptions="Start">
                             <Label Style="{StaticResource IconGlyph}"
                                    FontSize="22"
-                                   TextColor="{StaticResource Primary}"
+                                   TextColor="{DynamicResource Primary}"
                                    Text="{StaticResource IconBuilding}"
                                    HorizontalOptions="Center" />
                         </Border>
