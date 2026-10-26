@@ -768,8 +768,9 @@ so the whole app can switch palette at runtime.
 | Icons | moved to `Resources/Styles/Icons.xaml` (43 glyphs) because they never change with a palette |
 | Contrast | 26 AA pairs × 2 palettes, 0 failures — 55 checks (`tools/verify-theme-contrast.py`) |
 | Localization | +3 keys, 315 / 315 / 315 EN-AR-Designer |
-| New gate rules | palette baked with `StaticResource`, unknown icon key, dropped clay elevation, theme parity, engine wiring; **30 injected defects, 30 detected** |
-| Still unverified | every pixel of it: no device/emulator render, and the Android shadow appearance in particular (see the theme doc §8) |
+| New gate rules | palette baked with `StaticResource`, unknown icon key, dropped clay elevation, theme parity, engine wiring, `IList` members on the `ICollection` merged-dictionary property, disjoint keys across merged dictionaries; **31 injected defects, 31 detected** |
+| Real compiler | the first Windows build rejected `ThemeService.cs` with `CS1503`/`CS1501` (`MergedDictionaries` is `ICollection<ResourceDictionary>`, so `Insert`/`RemoveAt`/index do not exist). Fixed by removing every palette and appending the replacement, which is sound because the merged dictionaries own disjoint keys; both facts are now gated. The accompanying `XAGR7028` (missing `obj\…\lp\<n>\jl\res\…xml`) is stale build output, not app code — see `docs/first-boot-guide.md` §6 |
+| Still unverified | every pixel of it: no device/emulator render, and the Android shadow appearance in particular (see the theme doc §9) |
 
 Two defects in the first draft of this work were caught by the gates themselves: the redesign
 gate silently lost its 41 icon checks when the icons moved (an empty scan passes), and the

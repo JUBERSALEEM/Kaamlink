@@ -173,6 +173,13 @@ CASES = [
         ["tools/verify-theme-contrast.py"],
     ),
     (
+        "IList member used on an ICollection framework property (the real CS1501)",
+        "Core/Presentation/Theming/ThemeService.cs",
+        ("                merged.Add(replacement);",
+         "                merged.Insert(1, replacement);"),
+        ["tools/verify-compile-surface.py"],
+    ),
+    (
         "interface member dropped (the real CS1061)",
         "Core/Api/ApiClient.cs",
         ("        Task<StartAssessmentResponseDto> StartAssessmentAsync(Guid skillId, CancellationToken ct = default);\n\n", ""),

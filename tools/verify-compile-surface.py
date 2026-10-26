@@ -27,6 +27,7 @@ Usage: python3 tools/verify-compile-surface.py [-v]
 
 from __future__ import annotations
 
+import glob
 import os
 import re
 import sys
@@ -375,6 +376,36 @@ for dirpath, dirnames, filenames in os.walk("Features"):
         duplicates = {name for name in names if names.count(name) > 1}
         for name in sorted(duplicates):
             ok(False, f"{page}: x:Name '{name}' is declared more than once (XFC error)")
+
+# ------------------------------------- K. framework collection signatures (real CS errors)
+# CS1503/CS1501 shipped from ThemeService via Resources.MergedDictionaries: in .NET MAUI
+# that property is ICollection<ResourceDictionary>, so Insert/RemoveAt/indexer do not
+# exist on it. A regex gate cannot type-check, but it can refuse those members on a
+# collection it can prove is that property.
+FRAMEWORK_COLLECTIONS = {
+    # member: (forbidden usage on the local, why)
+    "MergedDictionaries": (
+        r"\b{var}\s*(?:\.\s*Insert\s*\(|\.\s*RemoveAt\s*\(|\s*\[)",
+        "the collection is ICollection<ResourceDictionary>: no Insert, RemoveAt or "
+        "indexer exists (CS1501/CS1503)",
+    ),
+}
+
+for path in sorted(glob.glob("Core/**/*.cs", recursive=True)
+                   + glob.glob("Features/**/*.cs", recursive=True)):
+    source = read(path)
+    lines = source.splitlines()
+    for member, (pattern, why) in FRAMEWORK_COLLECTIONS.items():
+        for line_no, line in enumerate(lines, start=1):
+            receiver = re.search(r"\bvar\s+(\w+)\s*=\s*[^;]*" + member, line)
+            if not receiver:
+                continue
+            variable = receiver.group(1)
+            ok(True, f"{path}:{line_no}: '{variable}' holds {member}")
+            forbidden = pattern.replace("{var}", re.escape(variable))
+            for offset, body_line in enumerate(lines, start=1):
+                if re.search(forbidden, body_line):
+                    ok(False, f"{path}:{offset}: '{variable}' {why}")
 
 # ------------------------------------------------------------------------------ report
 print()

@@ -1,7 +1,7 @@
 # KaamLink — Claymorphism theme and theme engine
 
 Status: **implemented, statically verified, not yet seen on a device.** Every claim below is
-checked by a gate listed in §7; runtime appearance is still unverified (§8).
+checked by a gate listed in §7; runtime appearance is still unverified (§9).
 
 Companion documents: `02-design-system-specification.md` (typography, spacing, control
 inventory — still current) and `03-implementation-and-verification-report.md` (the redesign
@@ -71,9 +71,17 @@ IThemeService / ThemeService        applies a palette, persists the choice
 **Startup.** `App` receives `IThemeService` through DI and calls `_theme.Apply(CurrentThemeId)`
 in `CreateWindow`, before the shell is built, so a dusk-theme user never sees a light flash.
 
-**Switching.** `ThemeService.Apply` removes every merged dictionary whose `Source` is a known
-palette and inserts the replacement at the same position (removing *all* of them, not just the
-active one, so a path that stops matching cannot leave a duplicate merged). Remove + insert (rather than assigning into
+**Switching.** `ThemeService.Apply` removes every merged dictionary that is a catalogue palette
+(by normalised `Source`, plus the instance it merged itself) and then appends the replacement.
+*All* of them are removed, not just the active one, so a path that stops matching cannot leave a
+duplicate merged.
+
+`Application.Resources.MergedDictionaries` is `ICollection<ResourceDictionary>` in .NET MAUI, not
+`IList` — there is no indexer, no `Insert` and no `RemoveAt` on it, so "replace in the same slot"
+is not available. Appending is only sound because **no key is defined by more than one merged
+dictionary** (icons, palette and styles are disjoint sets), which means merge *order* can never
+decide a value. That is enforced by the gate, not left to memory: a duplicated key between two
+merged dictionaries fails `verify-ui-redesign.py`. Remove + insert (rather than assigning into
 the slot) is what makes MAUI raise the resource change that repaints every `DynamicResource`
 consumer. On the next dispatcher turn it walks the live visual tree and re-applies clay
 shadows (`ClayMaterial.Refresh`), because a `Shadow` object is not a `DynamicResource` — and a
@@ -187,16 +195,25 @@ Features/**/*.xaml                46 colour refs → DynamicResource; panel radi
 | Gate | What it proves |
 |---|---|
 | `verify-theme-contrast.py` | key parity + resource kinds across palettes, 26 contrast pairs each (55 checks) |
-| `verify-ui-redesign.py` §K | catalogue files exist, palette merged, icons merged, service registered once, theme applied at startup, shadows refreshed on switch, card/tile styles keep clay elevation, toggle command bound |
+| `verify-ui-redesign.py` §K | catalogue files exist, palette merged, icons merged, service registered once, theme applied at startup, shadows refreshed on switch, no `Insert`/`RemoveAt`/indexer on the merged collection, merged dictionaries own disjoint keys, card/tile styles keep clay elevation, toggle command bound |
 | `verify-ui-redesign.py` §B | no page bakes a palette token with `StaticResource`; no raw hex; no legacy style keys |
 | `verify-ui-redesign.py` (icons) | every `Icon*` reference exists; the icon file cannot be empty |
 | `verify-bindings.py` | the new theme bindings (`ThemeToggleLabel`, `IsDusk`, `ToggleThemeCommand`) resolve |
-| `verify-compile-surface.py` | the new types are reachable from every file that uses them |
-| `verify-gates-selftest.py` | 30 injected defects, including “colour baked with StaticResource”, “icon key missing”, “clay elevation dropped”, “theme palette missing a token” |
+| `verify-compile-surface.py` | the new types are reachable from every file that uses them; a local that holds `MergedDictionaries` never uses `Insert`/`RemoveAt`/an indexer |
+| `verify-gates-selftest.py` | 31 injected defects, including “colour baked with StaticResource”, “icon key missing”, “clay elevation dropped”, “theme palette missing a token”, “IList member on an ICollection property” |
 
 ---
 
-## 8. What is still unverified
+## 8. What the real compiler rejected
+
+The first build on a Windows machine with the .NET 10 Android workload rejected two lines in
+`ThemeService.cs` — `CS1503` (argument of type `ICollection<ResourceDictionary>` passed to
+`IList<ResourceDictionary>`) and `CS1501` (`Insert` does not exist) — because the swap was written
+against `IList`. Both are fixed by the append strategy above. This is the case the regex gates
+cannot see, so `verify-compile-surface.py` now refuses `Insert`/`RemoveAt`/indexer usage on any
+local that holds `MergedDictionaries`, and `verify-gates-selftest.py` injects exactly that defect.
+
+## 9. What is still unverified
 
 * **Appearance on a device.** No emulator or device in this environment: gradients, shadow
   softness and the pressed state have never been rendered. Shadow rendering on Android depends

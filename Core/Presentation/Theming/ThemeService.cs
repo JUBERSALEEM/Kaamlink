@@ -16,6 +16,10 @@ namespace KaamLink.Core.Presentation.Theming
     {
         private const string PreferenceKey = "kaamlink.theme";
 
+        // The palette dictionary this service merged, so a source path that stops
+        // matching cannot hide it from the removal sweep.
+        private ResourceDictionary? _palette;
+
         public ThemeService() => CurrentThemeId = ReadStoredThemeId();
 
         public string CurrentThemeId { get; private set; }
@@ -28,6 +32,12 @@ namespace KaamLink.Core.Presentation.Theming
 
             void Swap()
             {
+                // MergedDictionaries is ICollection<ResourceDictionary> in .NET MAUI -
+                // no indexer, no Insert, no RemoveAt. So the replacement is appended
+                // rather than placed back in the palette's slot. That is safe only
+                // because no key is defined by more than one merged dictionary
+                // (asserted by tools/verify-ui-redesign.py section K), so merge ORDER
+                // cannot change which value a key resolves to.
                 var merged = Application.Current?.Resources.MergedDictionaries;
                 if (merged is null)
                     return;
@@ -37,14 +47,19 @@ namespace KaamLink.Core.Presentation.Theming
                     Source = new Uri(theme.PaletteSource, UriKind.Relative)
                 };
 
-                // Remove + insert (rather than assigning into the slot) is what makes
-                // MAUI raise the change that repaints DynamicResource consumers.
-                // Every catalogue palette is removed, not just the active one: if a
-                // source path ever stops matching (renamed file, leading slash), a
-                // single-palette lookup would leave a duplicate merged and the list
-                // would grow on every toggle.
-                var index = RemovePalettes(merged);
-                merged.Insert(index < 0 ? 0 : index, replacement);
+                // Remove then Add (rather than mutating in place) is what makes MAUI
+                // raise the change that repaints DynamicResource consumers. Every
+                // catalogue palette is removed, not just the tracked one: if a source
+                // path ever stops matching, a single lookup would leave the old palette
+                // merged and the collection would grow on every toggle.
+                foreach (var dictionary in merged.ToList())
+                {
+                    if (IsPalette(dictionary) || ReferenceEquals(dictionary, _palette))
+                        merged.Remove(dictionary);
+                }
+
+                merged.Add(replacement);
+                _palette = replacement;
 
                 CurrentThemeId = theme.Id;
                 WriteStoredThemeId(theme.Id);
@@ -71,26 +86,6 @@ namespace KaamLink.Core.Presentation.Theming
             var next = ThemeCatalog.Next(CurrentThemeId);
             Apply(next.Id);
             return next.Id;
-        }
-
-        /// <summary>
-        /// Removes every merged dictionary that is a catalogue palette and returns
-        /// the lowest index it occupied (-1 if none) so the caller can re-insert
-        /// there and keep the merge order (icons, palette, styles) intact.
-        /// </summary>
-        private static int RemovePalettes(IList<ResourceDictionary> merged)
-        {
-            var lowest = -1;
-            for (var index = merged.Count - 1; index >= 0; index--)
-            {
-                if (!IsPalette(merged[index]))
-                    continue;
-
-                merged.RemoveAt(index);
-                lowest = index;
-            }
-
-            return lowest;
         }
 
         private static bool IsPalette(ResourceDictionary dictionary)

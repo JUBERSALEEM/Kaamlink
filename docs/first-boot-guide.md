@@ -155,6 +155,7 @@ the reason is then visible to the employer.
 | `Microsoft.Maui.Controls` not found / `maui-android` workload errors | Workload missing — `dotnet workload install maui-android` (repair: `dotnet workload repair`) |
 | App restores to sign-in after a phone restart | Keystore session lost/unavailable → sign in again (refresh token rotation is server-side and correct) |
 | `docker compose up` port conflict 5432/8080 | Stop the local Postgres/other service on those ports or remap in compose |
+| **`XAGR7028`: "Could not find file …\obj\Debug\net10.0-android\lp\<n>\jl\res\…xml"** | **Stale build intermediates, not a code error.** `lp\…` is the extracted resource tree of the NuGet/AndroidX libraries; it is written by the build and can be left half-populated when a build is interrupted (for example by C# errors) or when two builds run at once. Close Visual Studio, delete `obj` and `bin`, rebuild. `dotnet clean` alone often leaves `lp` behind. If it returns, check that OneDrive/antivirus is not syncing `obj`, and that the path is under the Windows long-path limit |
 | Emulator can't build: missing SDK | `dotnet build` first run downloads Android SDK bits — accept licenses when prompted |
 
 ### 6a. "Package/repository could not be found" diagnostics (in order)

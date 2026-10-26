@@ -151,6 +151,24 @@ ok('_theme.Apply' in APP_CS,
 ok('ClayMaterial.Refresh' in THEME_SERVICE,
    "ThemeService: clay shadows are not refreshed after a palette swap")
 
+ok(not re.search(r'\bmerged\s*\.\s*(?:Insert|RemoveAt)\s*\(|\bmerged\s*\[', THEME_SERVICE),
+   "ThemeService: MergedDictionaries is ICollection<ResourceDictionary> - no Insert, "
+   "RemoveAt or indexer exists on it (CS1501/CS1503)")
+
+# A palette swap appends: the collection type offers no insert, so merge ORDER decides
+# which value a duplicated key resolves to. Order-independence is therefore a rule,
+# not an accident - every merged dictionary must own a disjoint set of keys.
+MERGED_DICTS = ["Resources/Styles/Icons.xaml", "Resources/Styles/Colors.xaml",
+                "Resources/Styles/Styles.xaml"]
+merged_keys = {path: set(re.findall(r'x:Key="([A-Za-z0-9_]+)"', read(path))) for path in MERGED_DICTS}
+for left in range(len(MERGED_DICTS)):
+    for right in range(left + 1, len(MERGED_DICTS)):
+        a, b = MERGED_DICTS[left], MERGED_DICTS[right]
+        overlap = sorted(merged_keys[a] & merged_keys[b])
+        ok(not overlap,
+           f"Theme: {a} and {b} both define {overlap}; a palette swap appends, so "
+           f"merge order would silently decide the value")
+
 for style_key in ("SurfaceCard", "SurfaceCardDense", "IconTile", "IconTileLarge"):
     # Match the whole <Style ...> element: BasedOn lives in the opening tag.
     block = re.search(rf'<Style [^>]*x:Key="{style_key}"[\s\S]*?</Style>', STYLES)
