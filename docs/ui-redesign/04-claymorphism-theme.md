@@ -8,14 +8,14 @@ See [`05-neumorphic-soft-ui-research.md`](05-neumorphic-soft-ui-research.md) for
 
 | Ingredient | Implementation | Location |
 |---|---|---|
-| Tonal surfaces | Cool grey-blue page, near-tone cards; equivalent charcoal dusk palette | `Resources/Styles/Colors.xaml`, `Resources/Themes/ClayDusk.xaml` |
+| Tonal surfaces | Cool blue-grey vertical gradients on page/card/soft-card, with contrast-checked top and bottom stops; equivalent charcoal dusk palette | `Resources/Styles/Colors.xaml`, `Resources/Themes/ClayDusk.xaml` |
 | Soft depth | One restrained low-opacity cast shadow per elevated view | `Core/Presentation/Clay/ClayMaterial.cs` |
 | Identifiable edges | Explicit 1dp card/field stroke and stronger native-button outlines; shadows are not the sole boundary | `Resources/Styles/Styles.xaml` |
 | Action/state | Saturated primary actions, visible 0.97 scale pressed state, disabled opacity; outlined secondary buttons | `Resources/Styles/Styles.xaml` |
 | Touch/accessibility | Native `Button` controls, text labels, semantic descriptions, 44dp+ theme/country controls and 48dp country rows | pages + styles |
 | Theme repaint | Palette keys are `DynamicResource`; `ThemeService` swaps dictionaries and refreshes shadows | `Core/Presentation/Theming/` |
 
-The current page/card surfaces are solid tonal surfaces. Gradient fills are retained for brand actions; the app does not claim a multi-shadow primitive, because MAUI `VisualElement` exposes one `Shadow` object per view.
+Page, card and soft-card surfaces now use three-stop vertical gradients (`ClayPageBrush`, `ClayCardBrush`, `ClayCardSoftBrush`) in both palettes, so the lit top edge reads as clay without relying on a second shadow. Native `Button` controls keep solid `BackgroundColor` fills: MAUI does not reliably paint a gradient on an Android `Button`, and a washed-out primary action is worse than a flat one. The app does not claim a multi-shadow primitive, because MAUI `VisualElement` exposes one `Shadow` object per view.
 
 ## 2. Elevation
 
@@ -45,9 +45,9 @@ Preference  → "kaamlink.theme"
 
 | Role | Current value(s) |
 |---|---|
-| Page | `PageBackground #E9EDF4` |
-| Card | `CardSurface #E9EDF4`; `CardSurfaceTop #F6F8FB` retained for token compatibility |
-| Quiet surface | `CardSurfaceAlt #E0E6EE` |
+| Page | `PageBackground #E8EFF9`; gradient stops `PageBackgroundTop #F4F8FE` → `PageBackgroundBottom #DCE7F5` |
+| Card | `CardSurface #EAF0F9`; gradient stops `CardSurfaceTop #FBFDFF` → `CardSurfaceBottom #D9E5F3` |
+| Quiet surface | `CardSurfaceAlt #DCE6F2`; gradient stops `#EFF5FD` → `#CFDDEE` |
 | Primary fill (top/body/base) | `#2E74C6 / #0B57A4 / #084A8C` |
 | Accent fill (top/body/base) | `#1B8078 / #0B6660 / #095651` |
 | Ink (primary/secondary/muted) | `#172638 / #34475C / #50637A` |
@@ -58,9 +58,9 @@ Preference  → "kaamlink.theme"
 
 | Role | Current value(s) |
 |---|---|
-| Page | `PageBackground #202731` |
-| Card | `CardSurface #242C36` |
-| Quiet surface | `CardSurfaceAlt #29333E` |
+| Page | `PageBackground #1F2732`; gradient stops `#27313D` → `#161D27` |
+| Card | `CardSurface #242E3A`; gradient stops `#303B49` → `#1B232D` |
+| Quiet surface | `CardSurfaceAlt #293541`; gradient stops `#354250` → `#1E2731` |
 | Primary fill (top/body/base) | `#3A72BC / #2E62A8 / #234C86` |
 | Accent fill (top/body/base) | `#17847A / #106B63 / #0B544E` |
 | Ink (primary/secondary/muted) | `#F1F4F7 / #D6DEE7 / #B8C4D0` |

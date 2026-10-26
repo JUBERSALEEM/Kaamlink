@@ -31,6 +31,23 @@ Requirements:
 | `render_mockups.py` | one function per screen; `SCREENS` lists the output order |
 | `*.png` | rendered screens (720 × 1560 @2×, design system sheet is taller) |
 
-The colour values in `mockup_kit.py` are asserted against
-`Resources/Styles/Colors.xaml` by `tools/verify-ui-redesign.py`, so a palette change
-fails verification until the mockups are regenerated.
+> **Historical set.** `render_mockups.py` documents the first flat design pass and
+> its `02-login.png` is **not** the current login screen. The current sign-in UI is
+> rendered by `tools/render-login-preview.py`, which reads the shipped
+> `Colors.xaml` / `ClayDusk.xaml` palette and `AppStrings.resx` directly:
+
+```bash
+python3 -m venv /tmp/login-preview-venv
+/tmp/login-preview-venv/bin/pip install Pillow
+/tmp/login-preview-venv/bin/python tools/render-login-preview.py --theme light --out docs/ui-redesign/mockups/login-current-light.png
+/tmp/login-preview-venv/bin/python tools/render-login-preview.py --theme dusk --out docs/ui-redesign/mockups/login-current-dusk.png
+```
+
+Those two files plus `docs/ui-redesign/app-icon-upgraded-preview.png` are the
+visual references for the current clay system and brand mark. The older `*.png`
+files remain for design history only.
+
+The colour values in `mockup_kit.py` belong to the historical palette; the live
+palette is verified by `tools/verify-theme-contrast.py` and
+`tools/verify-ui-redesign.py`, and the current login preview reads it at render
+time rather than duplicating hex values.

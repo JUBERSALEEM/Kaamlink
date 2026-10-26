@@ -159,6 +159,8 @@
                     <Border Style="{StaticResource SurfaceCardDense}" Padding="8">
                         <CollectionView HeightRequest="260"
                                         ItemsSource="{Binding SkillOptions}"
+                                        ItemSizingStrategy="MeasureFirstItem"
+                                        ItemsUpdatingScrollMode="KeepScrollOffset"
                                         SelectedItems="{Binding SelectedSkills}"
                                         SelectionMode="Multiple">
                             <CollectionView.ItemTemplate>

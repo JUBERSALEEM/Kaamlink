@@ -79,18 +79,24 @@ adb reverse tcp:8080 tcp:8080
 dotnet build KaamLink.csproj -f net10.0-android -c Debug -t:Run
 ```
 
-The app picks the URL itself, at runtime: **emulator → `http://10.0.2.2:8080/`,
-physical device → `http://localhost:8080/`** (`Core/Api/ApiConfig.cs`). A LAN IP such as
-`192.168.x.x` will **not** work: the cleartext policy below allows only those two hosts, so a
-LAN URL fails every request. Use `adb reverse`, over USB or `adb connect`.
+The app picks its default URL itself at runtime: **emulator →
+`http://10.0.2.2:8080/`, physical device → `http://localhost:8080/`**
+(`Core/Api/ApiConfig.cs`). Those two hosts are allowlisted for cleartext in
+`Platforms/Android/Resources/xml/network_security_config.xml`.
 
-Cleartext HTTP to `10.0.2.2` / `localhost` is explicitly allowed by
-`Platforms/Android/Resources/xml/network_security_config.xml` — for these two
-dev addresses only. Nothing else runs without TLS. This is only a local development route:
-when using mobile data or another Wi-Fi network, the app needs a reachable public HTTPS API
-base URL. Release currently points to an intentional `.invalid` placeholder, so having internet
-on the phone alone cannot make OTP work. A production SMS provider is also required for real
-OTP delivery; the development `log` provider only writes codes to API logs.
+For a physical phone on the same Wi-Fi without a cable, pass a Debug LAN URL, e.g.
+`-p:KaamLinkApiBaseUrl=http://192.168.1.20:8080/`. Debug builds now use a separate
+manifest (`AndroidManifest.Debug.xml`) whose policy permits cleartext LAN hosts;
+Release builds keep the strict TLS-only policy. See
+`docs/connectivity-and-release-configuration.md` for the full matrix and the
+required Release HTTPS URL.
+
+Having internet on the phone alone is still not enough for production OTP: the
+backend must be deployed to a public HTTPS origin and `Otp:Provider=log` must be
+replaced by a real SMS provider. The development `log` provider only writes codes
+to API logs. Release builds without `-p:KaamLinkApiBaseUrl=...` now warn at build
+time and show a clear "Server not configured" state instead of a reserved
+unaddressable host.
 
 **Installing an APK file directly (sideloading).** Two traps, both about *which* `.apk`:
 

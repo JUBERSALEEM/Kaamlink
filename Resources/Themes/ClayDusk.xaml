@@ -65,15 +65,15 @@
     <Color x:Key="Gray900">#F1F4F7</Color>
 
     <!-- ================= Surfaces ================= -->
-    <Color x:Key="PageBackground">#202731</Color>
-    <Color x:Key="PageBackgroundTop">#252E39</Color>
-    <Color x:Key="PageBackgroundBottom">#1A2029</Color>
-    <Color x:Key="CardSurface">#242C36</Color>
-    <Color x:Key="CardSurfaceTop">#2E3945</Color>
-    <Color x:Key="CardSurfaceBottom">#1E252E</Color>
-    <Color x:Key="CardSurfaceAlt">#29333E</Color>
-    <Color x:Key="CardSurfaceAltTop">#34414E</Color>
-    <Color x:Key="CardSurfaceAltBottom">#222A34</Color>
+    <Color x:Key="PageBackground">#1F2732</Color>
+    <Color x:Key="PageBackgroundTop">#27313D</Color>
+    <Color x:Key="PageBackgroundBottom">#161D27</Color>
+    <Color x:Key="CardSurface">#242E3A</Color>
+    <Color x:Key="CardSurfaceTop">#303B49</Color>
+    <Color x:Key="CardSurfaceBottom">#1B232D</Color>
+    <Color x:Key="CardSurfaceAlt">#293541</Color>
+    <Color x:Key="CardSurfaceAltTop">#354250</Color>
+    <Color x:Key="CardSurfaceAltBottom">#1E2731</Color>
     <Color x:Key="Border">#445261</Color>
     <Color x:Key="BorderStrong">#9AAABD</Color>
     <Color x:Key="Divider">#36424F</Color>
@@ -110,11 +110,24 @@
     <SolidColorBrush x:Key="ClayHighlightBrush" Color="{StaticResource ClayHighlight}" />
     <SolidColorBrush x:Key="ClayEdgeLowBrush" Color="{StaticResource ClayEdgeLow}" />
 
-    <SolidColorBrush x:Key="ClayPageBrush" Color="{StaticResource PageBackground}" />
+    <!-- Same gradient construction as the light palette; only the tokens change. -->
+    <LinearGradientBrush x:Key="ClayPageBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="{StaticResource PageBackgroundTop}" Offset="0.0" />
+        <GradientStop Color="{StaticResource PageBackground}" Offset="0.55" />
+        <GradientStop Color="{StaticResource PageBackgroundBottom}" Offset="1.0" />
+    </LinearGradientBrush>
 
-    <SolidColorBrush x:Key="ClayCardBrush" Color="{StaticResource CardSurface}" />
+    <LinearGradientBrush x:Key="ClayCardBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="{StaticResource CardSurfaceTop}" Offset="0.0" />
+        <GradientStop Color="{StaticResource CardSurface}" Offset="0.55" />
+        <GradientStop Color="{StaticResource CardSurfaceBottom}" Offset="1.0" />
+    </LinearGradientBrush>
 
-    <SolidColorBrush x:Key="ClayCardSoftBrush" Color="{StaticResource CardSurfaceAlt}" />
+    <LinearGradientBrush x:Key="ClayCardSoftBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="{StaticResource CardSurfaceAltTop}" Offset="0.0" />
+        <GradientStop Color="{StaticResource CardSurfaceAlt}" Offset="0.55" />
+        <GradientStop Color="{StaticResource CardSurfaceAltBottom}" Offset="1.0" />
+    </LinearGradientBrush>
 
     <LinearGradientBrush x:Key="ClayPrimaryBrush" StartPoint="0,0" EndPoint="0,1">
         <GradientStop Color="{StaticResource PrimaryFillTop}" Offset="0.0" />

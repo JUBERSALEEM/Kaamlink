@@ -240,6 +240,60 @@ CASES = [
         ('x:DataType="vm:MyApplicationsViewModel"', "x:DataType=\"{x:Null}\""),
         ["tools/verify-ui-redesign.py"],
     ),
+    (
+        "network timeout removed from shared HttpClient",
+        "Core/Api/ApiHttp.cs",
+        ("client.Timeout = TimeSpan.FromSeconds(ApiConfig.TimeoutSeconds);",
+         "client.Timeout = TimeSpan.FromSeconds(100);"),
+        ["tools/verify-connectivity.py"],
+    ),
+    (
+        "pre-flight network check removed from ApiClient",
+        "Core/Api/ApiClient.cs",
+        ("if (!_network.HasUsableNetwork())", "if (false)"),
+        ["tools/verify-connectivity.py"],
+    ),
+    (
+        "Release warning for missing API URL removed",
+        "KaamLink.csproj",
+        ('Name="WarnUnconfiguredKaamLinkApi"', 'Name="NoWarningTarget"'),
+        ["tools/verify-connectivity.py"],
+    ),
+    (
+        "Debug LAN cleartext policy disabled",
+        "Platforms/Android/Resources/xml/network_security_config_debug.xml",
+        ('<base-config cleartextTrafficPermitted="true">',
+         '<base-config cleartextTrafficPermitted="false">'),
+        ["tools/verify-connectivity.py"],
+    ),
+    (
+        "theme shadow dispatcher condition inverted",
+        "Core/Presentation/Theming/ThemeService.cs",
+        ("if (dispatcher is not null && dispatcher.IsDispatchRequired)",
+         "if (dispatcher is not null && !dispatcher.IsDispatchRequired)"),
+        ["tools/verify-connectivity.py"],
+    ),
+    (
+        "light clay page brush regressed to a flat fill",
+        "Resources/Styles/Colors.xaml",
+        ('<LinearGradientBrush x:Key="ClayPageBrush"',
+         '<SolidColorBrush x:Key="ClayPageBrush"'),
+        ["tools/verify-connectivity.py"],
+    ),
+    (
+        "dusk clay card brush regressed to a flat fill",
+        "Resources/Themes/ClayDusk.xaml",
+        ('<LinearGradientBrush x:Key="ClayCardBrush"',
+         '<SolidColorBrush x:Key="ClayCardBrush"'),
+        ["tools/verify-ui-redesign.py"],
+    ),
+    (
+        "session cold start skips the endpoint/network pre-flight",
+        "Core/Api/SessionService.cs",
+        ("private bool CanReachApi => ApiConfig.IsConfigured && _network.HasUsableNetwork();",
+         "private bool CanReachApi => true;"),
+        ["tools/verify-connectivity.py"],
+    ),
 ]
 
 

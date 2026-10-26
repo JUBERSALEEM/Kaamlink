@@ -97,8 +97,13 @@ namespace KaamLink.Core.Api
         }
 
         private readonly HttpClient _http;
+        private readonly INetworkStatus _network;
 
-        public ApiClient(HttpClient http) => _http = http;
+        public ApiClient(HttpClient http, INetworkStatus network)
+        {
+            _http = http;
+            _network = network;
+        }
 
         public Task<RequestOtpResponseDto> RequestOtpAsync(string phone, CancellationToken ct = default) =>
             SendAsync<RequestOtpResponseDto>(HttpMethod.Post, "auth/otp/request",
@@ -254,6 +259,22 @@ namespace KaamLink.Core.Api
             if (body is not null && bodyTypeInfo is not null)
                 request.Content = JsonContent.Create(body, bodyTypeInfo);
 
+            // Fail fast on the two causes a user cannot fix by retrying: an
+            // unconfigured Release endpoint and a device with no usable network.
+            // Both would otherwise wait for HttpClient.Timeout or DNS failure.
+            if (!ApiConfig.IsConfigured)
+            {
+                var issue = ApiConfig.ConfigurationIssue ?? "The API endpoint is not configured.";
+                Console.WriteLine($"[KaamLink] API configuration: {issue}");
+                throw ApiException.Misconfigured(issue);
+            }
+
+            if (!_network.HasUsableNetwork())
+            {
+                Console.WriteLine($"[KaamLink] no usable network ({_network.Describe()}) for {request.RequestUri}");
+                throw ApiException.NoInternet();
+            }
+
             HttpResponseMessage response;
             try
             {
@@ -316,7 +337,9 @@ namespace KaamLink.Core.Api
         private void LogTransportFailure(HttpRequestMessage request, Exception exception) =>
             Console.WriteLine(
                 $"[KaamLink] {request.Method} {request.RequestUri} failed: " +
-                $"{exception.GetType().Name}: {exception.Message} (base address: {_http.BaseAddress})");
+                $"{exception.GetType().Name}: {exception.Message} " +
+                $"(base address: {_http.BaseAddress}, source: {ApiConfig.ConfigurationSource}, " +
+                $"network: {_network.Describe()})");
 
         private static async Task<ApiException> ToApiExceptionAsync(
             HttpResponseMessage response, CancellationToken ct)

@@ -87,6 +87,8 @@
         <!-- Results -->
         <CollectionView Grid.Row="1"
                         ItemsSource="{Binding Items}"
+                        ItemSizingStrategy="MeasureFirstItem"
+                        ItemsUpdatingScrollMode="KeepScrollOffset"
                         SelectionMode="None"
                         Margin="16,0,16,0">
 

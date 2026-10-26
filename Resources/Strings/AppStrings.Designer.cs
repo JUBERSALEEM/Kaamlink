@@ -524,6 +524,10 @@ namespace KaamLink.Resources.Strings
         public static string VacancyEditSkillsHint => ResourceManager.GetString(nameof(VacancyEditSkillsHint), Culture)!;
         public static string CompanyVacanciesEmptyTitle => ResourceManager.GetString(nameof(CompanyVacanciesEmptyTitle), Culture)!;
         public static string ErrorOfflineTitle => ResourceManager.GetString(nameof(ErrorOfflineTitle), Culture)!;
+        public static string ErrorNoInternet => ResourceManager.GetString(nameof(ErrorNoInternet), Culture)!;
+        public static string ErrorNoInternetTitle => ResourceManager.GetString(nameof(ErrorNoInternetTitle), Culture)!;
+        public static string ErrorApiNotConfigured => ResourceManager.GetString(nameof(ErrorApiNotConfigured), Culture)!;
+        public static string ErrorApiNotConfiguredTitle => ResourceManager.GetString(nameof(ErrorApiNotConfiguredTitle), Culture)!;
         public static string ThemeSwitchToDusk => ResourceManager.GetString(nameof(ThemeSwitchToDusk), Culture)!;
         public static string ThemeSwitchToLight => ResourceManager.GetString(nameof(ThemeSwitchToLight), Culture)!;
         public static string LoginWelcomeHeadline => ResourceManager.GetString(nameof(LoginWelcomeHeadline), Culture)!;

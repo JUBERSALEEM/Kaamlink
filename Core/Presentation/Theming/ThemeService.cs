@@ -84,7 +84,7 @@ namespace KaamLink.Core.Presentation.Theming
                 // loaded before shadows read ClayShadowBrush from it; resolving too
                 // early would give every shadow the fallback colour.
                 var dispatcher = Application.Current?.Dispatcher;
-                if (dispatcher is not null && !dispatcher.IsDispatchRequired)
+                if (dispatcher is not null && dispatcher.IsDispatchRequired)
                     dispatcher.Dispatch(RefreshClayShadows);
                 else
                     RefreshClayShadows();

@@ -154,6 +154,18 @@
   <data name="ErrorOffline" xml:space="preserve">
     <value>تعذر الاتصال بخادم كاملينك. تحقق من اتصالك أو أعد المحاولة لاحقًا.</value>
   </data>
+  <data name="ErrorNoInternet" xml:space="preserve">
+    <value>لا يوجد اتصال بالإنترنت. شغّل شبكة Wi-Fi أو بيانات الهاتف، ثم أعد المحاولة.</value>
+  </data>
+  <data name="ErrorNoInternetTitle" xml:space="preserve">
+    <value>لا يوجد اتصال بالإنترنت</value>
+  </data>
+  <data name="ErrorApiNotConfigured" xml:space="preserve">
+    <value>عنوان خادم التطبيق غير مضبط. أعد تثبيت نسخة تحتوي على عنوان API صالح يبدأ بـ HTTPS.</value>
+  </data>
+  <data name="ErrorApiNotConfiguredTitle" xml:space="preserve">
+    <value>الخادم غير مضبط</value>
+  </data>
   <data name="ErrorTooManyAttempts" xml:space="preserve">
     <value>محاولات كثيرة جدًا. انتظر قليلًا ثم حاول مجددًا.</value>
   </data>

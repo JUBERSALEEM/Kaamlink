@@ -642,7 +642,7 @@ path to converting the BLOCKED/PARTIAL rows below into PASS:
 | R5 | 66 backend error codes, 13 mapped | unusual failures surface as the localized generic message | intentional (`Detail` is never shown); extend `ApiClient.Codes` + `MapError` as needed |
 | R6 | Assessment abandonment leaves a server-side attempt open | the backend decides its lifetime; the client shows the next state from the API | verified the UI reports `assessment.not_available` / `already_completed` correctly |
 | R7 | `ApplyQueryAttributes` starts the assessment with `_ = StartAsync()` | any exception type not derived from `ApiException` inside the task would be unobserved | `StartAsync` wraps its whole body in `try/finally` and all API failures now surface as `ApiException` (D6) |
-| R8 | A **Release** build has no real endpoint: `ApiConfig.BaseUrl` is `https://replace-me-when-environments-exist.kaamlink.invalid/` (DEBUG resolves at runtime to `http://10.0.2.2:8080/` on an emulator and `http://localhost:8080/` on a phone, and `network_security_config.xml` allows cleartext to exactly those hosts) | a Release APK cannot reach any API, so it is not shippable regardless of the UI work | hosting/staging is explicitly a later phase; a release candidate needs the real base URL first |
+| R8 | A **Release** build originally had no real endpoint: `ApiConfig.BaseUrl` was `https://replace-me-when-environments-exist.kaamlink.invalid/` (DEBUG resolves at runtime to `http://10.0.2.2:8080/` on an emulator and `http://localhost:8080/` on a phone, and `network_security_config.xml` allows cleartext to exactly those hosts) | a Release APK could not reach any API, so it was not shippable regardless of the UI work | **Client-side root cause fixed later (§9.15):** Release now reads `-p:KaamLinkApiBaseUrl=https://api.example.com/`, warns when absent and shows a localized setup state. A public HTTPS deployment + SMS provider are still required |
 | R9 | A 401 whose silent refresh fails for a *transient* reason (offline, 5xx) still surfaces as 401, so the view model routes to the welcome screen | the user appears signed out on a network blip (tokens are kept, so a restart recovers) | pre-existing session contract (`RefreshAsync` returns a bool); distinguishing "session over" from "could not refresh" needs an `ISessionService` change and was deliberately out of scope for a UI pass |
 
 ### 9.11 Release readiness — verdict
@@ -658,7 +658,7 @@ path to converting the BLOCKED/PARTIAL rows below into PASS:
 | Defects found in this pass fixed, with the tree green afterwards | **PASS** (11 defects: D1–D11, including the D9 login blocker, the D10 build blocker and the D11 contradictory error title) |
 | Android build | **BLOCKED** — no SDK/JDK/Android SDK and no egress to obtain them (§9.6). The reviewer's Visual Studio build reached the compiler and found one interface defect, now fixed (§9.12) |
 | Runtime, navigation, forms, TalkBack, RTL rendering, screenshots | **PARTIAL** — the app was built, deployed and launched on a Pixel 7 API 36 emulator; login screen and its offline state verified visually (§9.13). Journeys, TalkBack, RTL rendering and screenshots of the other 14 screens still unverified |
-| Release configuration can reach a real backend | **BLOCKED** — `ApiConfig.BaseUrl` (Release) is an intentional `.invalid` placeholder; a release APK would have no API to talk to (R8) |
+| Release configuration can reach a real backend | **PARTIAL** — the reserved `.invalid` placeholder is gone and Release accepts a public HTTPS URL at build time (§9.15). Still **BLOCKED** on someone supplying/deploying that URL and a production SMS provider (R8) |
 | Small-screen and large-font behaviour | **PARTIAL** — designed for it, never measured |
 | Performance on a low-end device | **PARTIAL** — virtualised feed, no raster assets, never profiled |
 
@@ -771,6 +771,23 @@ so the whole app can switch palette at runtime.
 | New gate rules | palette baked with `StaticResource`, unknown icon key, dropped clay elevation, theme parity, engine wiring, `IList` members on the `ICollection` merged-dictionary property, disjoint keys across merged dictionaries; **31 injected defects, 31 detected** |
 | Real compiler | the first Windows build rejected `ThemeService.cs` with `CS1503`/`CS1501` (`MergedDictionaries` is `ICollection<ResourceDictionary>`, so `Insert`/`RemoveAt`/index do not exist). Fixed by removing every palette and appending the replacement, which is sound because the merged dictionaries own disjoint keys; both facts are now gated. The accompanying `XAGR7028` (missing `obj\…\lp\<n>\jl\res\…xml`) is stale build output, not app code — see `docs/first-boot-guide.md` §6 |
 | Still unverified | every pixel of it: no device/emulator render, and the Android shadow appearance in particular (see the theme doc §9) |
+
+### 9.15 Later connectivity / UI hardening pass (2026-10-26)
+
+A follow-up pass removed the client-side half of R8 and upgraded the material system.
+This section is additive; the historical counts above describe their own commit.
+
+| Item | Result |
+|---|---|
+| Release endpoint | `ApiConfig` reads `-p:KaamLinkApiBaseUrl=https://…/` from `AssemblyMetadata`; no reserved host remains. Unconfigured Release warns at build time and shows a localized "Server not configured" state (`docs/connectivity-and-release-configuration.md`) |
+| Debug over Wi-Fi | Debug-only `AndroidManifest.Debug.xml` + `network_security_config_debug.xml` allow a LAN URL; Release stays TLS-only. `adb reverse` remains supported but is no longer the only physical-device route |
+| Transport | `ApiHttp.Configure` gives both HttpClients the same `BaseAddress`, 15 s timeout and JSON accept header; `SessionService` now uses `IHttpClientFactory` instead of a static client; timeouts are handled in refresh/reload/logout |
+| Error taxonomy | `client.no_internet`, `client.api_not_configured` and offline are distinct, with EN/AR copy and titles |
+| Theme | both palettes use `LinearGradientBrush` for page/card/soft-card surfaces; new tokens are contrast-checked; the theme dispatcher condition was corrected; `CollectionView` item sizing/scroll retention added on three lists |
+| Brand | `appicon.svg`, `appiconfg.svg`, `kaamlink-mark.svg`, `splash.svg` and `login-hero.svg` now share a rich cobalt/navy gradient and mint linked-K mark |
+| Previews | `tools/render-login-preview.py` reads the shipped palette + strings to draw current light/dusk login screens; old `02-login.png` is explicitly historical |
+| New gate | `tools/verify-connectivity.py` (41 checks) plus 8 new injected defects in `verify-gates-selftest.py`; `tools/verify-all.sh` runs the whole suite |
+| Still unverified | `dotnet build`, XamlC, real-device network journey on mobile data, Android shadow/gradient rendering, production OTP delivery and performance profiling. No public HTTPS API URL or SMS credentials were supplied |
 
 Two defects in the first draft of this work were caught by the gates themselves: the redesign
 gate silently lost its 41 icon checks when the icons moved (an empty scan passes), and the

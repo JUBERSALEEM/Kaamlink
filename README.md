@@ -33,10 +33,14 @@ with employers (factories, workshops, contractors, SMEs, warehouses) — built a
 **UI redesign — every active screen rebuilt on one design system (blue-led, Lucide icons,
 EN/AR, 48dp targets, truthful states):** audit, 23 mockups, design-system spec and the
 implementation/verification report live in [docs/ui-redesign/](docs/ui-redesign).
-Static gates: `tools/verify-phase03.py` (103), `verify-phase04.py` (105),
-`verify-phase05.py` (88), `verify-bindings.py` (347 compiled bindings),
-`verify-ui-redesign.py` (350). **The redesign has not been built or run: this environment
-has no .NET/Android SDK** — see §4 of the report.
+Static gates: `tools/verify-all.sh` runs `verify-phase03.py` (105),
+`verify-phase04.py` (105), `verify-phase05.py` (88), `verify-bindings.py` (368 compiled
+bindings), `verify-theme-contrast.py` (55), `verify-ui-redesign.py` (441),
+`verify-compile-surface.py` (347) and `verify-connectivity.py` (41), plus the negative
+gate self-tests. Connectivity/Release setup is documented in
+[docs/connectivity-and-release-configuration.md](docs/connectivity-and-release-configuration.md).
+**The redesign has not been built or run in this environment: no .NET/Android SDK** —
+see §4 of the report.
 
 **Want to run it? → [docs/first-boot-guide.md](docs/first-boot-guide.md)**
 (backend up → app on emulator/device → sign in with your phone → onboard → home).

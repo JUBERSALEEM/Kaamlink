@@ -180,6 +180,8 @@
                            Text="{Binding CountrySearchText}" />
                     <CollectionView Grid.Row="2"
                                     ItemsSource="{Binding FilteredCountries}"
+                                    ItemSizingStrategy="MeasureFirstItem"
+                                    ItemsUpdatingScrollMode="KeepScrollOffset"
                                     SelectionMode="None">
                         <CollectionView.EmptyView>
                             <Label Style="{StaticResource BodyText}"

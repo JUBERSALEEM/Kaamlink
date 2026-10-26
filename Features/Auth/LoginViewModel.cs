@@ -223,11 +223,21 @@ namespace KaamLink.Features.Auth
             }
         }
 
-        internal static string MapErrorTitle(ApiException exception, string inputTitle) =>
-            exception.IsOffline ? AppStrings.ErrorOfflineTitle : inputTitle;
+        internal static string MapErrorTitle(ApiException exception, string inputTitle)
+        {
+            if (exception.IsNoInternet)
+                return AppStrings.ErrorNoInternetTitle;
+            if (exception.IsMisconfigured)
+                return AppStrings.ErrorApiNotConfiguredTitle;
+            return exception.IsOffline ? AppStrings.ErrorOfflineTitle : inputTitle;
+        }
 
         internal static string MapError(ApiException exception)
         {
+            if (exception.IsNoInternet)
+                return AppStrings.ErrorNoInternet;
+            if (exception.IsMisconfigured)
+                return AppStrings.ErrorApiNotConfigured;
             if (exception.IsOffline)
                 return AppStrings.ErrorOffline;
             return exception.Code switch

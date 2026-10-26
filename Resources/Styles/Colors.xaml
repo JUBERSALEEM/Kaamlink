@@ -75,15 +75,15 @@
     <Color x:Key="Gray900">#172638</Color>
 
     <!-- ================= Surfaces ================= -->
-    <Color x:Key="PageBackground">#E9EDF4</Color>
-    <Color x:Key="PageBackgroundTop">#EFF2F6</Color>
-    <Color x:Key="PageBackgroundBottom">#E1E7EF</Color>
-    <Color x:Key="CardSurface">#E9EDF4</Color>
-    <Color x:Key="CardSurfaceTop">#F6F8FB</Color>
-    <Color x:Key="CardSurfaceBottom">#E0E6EE</Color>
-    <Color x:Key="CardSurfaceAlt">#E0E6EE</Color>
-    <Color x:Key="CardSurfaceAltTop">#EEF1F6</Color>
-    <Color x:Key="CardSurfaceAltBottom">#D6DEE8</Color>
+    <Color x:Key="PageBackground">#E8EFF9</Color>
+    <Color x:Key="PageBackgroundTop">#F4F8FE</Color>
+    <Color x:Key="PageBackgroundBottom">#DCE7F5</Color>
+    <Color x:Key="CardSurface">#EAF0F9</Color>
+    <Color x:Key="CardSurfaceTop">#FBFDFF</Color>
+    <Color x:Key="CardSurfaceBottom">#D9E5F3</Color>
+    <Color x:Key="CardSurfaceAlt">#DCE6F2</Color>
+    <Color x:Key="CardSurfaceAltTop">#EFF5FD</Color>
+    <Color x:Key="CardSurfaceAltBottom">#CFDDEE</Color>
     <Color x:Key="Border">#C2CCD9</Color>
     <!-- Input outlines need 3:1 non-text contrast (WCAG 1.4.11). -->
     <Color x:Key="BorderStrong">#6E8198</Color>
@@ -125,11 +125,28 @@
     <SolidColorBrush x:Key="ClayEdgeLowBrush" Color="{StaticResource ClayEdgeLow}" />
 
     <!-- Clay gradients: light from above, so the top of every surface is lighter. -->
-    <SolidColorBrush x:Key="ClayPageBrush" Color="{StaticResource PageBackground}" />
+    <!--
+        Clay surfaces are vertical gradients: light from above, a calm body and a
+        slightly cooler base. The top/bottom colours are also contrast-checked, so
+        text stays readable at both ends of every card.
+    -->
+    <LinearGradientBrush x:Key="ClayPageBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="{StaticResource PageBackgroundTop}" Offset="0.0" />
+        <GradientStop Color="{StaticResource PageBackground}" Offset="0.55" />
+        <GradientStop Color="{StaticResource PageBackgroundBottom}" Offset="1.0" />
+    </LinearGradientBrush>
 
-    <SolidColorBrush x:Key="ClayCardBrush" Color="{StaticResource CardSurface}" />
+    <LinearGradientBrush x:Key="ClayCardBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="{StaticResource CardSurfaceTop}" Offset="0.0" />
+        <GradientStop Color="{StaticResource CardSurface}" Offset="0.55" />
+        <GradientStop Color="{StaticResource CardSurfaceBottom}" Offset="1.0" />
+    </LinearGradientBrush>
 
-    <SolidColorBrush x:Key="ClayCardSoftBrush" Color="{StaticResource CardSurfaceAlt}" />
+    <LinearGradientBrush x:Key="ClayCardSoftBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="{StaticResource CardSurfaceAltTop}" Offset="0.0" />
+        <GradientStop Color="{StaticResource CardSurfaceAlt}" Offset="0.55" />
+        <GradientStop Color="{StaticResource CardSurfaceAltBottom}" Offset="1.0" />
+    </LinearGradientBrush>
 
     <!-- Primary clay: saturated, still with a lighter top so it looks moulded. -->
     <LinearGradientBrush x:Key="ClayPrimaryBrush" StartPoint="0,0" EndPoint="0,1">

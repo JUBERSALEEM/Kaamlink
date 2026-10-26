@@ -369,6 +369,10 @@ for theme_path in THEME_FILES:
     theme_text = open(theme_path, encoding="utf-8").read()
     missing = sorted(set(re.findall(r'x:Key="(\w+)"', COLORS)) - set(re.findall(r'x:Key="(\w+)"', theme_text)))
     ok(not missing, f"{theme_path}: missing palette keys {missing[:6]}")
+    for brush_key in ("ClayPageBrush", "ClayCardBrush", "ClayCardSoftBrush"):
+        ok(re.search(rf'<LinearGradientBrush x:Key="{brush_key}"', COLORS) is not None
+           and re.search(rf'<LinearGradientBrush x:Key="{brush_key}"', theme_text) is not None,
+           f"{theme_path}: {brush_key} is flat or out of parity with the light palette")
 
 # The clay styles must actually ask for clay (a style that silently loses its
 # elevation is a flat card that still passes every other rule).

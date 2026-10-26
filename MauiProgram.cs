@@ -60,13 +60,17 @@ namespace KaamLink
             // palette before the shell is built, pages read it for the toggle.
             services.AddSingleton<IThemeService, ThemeService>();
 
-            // Core: session + api
+            // Core: session + api. Both HttpClients share ApiHttp.Configure, so a
+            // stale BaseAddress or missing timeout cannot diverge between the API
+            // and the silent-refresh client.
+            services.AddSingleton<INetworkStatus, NetworkStatus>();
             services.AddSingleton<ITokenStore, SecureStorageTokenStore>();
+            services.AddHttpClient(ApiHttp.AuthClientName, ApiHttp.Configure);
             services.AddSingleton<SessionService>();
             services.AddSingleton<ISessionService>(sp => sp.GetRequiredService<SessionService>());
             services.AddTransient<AuthHeaderHandler>();
             services
-                .AddHttpClient<IApiClient, ApiClient>(client => client.BaseAddress = ApiConfig.BaseUri)
+                .AddHttpClient<IApiClient, ApiClient>(ApiHttp.Configure)
                 .AddHttpMessageHandler<AuthHeaderHandler>();
 
             // Entry point

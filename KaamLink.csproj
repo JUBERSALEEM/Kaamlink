@@ -39,6 +39,15 @@
 		<ApplicationDisplayVersion>0.1</ApplicationDisplayVersion>
 		<ApplicationVersion>1</ApplicationVersion>
 
+		<!--
+			Public HTTPS API base URL for Release/staging builds, e.g.
+			-p:KaamLinkApiBaseUrl=https://api.example.com/
+			Debug builds may also use this for a cleartext LAN host; the Debug-only
+			Android manifest permits cleartext. Never put secrets in this URL.
+		-->
+		<KaamLinkApiBaseUrl Condition="'$(KaamLinkApiBaseUrl)' == ''"></KaamLinkApiBaseUrl>
+		<AndroidManifest Condition="'$(Configuration)' == 'Debug'">Platforms\Android\AndroidManifest.Debug.xml</AndroidManifest>
+
 		<!-- Minimum Android 5.0 (API 21): required to reach the affordable devices this product targets. -->
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
 	</PropertyGroup>
@@ -112,5 +121,24 @@
 		<!-- MVVM source generators ([ObservableProperty]/[RelayCommand]) — the app's MVVM standard. -->
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 	</ItemGroup>
+
+	<!-- Bake the configured API URL into assembly metadata; ApiConfig reads it at runtime. -->
+	<ItemGroup Condition="'$(KaamLinkApiBaseUrl)' != ''">
+		<AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+			<_Parameter1>KaamLink.ApiBaseUrl</_Parameter1>
+			<_Parameter2>$(KaamLinkApiBaseUrl)</_Parameter2>
+		</AssemblyAttribute>
+	</ItemGroup>
+
+	<!--
+		Never silently ship another unaddressable Release APK. A Release build without
+		a URL still compiles for UI review, but warns and the app shows a clear
+		"server not configured" state instead of pretending the device is offline.
+	-->
+	<Target Name="WarnUnconfiguredKaamLinkApi"
+	        BeforeTargets="Build"
+	        Condition="'$(Configuration)' == 'Release' and '$(KaamLinkApiBaseUrl)' == ''">
+		<Warning Text="KaamLinkApiBaseUrl is not set. Pass -p:KaamLinkApiBaseUrl=https://api.example.com/ for a build that can reach the backend." />
+	</Target>
 
 </Project>

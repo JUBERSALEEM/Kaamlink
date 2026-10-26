@@ -440,6 +440,22 @@ for dev_host in http_hosts:
        f"ApiConfig: '{dev_host}' is used over http but is not permitted cleartext in "
        f"network_security_config.xml - every request from that build fails at runtime")
 
+# Debug-only LAN testing must stay isolated from the Release TLS policy. Without
+# this split, either a physical phone cannot reach a LAN API (the old bug) or
+# every shipped build would allow plaintext traffic (a security regression).
+PROJECT_EARLY = read("KaamLink.csproj")
+DEBUG_MANIFEST = read("Platforms/Android/AndroidManifest.Debug.xml")
+DEBUG_CONFIG = read("Platforms/Android/Resources/xml/network_security_config_debug.xml")
+ok('android:networkSecurityConfig="@xml/network_security_config_debug"' in DEBUG_MANIFEST,
+   "AndroidManifest.Debug: missing the Debug-only cleartext policy")
+ok(re.search(r'<base-config[^>]*cleartextTrafficPermitted="true"', DEBUG_CONFIG) is not None,
+   "network_security_config_debug: Debug LAN cleartext is disabled")
+ok(r"""<AndroidManifest Condition="'$(Configuration)' == 'Debug'">Platforms\Android\AndroidManifest.Debug.xml</AndroidManifest>"""
+   in PROJECT_EARLY,
+   "csproj: Debug configuration does not select AndroidManifest.Debug.xml")
+ok("KaamLinkApiBaseUrl" in PROJECT_EARLY and "AssemblyMetadataAttribute" in PROJECT_EARLY,
+   "csproj: configured API URL is not embedded in assembly metadata")
+
 # ------------------------------ M. sideloadable APK: every ABI, assemblies inside
 # "App not compatible" on a phone is an ABI fact, and "installs then closes" is a Fast
 # Deployment fact. Both live in the csproj, and both have bitten this project already.
