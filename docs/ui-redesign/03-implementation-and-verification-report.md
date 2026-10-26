@@ -2,8 +2,8 @@
 
 Status: **implementation complete, static verification green, build/runtime verification BLOCKED (no SDK or device in
 this environment).** A dedicated release-verification pass was run afterwards and is recorded in [§9](#9-post-fix-release-verification-gate);
-it found and fixed nine defects — one of them a login blocker — and it does not change the
-build/runtime verdict.
+it found and fixed ten defects — one a login blocker and one a build blocker reported by the
+real compiler — and it does not change the build/runtime verdict (§9.12).
 Branch: `arena/44c99984-kaamlink`. Base commit: `de54334`. Reports for the earlier phases:
 `00-repository-and-screen-audit.md`, `01-mockup-catalog.md`, `02-design-system-specification.md`.
 
@@ -111,8 +111,10 @@ All commands were run in this workspace, in this order, at the end of the work.
 | Localization parity | resx/Designer inventory | **312 / 312 / 312** (EN / AR / Designer) |
 
 > These are the counts as first measured. The gates were hardened afterwards (two rules were
-> silently green — see §9.5 D1–D3), so the current counts are **349 compiled bindings** and
-> **375 redesign checks**; §9.2 re-runs every gate with exit codes at the tip of the branch.
+> silently green — see §9.5 D1–D3) and a compile-surface gate was added after a real build
+> exposed a defect these gates could not see (§9.12), so the current counts are
+> **349 compiled bindings**, **381 redesign checks** and **301 compile-surface checks**;
+> §9.2 re-runs every gate with exit codes at the tip of the branch.
 
 ### What the new gates actually check
 
@@ -218,7 +220,7 @@ network flows behave. Those need a build and a device (see §4).
 | Emulator / physical device run | **BLOCKED** | no SDK, no emulator, no device |
 | Screenshot comparison against mockups | **NOT PERFORMED** | requires a running app; the 23 mockups in `docs/ui-redesign/mockups/` remain the visual reference, not a proof of the built UI |
 | XAML well-formedness | PASS | all 15 pages parse as XML |
-| XamlC binding resolution | PASS (static) | `tools/verify-bindings.py`, 347 bindings |
+| XamlC binding resolution | PASS (static) | `tools/verify-bindings.py`, 349 bindings |
 
 No build was attempted and failed for a code reason; the toolchain is simply absent. **No
 claim of a passing build or a working app is made anywhere in this report.**
@@ -322,7 +324,8 @@ Platforms/Android/Resources/values/colors.xml, KaamLink.csproj, AppIcon, Splash
                                            brand surfaces re-coloured to the new blue
 Core/Text/DigitText.cs                     Arabic-Indic → ASCII digit normalization (§9.5 D5)
 Core/Api/ApiClient.cs                     transports timeout/malformed-body failures as ApiException
-tools/{verify-bindings,verify-ui-redesign}.py          new gates (349 bindings / 375 checks)
+tools/{verify-bindings,verify-ui-redesign}.py          new gates (349 bindings / 381 checks)
+tools/verify-compile-surface.py            cross-file compile proxy (301 checks, §9.12)
 tools/verify-gates-selftest.py             17 injected defects, all must be caught (§9.5)
 tools/add-strings.py                       resx + Designer + AR writer used for every new key
 docs/ui-redesign/00,01,02,03               audit, mockup catalogue, design system, this report
@@ -371,6 +374,9 @@ the report commits are interleaved (D9 was found after `c8be061`, so it lands as
 | `067d06a` | gate: require escaped route values to be decoded by their consumer |
 | `03b46b4` | docs: record the D9 login-blocker fix and the final gate counts |
 | `00692cc` | docs: release-build endpoint and refresh-failure risks (R8, R9) |
+| `e55b26b`, `0fa7fc7` | docs: keep the verification commit list and head SHA accurate |
+| `8644329` | fix: declare the three Phase-05 assessment methods on IApiClient |
+| `8b96f4e` | gate: compile-surface checker for the cross-file contracts a compiler enforces |
 
 ### 9.1 Git state — checked, not assumed
 
@@ -414,8 +420,9 @@ report `tail`'s status instead):
 | 3 | `python3 tools/verify-phase05.py` | **0** | `88 checks, 0 failures — ALL STATIC CHECKS PASSED` |
 | 4 | `python3 tools/verify-bindings.py` | **0** | `15 pages, 314 types, 349 compiled bindings checked` |
 | 5 | `python3 tools/verify-ui-redesign.py` | **0** | `381 checks, 0 failures — ALL REDESIGN CHECKS PASSED` |
-| 6 | `python3 tools/verify-gates-selftest.py` | **0** | `all 18 injected defects were detected; tree restored clean` |
-| 7 | `python3 tools/add-strings.py --check` | **0** | `OK — en=312 ar=312 designer=312` |
+| 6 | `python3 tools/verify-compile-surface.py` | **0** | `301 checks, 0 failures — COMPILE SURFACE CONSISTENT` |
+| 7 | `python3 tools/verify-gates-selftest.py` | **0** | `all 26 injected defects were detected; tree restored clean` |
+| 8 | `python3 tools/add-strings.py --check` | **0** | `OK — en=312 ar=312 designer=312` |
 
 **Why the counts moved** (350 → 381 redesign checks, 347 → 349 bindings). Nothing was dropped;
 the new rules are additive, and the gate was hardened *after* §3 was written:
@@ -638,15 +645,57 @@ path to converting the BLOCKED/PARTIAL rows below into PASS:
 | Criterion | Status |
 |---|---|
 | Repository state matches the intended redesign (no stray edits, no lost features) | **PASS** |
-| All five existing gates + localization parity, re-run at this commit | **PASS** (103 / 105 / 88 / 349 bindings / 375 checks, exit 0 each) |
-| Negative tests prove the gates still detect defects | **PASS** (17 / 17 injected, tree restored) |
+| All gates + localization parity, re-run at this commit | **PASS** (103 / 105 / 88 / 349 bindings / 381 redesign checks / 301 compile-surface checks, exit 0 each) |
+| Negative tests prove the gates still detect defects | **PASS** (26 / 26 injected, tree restored) |
 | Each previously reported bug traced to source, state change and navigation result | **PASS** (7 / 7) |
-| Defects found in this pass fixed, with the tree green afterwards | **PASS** (9 defects: D1–D9, including the D9 login blocker) |
-| Android build | **BLOCKED** — no SDK/JDK/Android SDK and no egress to obtain them (§9.6) |
+| Defects found in this pass fixed, with the tree green afterwards | **PASS** (10 defects: D1–D10, including the D9 login blocker and the D10 build blocker) |
+| Android build | **BLOCKED** — no SDK/JDK/Android SDK and no egress to obtain them (§9.6). The reviewer's Visual Studio build reached the compiler and found one interface defect, now fixed (§9.12) |
 | Runtime, navigation, forms, TalkBack, RTL rendering, screenshots | **BLOCKED** — no emulator or device (§9.7) |
 | Release configuration can reach a real backend | **BLOCKED** — `ApiConfig.BaseUrl` (Release) is an intentional `.invalid` placeholder; a release APK would have no API to talk to (R8) |
 | Small-screen and large-font behaviour | **PARTIAL** — designed for it, never measured |
 | Performance on a low-end device | **PARTIAL** — virtualised feed, no raster assets, never profiled |
+
+### 9.12 Build blocker reported by the real compiler (fixed)
+
+The first real `net10.0-android` build (Visual Studio, on the reviewer's machine) reported three
+errors, all in the assessment flow:
+
+```
+CS1061  IApiClient does not contain a definition for 'SubmitAssessmentAsync'   AssessmentRunViewModel.cs:219
+CS1061  IApiClient does not contain a definition for 'GetMyAssessmentsAsync'   MyAssessmentsViewModel.cs:57
+CS1061  IApiClient does not contain a definition for 'StartAssessmentAsync'    AssessmentRunViewModel.cs:137
+```
+
+**Cause.** `ApiClient` implemented the whole Phase-05 assessment block, but the
+`IApiClient` *interface* was never extended with it. Every view model depends on the
+interface, so the three assessment screens could not compile — a build blocker for the entire
+project, not just those screens.
+
+**Fix (`8644329`).** The three members are declared on the interface with the same signatures
+and arity as the implementation. Interface and class now agree on all 22 members, in both
+directions, with no arity mismatch.
+
+**Why every gate was green while the app did not compile — and what changed.** All five
+original gates are text/AST parsers for XAML and C#; none of them resolves types across files,
+so a missing interface member is invisible to them. This report already flagged that risk (R1,
+R2) but treated it as "a compile error is still possible"; it was not hypothetical, it was
+already in the tree.
+
+The new gate `tools/verify-compile-surface.py` (301 checks) closes the specific gap without a
+compiler. It verifies the project's cross-file contracts: the client interface against its
+implementation, **every `_api.<Method>()` call site and its argument count**, every
+`AppStrings.*` key, every `ApiClient.Codes.*` constant, every `AppJsonContext.Default.*`
+registration, every project type's namespace reachability in the files that use it (honouring
+`GlobalUsings.cs`), the CommunityToolkit source-generator contracts (`[ObservableProperty]`
+name collisions, `partial void On…Changed` types, `[RelayCommand]` return types and
+`CanExecute` targets) and duplicate `x:Name` per page. Eight of the 26 injected defects in
+`verify-gates-selftest.py` target this gate, including the exact "interface member dropped" and
+"view model calls a method the interface does not declare" mutations.
+
+**What this does not prove.** The gate is a proxy, not a compiler: it cannot check overload
+resolution, generic constraints, nullable flow analysis, or XamlC. The only way to be certain
+there is no second compile error is to run `dotnet build` (§9.6). The verdict below stays
+PARTIAL for that reason.
 
 What that means in plain terms: the code is in the best statically verifiable state this
 environment allows — the branch is clean and forward-only, the gates are green *and* proven to
