@@ -10,7 +10,14 @@
             <!-- Shared converter instances (MAUI core has no boolean inverter — ours is in Core/Presentation). -->
             <presentation:InverseBoolConverter x:Key="InvertedBoolConverter" />
             <presentation:VerificationStateColorConverter x:Key="VerificationStateColorConverter" />
+            <presentation:VerificationStateSoftColorConverter x:Key="VerificationStateSoftColorConverter" />
             <presentation:StatusColorConverter x:Key="StatusColorConverter" />
+            <presentation:StatusSoftColorConverter x:Key="StatusSoftColorConverter" />
+            <presentation:StringHasContentConverter x:Key="StringHasContent" />
+            <presentation:CountPositiveConverter x:Key="CountPositive" />
+            <presentation:StageColorConverter x:Key="StageColorConverter" />
+            <presentation:CountEmptyConverter x:Key="CountEmpty" />
+            <presentation:StringEqualsConverter x:Key="StringEquals" />
             <presentation:SelectedOptionBackgroundConverter x:Key="SelectedOptionBackground" />
             <presentation:SelectedOptionTextColorConverter x:Key="SelectedOptionText" />
 

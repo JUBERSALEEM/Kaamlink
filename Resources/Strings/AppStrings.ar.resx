@@ -640,4 +640,373 @@
   <data name="ErrorAssessmentAlreadyCompleted" xml:space="preserve">
     <value>تم إرسال هذه المحاولة مسبقًا. ابدأ محاولة جديدة لإعادة المحاولة.</value>
   </data>
+  <data name="WelcomeHeadline" xml:space="preserve">
+    <value>اعثر على عمل تُتقنه.</value>
+  </data>
+  <data name="WelcomeBody" xml:space="preserve">
+    <value>يربط كاملنك العمال بأصحاب العمل في الإمارات بناءً على المهارة العملية، لا على فلاتر السيرة الذاتية.</value>
+  </data>
+  <data name="RoleWorkerCardBody" xml:space="preserve">
+    <value>أنشئ جواز مهاراتك، وأثبت مهاراتك، وتقدّم إلى وظائف حقيقية.</value>
+  </data>
+  <data name="RoleEmployerCardBody" xml:space="preserve">
+    <value>سجّل شركتك، وانشر الشواغر، وراجع المتقدمين بثقة.</value>
+  </data>
+  <data name="WorkerOnboardingCta" xml:space="preserve">
+    <value>المتابعة كعامل</value>
+  </data>
+  <data name="EmployerOnboardingCta" xml:space="preserve">
+    <value>المتابعة كصاحب عمل</value>
+  </data>
+  <data name="WelcomeFreeNote" xml:space="preserve">
+    <value>مجاني · نحو 3 دقائق</value>
+  </data>
+  <data name="WhyKaamlinkTitle" xml:space="preserve">
+    <value>لماذا كاملنك</value>
+  </data>
+  <data name="WhyVerifiedTitle" xml:space="preserve">
+    <value>شركات يراجعها فريق الإدارة</value>
+  </data>
+  <data name="WhyVerifiedBody" xml:space="preserve">
+    <value>يتم التحقق من كل شركة موظِّفة قبل نشر شواغرها.</value>
+  </data>
+  <data name="WhySkillTitle" xml:space="preserve">
+    <value>اختبارات مهارة، لا سير ذاتية</value>
+  </data>
+  <data name="WhySkillBody" xml:space="preserve">
+    <value>اختبارات عملية قصيرة تجعل عملك يتحدث عنك.</value>
+  </data>
+  <data name="WhyLangTitle" xml:space="preserve">
+    <value>الإنجليزية والعربية</value>
+  </data>
+  <data name="WhyLangBody" xml:space="preserve">
+    <value>يتّبع التطبيق لغة جهازك، بما في ذلك الاتجاه من اليمين إلى اليسار.</value>
+  </data>
+  <data name="WelcomeTermsNote" xml:space="preserve">
+    <value>بالمتابعة فإنك توافق على شروط استخدام كاملنك.</value>
+  </data>
+  <data name="RoleWorkerPill" xml:space="preserve">
+    <value>عامل</value>
+  </data>
+  <data name="RoleEmployerPill" xml:space="preserve">
+    <value>صاحب عمل</value>
+  </data>
+  <data name="LoginPrivacyNote" xml:space="preserve">
+    <value>نستخدم رقمك لتسجيل الدخول ولتواصل أصحاب العمل معك بشأن طلباتك.</value>
+  </data>
+  <data name="LoginWrongRoleTitle" xml:space="preserve">
+    <value>اخترت الدور الخطأ؟</value>
+  </data>
+  <data name="LoginBackToRoles" xml:space="preserve">
+    <value>العودة لاختيار الدور</value>
+  </data>
+  <data name="LoginPhoneErrorTitle" xml:space="preserve">
+    <value>تحقق من الرقم</value>
+  </data>
+  <data name="OtpHeadline" xml:space="preserve">
+    <value>أدخل الرمز المكوّن من 6 أرقام</value>
+  </data>
+  <data name="OtpSentTo" xml:space="preserve">
+    <value>أُرسل برسالة نصية إلى</value>
+  </data>
+  <data name="OtpErrorTitle" xml:space="preserve">
+    <value>هذا الرمز غير صحيح</value>
+  </data>
+  <data name="OtpResendInFormat" xml:space="preserve">
+    <value>إعادة الإرسال متاحة بعد {0}</value>
+  </data>
+  <data name="OtpExpiryNote" xml:space="preserve">
+    <value>تنتهي صلاحية الرمز بعد 5 دقائق.</value>
+  </data>
+  <data name="OtpWrongNumberNote" xml:space="preserve">
+    <value>رقم غير صحيح؟ عُد لتعديله.</value>
+  </data>
+  <data name="VerifyingNote" xml:space="preserve">
+    <value>جارٍ التحقق…</value>
+  </data>
+  <data name="CommonLoading" xml:space="preserve">
+    <value>جارٍ التحميل…</value>
+  </data>
+  <data name="CommonErrorTitle" xml:space="preserve">
+    <value>تعذّر التحميل</value>
+  </data>
+  <data name="CommonEmptyTitle" xml:space="preserve">
+    <value>لا يوجد شيء بعد</value>
+  </data>
+  <data name="NoticeTryAgainBody" xml:space="preserve">
+    <value>تحقق من اتصالك. لم يُفقد شيء — حاول مرة أخرى.</value>
+  </data>
+  <data name="StepBasics" xml:space="preserve">
+    <value>الأساسيات</value>
+  </data>
+  <data name="StepSkills" xml:space="preserve">
+    <value>المهارات</value>
+  </data>
+  <data name="StepPreferences" xml:space="preserve">
+    <value>التفضيلات</value>
+  </data>
+  <data name="WobBasicsHeadline" xml:space="preserve">
+    <value>بياناتك الأساسية</value>
+  </data>
+  <data name="WobBasicsBody" xml:space="preserve">
+    <value>يرى أصحاب العمل هذا أولاً. اجعله صادقًا وبسيطًا.</value>
+  </data>
+  <data name="WobIdentitySection" xml:space="preserve">
+    <value>الهوية</value>
+  </data>
+  <data name="WobLocationSection" xml:space="preserve">
+    <value>مكان العمل</value>
+  </data>
+  <data name="WobSkillAddSection" xml:space="preserve">
+    <value>أضف مهارة</value>
+  </data>
+  <data name="WobSkillsListFormat" xml:space="preserve">
+    <value>مهاراتك · {0}</value>
+  </data>
+  <data name="WobPreferencesBody" xml:space="preserve">
+    <value>نعرض هذا لأصحاب العمل على كاملنك فقط. يمكنك تغييره لاحقًا.</value>
+  </data>
+  <data name="WobPaySection" xml:space="preserve">
+    <value>الأجر الشهري المتوقع (درهم)</value>
+  </data>
+  <data name="WobPayHint" xml:space="preserve">
+    <value>اتركه فارغًا إذا كنت تفضّل مناقشة الأجر لاحقًا.</value>
+  </data>
+  <data name="WobAboutSection" xml:space="preserve">
+    <value>نبذة عنك</value>
+  </data>
+  <data name="WobAboutPlaceholder" xml:space="preserve">
+    <value>خبرتك، والأدوات التي تجيدها، والعمل الذي تريده.</value>
+  </data>
+  <data name="WobFinishCta" xml:space="preserve">
+    <value>إنهاء وعرض الملف</value>
+  </data>
+  <data name="SkillPrimaryBadge" xml:space="preserve">
+    <value>أساسية</value>
+  </data>
+  <data name="HomeQuickActions" xml:space="preserve">
+    <value>إجراءات سريعة</value>
+  </data>
+  <data name="HomeSkillsCountFormat" xml:space="preserve">
+    <value>{0} مهارات</value>
+  </data>
+  <data name="HomeNoSkills" xml:space="preserve">
+    <value>لا توجد مهارات بعد — أكمل التسجيل لإضافتها.</value>
+  </data>
+  <data name="HomeAboutSection" xml:space="preserve">
+    <value>نبذة</value>
+  </data>
+  <data name="HomeCompletenessNote" xml:space="preserve">
+    <value>الملف المكتمل يساعد أصحاب العمل على فهم خبرتك.</value>
+  </data>
+  <data name="HomeAccountSection" xml:space="preserve">
+    <value>الحساب</value>
+  </data>
+  <data name="HomeBrowseJobsCta" xml:space="preserve">
+    <value>ابحث عن عمل</value>
+  </data>
+  <data name="FeedScreenTitle" xml:space="preserve">
+    <value>ابحث عن عمل</value>
+  </data>
+  <data name="FeedResultsFormat" xml:space="preserve">
+    <value>{0} وظيفة</value>
+  </data>
+  <data name="FeedNoResultsTitle" xml:space="preserve">
+    <value>لا توجد وظائف مطابقة</value>
+  </data>
+  <data name="FeedNoResultsBody" xml:space="preserve">
+    <value>جرّب إمارة أخرى أو كلمة بحث مختلفة.</value>
+  </data>
+  <data name="FeedSearchHint" xml:space="preserve">
+    <value>المسمى الوظيفي أو المهارة</value>
+  </data>
+  <data name="FeedFilterLabel" xml:space="preserve">
+    <value>تصفية حسب الإمارة</value>
+  </data>
+  <data name="FeedVerifiedCompany" xml:space="preserve">
+    <value>شركة موثّقة</value>
+  </data>
+  <data name="FeedNewVacanciesNote" xml:space="preserve">
+    <value>تظهر الشواغر الجديدة هنا أولًا.</value>
+  </data>
+  <data name="DetailSkillsTitle" xml:space="preserve">
+    <value>المهارات المطلوبة</value>
+  </data>
+  <data name="DetailAboutTitle" xml:space="preserve">
+    <value>عن هذه الوظيفة</value>
+  </data>
+  <data name="DetailNoteTitle" xml:space="preserve">
+    <value>رسالتك (اختياري)</value>
+  </data>
+  <data name="DetailOneApplicationNote" xml:space="preserve">
+    <value>يمكنك التقديم مرة واحدة لكل وظيفة. يرى صاحب العمل جواز مهاراتك.</value>
+  </data>
+  <data name="DetailSalaryLabel" xml:space="preserve">
+    <value>الأجر الشهري</value>
+  </data>
+  <data name="DetailLocationLabel" xml:space="preserve">
+    <value>الموقع</value>
+  </data>
+  <data name="DetailOpeningsLabel" xml:space="preserve">
+    <value>عدد الشواغر</value>
+  </data>
+  <data name="ApplicationsEmptyTitle" xml:space="preserve">
+    <value>لا توجد طلبات بعد</value>
+  </data>
+  <data name="ApplicationsEmptyBody" xml:space="preserve">
+    <value>عند التقديم على وظيفة ستظهر هنا مع حالتها المحدّثة.</value>
+  </data>
+  <data name="ApplicationsStatusNote" xml:space="preserve">
+    <value>تتحدّث الحالات تلقائيًا عند مراجعة صاحب العمل لطلبك.</value>
+  </data>
+  <data name="AssessmentsHeadline" xml:space="preserve">
+    <value>أثبت مهارتك</value>
+  </data>
+  <data name="AssessmentsBody" xml:space="preserve">
+    <value>اختبار قصير على مهارة أعلنتها. يتم التصحيح على الخادم، والنجاح يمنح المهارة حالة «مُقيَّمة» في جوازك.</value>
+  </data>
+  <data name="AssessmentsWhyTitle" xml:space="preserve">
+    <value>لماذا هذا مهم</value>
+  </data>
+  <data name="AssessmentsWhyBody" xml:space="preserve">
+    <value>يثق أصحاب العمل بالمهارة المُقيَّمة أكثر من المعلنة ذاتيًا. يمكنك إعادة الاختبار.</value>
+  </data>
+  <data name="AssessmentsPrivacyTitle" xml:space="preserve">
+    <value>عادل وخاص</value>
+  </data>
+  <data name="AssessmentsPrivacyBody" xml:space="preserve">
+    <value>تُصحَّح الإجابات على الخادم، ولا تُرسل الإجابات الصحيحة إلى هاتفك أبدًا.</value>
+  </data>
+  <data name="AssessmentsEmptyTitle" xml:space="preserve">
+    <value>لا توجد مهارات للتقييم بعد</value>
+  </data>
+  <data name="AssessmentsNotAssessed" xml:space="preserve">
+    <value>لم تُقيَّم بعد</value>
+  </data>
+  <data name="RunnerQuestionFormat" xml:space="preserve">
+    <value>السؤال {0}</value>
+  </data>
+  <data name="RunnerSubmitNote" xml:space="preserve">
+    <value>يمكنك الإرسال مرة واحدة، ولا يمكن تغيير الإجابات بعد ذلك.</value>
+  </data>
+  <data name="RunnerTapHint" xml:space="preserve">
+    <value>اضغط على إجابة لاختيارها.</value>
+  </data>
+  <data name="RunnerResultEyebrow" xml:space="preserve">
+    <value>نتيجة الخادم</value>
+  </data>
+  <data name="EmployerDashboard" xml:space="preserve">
+    <value>لوحة التوظيف</value>
+  </data>
+  <data name="EmployerReviewTitle" xml:space="preserve">
+    <value>يتم مراجعة كل شركة</value>
+  </data>
+  <data name="EmployerReviewBody" xml:space="preserve">
+    <value>يراجع فريق الإدارة رخصة التجارة قبل نشر شواغرك. تبقى شركتك «قيد المراجعة» حتى ذلك الحين.</value>
+  </data>
+  <data name="EmployerBusinessSection" xml:space="preserve">
+    <value>النشاط</value>
+  </data>
+  <data name="EmployerLocationSection" xml:space="preserve">
+    <value>الموقع</value>
+  </data>
+  <data name="EmployerPendingTitle" xml:space="preserve">
+    <value>التحقق قيد التنفيذ</value>
+  </data>
+  <data name="EmployerPendingBody" xml:space="preserve">
+    <value>يراجع فريق الإدارة رخصة تجارتك. يمكنك تجهيز الشواغر الآن، لكن لا يمكن نشرها حتى يتم التحقق من الشركة.</value>
+  </data>
+  <data name="EmployerVerifiedTitle" xml:space="preserve">
+    <value>تم التحقق من شركتك</value>
+  </data>
+  <data name="EmployerVerifiedBody" xml:space="preserve">
+    <value>يمكن نشر شواغرك فور قيامك بالنشر.</value>
+  </data>
+  <data name="EmployerRejectedTitle" xml:space="preserve">
+    <value>لم تتم الموافقة على التحقق</value>
+  </data>
+  <data name="EmployerManageHiring" xml:space="preserve">
+    <value>إدارة التوظيف</value>
+  </data>
+  <data name="EmployerTradeLicenceFormat" xml:space="preserve">
+    <value>رخصة التجارة {0}</value>
+  </data>
+  <data name="EmployerLicenceApproved" xml:space="preserve">
+    <value>معتمدة</value>
+  </data>
+  <data name="EmployerLicenceInReview" xml:space="preserve">
+    <value>قيد المراجعة</value>
+  </data>
+  <data name="EmployerVacanciesTile" xml:space="preserve">
+    <value>الشواغر</value>
+  </data>
+  <data name="EmployerApplicantsTile" xml:space="preserve">
+    <value>المتقدمون</value>
+  </data>
+  <data name="EmployerCompanyPill" xml:space="preserve">
+    <value>شركة</value>
+  </data>
+  <data name="VacancySectionRole" xml:space="preserve">
+    <value>الوظيفة</value>
+  </data>
+  <data name="VacancySectionLocationPay" xml:space="preserve">
+    <value>الموقع والأجر</value>
+  </data>
+  <data name="VacancySkillsSelectedFormat" xml:space="preserve">
+    <value>المهارات · تم اختيار {0}</value>
+  </data>
+  <data name="VacancySkillsHint" xml:space="preserve">
+    <value>اختر كل مهارة تحتاجها الوظيفة.</value>
+  </data>
+  <data name="VacancyDraftNote" xml:space="preserve">
+    <value>الشواغر المسودة مرئية لشركتك فقط.</value>
+  </data>
+  <data name="VacancyNoApplicants" xml:space="preserve">
+    <value>لا يوجد متقدمون بعد</value>
+  </data>
+  <data name="VacancyEditBody" xml:space="preserve">
+    <value>املأ التفاصيل التي سيراها العمال.</value>
+  </data>
+  <data name="VacancyManageTitle" xml:space="preserve">
+    <value>الشواغر</value>
+  </data>
+  <data name="ApplicantsDecisions" xml:space="preserve">
+    <value>القرارات</value>
+  </data>
+  <data name="ApplicantsPhoneLabel" xml:space="preserve">
+    <value>الهاتف</value>
+  </data>
+  <data name="ApplicantsEmptyTitle" xml:space="preserve">
+    <value>لا يوجد متقدمون بعد</value>
+  </data>
+  <data name="ApplicantsEmptyBody" xml:space="preserve">
+    <value>شارك الشاغر أو انشره مجددًا للوصول إلى مزيد من العمال.</value>
+  </data>
+  <data name="WorkerApplicationsCountFormat" xml:space="preserve">
+    <value>{0} طلب</value>
+  </data>
+  <data name="FeedResultsLabel" xml:space="preserve">
+    <value>النتائج</value>
+  </data>
+  <data name="DetailAppliedNote" xml:space="preserve">
+    <value>طلبك لدى صاحب العمل. تابع كل خطوة في «طلباتي».</value>
+  </data>
+  <data name="SkillsSelectedCountFormat" xml:space="preserve">
+    <value>تم اختيار {0}</value>
+  </data>
+  <data name="VacancyEditFormSection" xml:space="preserve">
+    <value>تفاصيل الوظيفة</value>
+  </data>
+  <data name="VacancyEditLocationSection" xml:space="preserve">
+    <value>الموقع والأجر</value>
+  </data>
+  <data name="VacancyEditSkillsSection" xml:space="preserve">
+    <value>المهارات المطلوبة</value>
+  </data>
+  <data name="VacancyEditSkillsHint" xml:space="preserve">
+    <value>اضغط على كل مهارة تحتاجها هذه الوظيفة. يجب أن يطابق الباحث عن عمل مهارة واحدة على الأقل ليراها في قائمته.</value>
+  </data>
+  <data name="CompanyVacanciesEmptyTitle" xml:space="preserve">
+    <value>لا توجد وظائف بعد</value>
+  </data>
 </root>

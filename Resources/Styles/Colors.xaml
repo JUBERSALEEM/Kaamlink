@@ -1,58 +1,134 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!--
-    KaamLink design tokens — single source of truth for color (2026 refresh).
-    Screens reference these tokens (or style classes in Styles.xaml), never raw hex.
-    Rationale: rich indigo/violet brand + warm amber accent on warm "stone" neutrals —
-    moves the product away from the flat teal/blue-gray "ERP" look. Key NAMES are
-    frozen (pages bind to them); only VALUES evolve. Dark-mode palette is introduced
-    together with dark-mode support in a later phase (AppThemeBinding), not piecemeal.
+    KaamLink design tokens — v1.0 "Marine Blue + Trust Teal" (see
+    docs/ui-redesign/02-design-system-specification.md).
+
+    Rules:
+      * Screens reference these tokens (directly or through the styles in
+        Styles.xaml); a page must never contain a raw hex value.
+      * Keys are semantic, not literal: name the ROLE (TextMuted, SuccessSoft),
+        not the hue.
+      * Legacy keys (Secondary, Tertiary, AccentDark, Gray50..900) are kept so
+        existing converter/style lookups keep resolving; values below are the
+        current palette.
+      * Every text/background pair in here was contrast-checked; the measured
+        ratios live in the design spec §1.4.
+      * Dark mode is intentionally out of scope for V1 (tokens are grouped so a
+        parallel dark dictionary can be added later).
 -->
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
-    <!-- Brand: indigo → violet with a warm amber accent -->
-    <Color x:Key="Primary">#4F46E5</Color>
-    <Color x:Key="PrimaryDark">#4338CA</Color>
-    <Color x:Key="PrimarySoft">#EEF2FF</Color>
-    <Color x:Key="Secondary">#7C3AED</Color>
-    <Color x:Key="Tertiary">#8B5CF6</Color>
-    <Color x:Key="Accent">#F97316</Color>
-    <Color x:Key="AccentDark">#EA580C</Color>
+    <!-- ================= Brand ================= -->
+    <Color x:Key="Primary">#0B57A4</Color>
+    <Color x:Key="PrimaryDark">#084A8C</Color>
+    <Color x:Key="PrimarySoft">#E9F1F9</Color>
+    <!-- Legacy aliases: the old indigo set is gone, the keys are kept for lookups. -->
+    <Color x:Key="Secondary">#0B57A4</Color>
+    <Color x:Key="Tertiary">#0B6660</Color>
+    <Color x:Key="Accent">#0B6660</Color>
+    <Color x:Key="AccentDark">#095651</Color>
+    <Color x:Key="AccentSoft">#E4F2F0</Color>
 
-    <!-- Semantic: vivid, high-contrast (status pills must read on small screens) -->
-    <Color x:Key="Success">#16A34A</Color>
-    <Color x:Key="Warning">#D97706</Color>
-    <Color x:Key="Error">#DC2626</Color>
-    <Color x:Key="Info">#2563EB</Color>
+    <!-- ================= Semantic status ================= -->
+    <Color x:Key="Success">#11652F</Color>
+    <Color x:Key="SuccessSoft">#E7F4EC</Color>
+    <Color x:Key="Warning">#9A5B00</Color>
+    <Color x:Key="WarningSoft">#FCF3E3</Color>
+    <Color x:Key="Error">#B3261E</Color>
+    <Color x:Key="ErrorSoft">#FBECEB</Color>
+    <Color x:Key="Info">#0B57A4</Color>
+    <Color x:Key="InfoSoft">#E9F1F9</Color>
 
-    <!-- Warm "stone" neutrals: replaces the cold blue-gray ERP ramp -->
+    <!-- ================= Neutrals ================= -->
     <Color x:Key="White">#FFFFFF</Color>
     <Color x:Key="Black">#000000</Color>
-    <Color x:Key="Gray50">#FAFAF9</Color>
-    <Color x:Key="Gray100">#F5F5F4</Color>
-    <Color x:Key="Gray200">#E7E5E4</Color>
-    <Color x:Key="Gray300">#D6D3D1</Color>
-    <Color x:Key="Gray400">#A8A29E</Color>
-    <Color x:Key="Gray500">#78716C</Color>
-    <Color x:Key="Gray600">#57534E</Color>
-    <Color x:Key="Gray700">#44403C</Color>
-    <Color x:Key="Gray800">#292524</Color>
-    <Color x:Key="Gray900">#1C1917</Color>
+    <Color x:Key="Gray50">#FAFBFC</Color>
+    <Color x:Key="Gray100">#F5F7F9</Color>
+    <Color x:Key="Gray200">#EDF0F4</Color>
+    <Color x:Key="Gray300">#DEE3E9</Color>
+    <Color x:Key="Gray400">#9AA5B1</Color>
+    <Color x:Key="Gray500">#66717F</Color>
+    <Color x:Key="Gray600">#4C5865</Color>
+    <Color x:Key="Gray700">#3C4753</Color>
+    <Color x:Key="Gray800">#1D2833</Color>
+    <Color x:Key="Gray900">#111A24</Color>
 
-    <!-- Surfaces: faintly tinted page canvas so white cards pop with the shadow -->
-    <Color x:Key="PageBackground">#F6F7FB</Color>
+    <!-- ================= Surfaces ================= -->
+    <Color x:Key="PageBackground">#F5F7F9</Color>
     <Color x:Key="CardSurface">#FFFFFF</Color>
-    <Color x:Key="Border">#E7E5E4</Color>
+    <Color x:Key="CardSurfaceAlt">#FAFBFC</Color>
+    <Color x:Key="Border">#DEE3E9</Color>
+    <!-- Input outlines need 3:1 non-text contrast (WCAG 1.4.11). -->
+    <Color x:Key="BorderStrong">#7E8B99</Color>
+    <Color x:Key="Divider">#EDF0F4</Color>
+    <Color x:Key="Scrim">#66000000</Color>
 
-    <!-- Text -->
-    <Color x:Key="TextPrimary">#1C1917</Color>
-    <Color x:Key="TextSecondary">#57534E</Color>
+    <!-- ================= Text ================= -->
+    <Color x:Key="TextPrimary">#111A24</Color>
+    <Color x:Key="TextSecondary">#3C4753</Color>
+    <Color x:Key="TextMuted">#66717F</Color>
     <Color x:Key="TextOnPrimary">#FFFFFF</Color>
+    <Color x:Key="TextDisabled">#9AA5B1</Color>
 
-    <!-- Brushes (only for what is actually used; add when needed) -->
+    <!-- ================= Brushes ================= -->
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}" />
     <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource Accent}" />
     <SolidColorBrush x:Key="WhiteBrush" Color="{StaticResource White}" />
     <SolidColorBrush x:Key="BlackBrush" Color="{StaticResource Black}" />
+    <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource Border}" />
+    <SolidColorBrush x:Key="BorderStrongBrush" Color="{StaticResource BorderStrong}" />
+    <SolidColorBrush x:Key="DividerBrush" Color="{StaticResource Divider}" />
+    <SolidColorBrush x:Key="TextMutedBrush" Color="{StaticResource TextMuted}" />
+    <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource Error}" />
+    <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource Success}" />
+
+    <!-- ================= Icon glyphs (Lucide, ISC) =================
+         Single codepoints from Resources/Fonts/lucide.ttf, verified against the
+         font cmap by tools/verify-ui-redesign.py. Usage:
+             <Label Style="{StaticResource IconGlyph}" Text="{StaticResource IconPin}" />
+    -->
+    <x:String x:Key="IconHardHat">&#xE0EE;</x:String>
+    <x:String x:Key="IconBuilding">&#xE290;</x:String>
+    <x:String x:Key="IconBriefcase">&#xE5D9;</x:String>
+    <x:String x:Key="IconPin">&#xE111;</x:String>
+    <x:String x:Key="IconBanknote">&#xE052;</x:String>
+    <x:String x:Key="IconUsers">&#xE1A4;</x:String>
+    <x:String x:Key="IconClipboard">&#xE086;</x:String>
+    <x:String x:Key="IconBadgeCheck">&#xE241;</x:String>
+    <x:String x:Key="IconCheck">&#xE04C;</x:String>
+    <x:String x:Key="IconX">&#xE1B2;</x:String>
+    <x:String x:Key="IconShieldCheck">&#xE1FF;</x:String>
+    <x:String x:Key="IconStar">&#xE176;</x:String>
+    <x:String x:Key="IconClock">&#xE087;</x:String>
+    <x:String x:Key="IconArrowLeft">&#xE048;</x:String>
+    <x:String x:Key="IconChevronRight">&#xE06F;</x:String>
+    <x:String x:Key="IconPlus">&#xE13D;</x:String>
+    <x:String x:Key="IconClose">&#xE1B2;</x:String>
+    <x:String x:Key="IconPause">&#xE12E;</x:String>
+    <x:String x:Key="IconPlay">&#xE13C;</x:String>
+    <x:String x:Key="IconCheckCircle">&#xE226;</x:String>
+    <x:String x:Key="IconAlertCircle">&#xE077;</x:String>
+    <x:String x:Key="IconAlertTriangle">&#xE193;</x:String>
+    <x:String x:Key="IconInfo">&#xE0F9;</x:String>
+    <x:String x:Key="IconLock">&#xE10B;</x:String>
+    <x:String x:Key="IconPhone">&#xE133;</x:String>
+    <x:String x:Key="IconLogout">&#xE10E;</x:String>
+    <x:String x:Key="IconUser">&#xE46C;</x:String>
+    <x:String x:Key="IconGlobe">&#xE0E8;</x:String>
+    <x:String x:Key="IconPencil">&#xE1F9;</x:String>
+    <x:String x:Key="IconEye">&#xE0BA;</x:String>
+    <x:String x:Key="IconWarningBadge">&#xE479;</x:String>
+    <x:String x:Key="IconBadgeId">&#xE61B;</x:String>
+    <x:String x:Key="IconSearch">&#xE151;</x:String>
+    <x:String x:Key="IconSliders">&#xE29A;</x:String>
+    <x:String x:Key="IconHandshake">&#xE5C4;</x:String>
+    <x:String x:Key="IconCalendar">&#xE063;</x:String>
+    <x:String x:Key="IconPercent">&#xE132;</x:String>
+    <x:String x:Key="IconTimer">&#xE1E0;</x:String>
+    <x:String x:Key="IconUserCheck">&#xE1A0;</x:String>
+    <x:String x:Key="IconPauseCircle">&#xE07F;</x:String>
+    <x:String x:Key="IconPlayCircle">&#xE080;</x:String>
+
 </ResourceDictionary>

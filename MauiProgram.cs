@@ -20,6 +20,10 @@ namespace KaamLink
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                    // Icon glyphs (Lucide, ISC licence — Resources/Fonts/lucide-LICENSE.txt).
+                    // Single codepoint per icon; keys live in Colors.xaml (IconXxx) so a
+                    // page never inlines a private-use glyph.
+                    fonts.AddFont("lucide.ttf", "Lucide");
                 });
 
 #if DEBUG

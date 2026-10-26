@@ -652,4 +652,373 @@
   <data name="ErrorAssessmentAlreadyCompleted" xml:space="preserve">
     <value>This attempt was already submitted. Start a new one to retry.</value>
   </data>
+  <data name="WelcomeHeadline" xml:space="preserve">
+    <value>Find work you're good at.</value>
+  </data>
+  <data name="WelcomeBody" xml:space="preserve">
+    <value>KaamLink matches workers and employers across the UAE on practical skill — not CV filters.</value>
+  </data>
+  <data name="RoleWorkerCardBody" xml:space="preserve">
+    <value>Build a Skill Passport, prove your skills, apply to real vacancies.</value>
+  </data>
+  <data name="RoleEmployerCardBody" xml:space="preserve">
+    <value>Register your company, post vacancies and review applicants with confidence.</value>
+  </data>
+  <data name="WorkerOnboardingCta" xml:space="preserve">
+    <value>Continue as a worker</value>
+  </data>
+  <data name="EmployerOnboardingCta" xml:space="preserve">
+    <value>Continue as an employer</value>
+  </data>
+  <data name="WelcomeFreeNote" xml:space="preserve">
+    <value>Free · about 3 minutes</value>
+  </data>
+  <data name="WhyKaamlinkTitle" xml:space="preserve">
+    <value>Why KaamLink</value>
+  </data>
+  <data name="WhyVerifiedTitle" xml:space="preserve">
+    <value>Admin-reviewed companies</value>
+  </data>
+  <data name="WhyVerifiedBody" xml:space="preserve">
+    <value>Every hiring company is verified before its vacancies can go live.</value>
+  </data>
+  <data name="WhySkillTitle" xml:space="preserve">
+    <value>Skill checks, not CVs</value>
+  </data>
+  <data name="WhySkillBody" xml:space="preserve">
+    <value>Short practical tests let your work speak for you.</value>
+  </data>
+  <data name="WhyLangTitle" xml:space="preserve">
+    <value>English &amp; Arabic</value>
+  </data>
+  <data name="WhyLangBody" xml:space="preserve">
+    <value>The app follows your device language, right to left included.</value>
+  </data>
+  <data name="WelcomeTermsNote" xml:space="preserve">
+    <value>By continuing you accept KaamLink's Terms of Use.</value>
+  </data>
+  <data name="RoleWorkerPill" xml:space="preserve">
+    <value>Worker</value>
+  </data>
+  <data name="RoleEmployerPill" xml:space="preserve">
+    <value>Employer</value>
+  </data>
+  <data name="LoginPrivacyNote" xml:space="preserve">
+    <value>We use your number to sign you in and to let employers contact you about applications.</value>
+  </data>
+  <data name="LoginWrongRoleTitle" xml:space="preserve">
+    <value>Chose the wrong role?</value>
+  </data>
+  <data name="LoginBackToRoles" xml:space="preserve">
+    <value>Back to role selection</value>
+  </data>
+  <data name="LoginPhoneErrorTitle" xml:space="preserve">
+    <value>Check the number</value>
+  </data>
+  <data name="OtpHeadline" xml:space="preserve">
+    <value>Enter the 6-digit code</value>
+  </data>
+  <data name="OtpSentTo" xml:space="preserve">
+    <value>Sent by SMS to</value>
+  </data>
+  <data name="OtpErrorTitle" xml:space="preserve">
+    <value>That code isn't right</value>
+  </data>
+  <data name="OtpResendInFormat" xml:space="preserve">
+    <value>Resend available in {0}</value>
+  </data>
+  <data name="OtpExpiryNote" xml:space="preserve">
+    <value>The code expires after 5 minutes.</value>
+  </data>
+  <data name="OtpWrongNumberNote" xml:space="preserve">
+    <value>Wrong number? Go back to edit it.</value>
+  </data>
+  <data name="VerifyingNote" xml:space="preserve">
+    <value>Verifying…</value>
+  </data>
+  <data name="CommonLoading" xml:space="preserve">
+    <value>Loading…</value>
+  </data>
+  <data name="CommonErrorTitle" xml:space="preserve">
+    <value>Couldn't load</value>
+  </data>
+  <data name="CommonEmptyTitle" xml:space="preserve">
+    <value>Nothing here yet</value>
+  </data>
+  <data name="NoticeTryAgainBody" xml:space="preserve">
+    <value>Check your connection. Nothing was lost — try again.</value>
+  </data>
+  <data name="StepBasics" xml:space="preserve">
+    <value>Basics</value>
+  </data>
+  <data name="StepSkills" xml:space="preserve">
+    <value>Skills</value>
+  </data>
+  <data name="StepPreferences" xml:space="preserve">
+    <value>Preferences</value>
+  </data>
+  <data name="WobBasicsHeadline" xml:space="preserve">
+    <value>Your basics</value>
+  </data>
+  <data name="WobBasicsBody" xml:space="preserve">
+    <value>Employers see this first. Keep it honest and simple.</value>
+  </data>
+  <data name="WobIdentitySection" xml:space="preserve">
+    <value>Identity</value>
+  </data>
+  <data name="WobLocationSection" xml:space="preserve">
+    <value>Where you work</value>
+  </data>
+  <data name="WobSkillAddSection" xml:space="preserve">
+    <value>Add a skill</value>
+  </data>
+  <data name="WobSkillsListFormat" xml:space="preserve">
+    <value>Your skills · {0}</value>
+  </data>
+  <data name="WobPreferencesBody" xml:space="preserve">
+    <value>We only show this to employers on KaamLink. You can change it later.</value>
+  </data>
+  <data name="WobPaySection" xml:space="preserve">
+    <value>Expected monthly pay (AED)</value>
+  </data>
+  <data name="WobPayHint" xml:space="preserve">
+    <value>Leave empty if you'd rather discuss pay later.</value>
+  </data>
+  <data name="WobAboutSection" xml:space="preserve">
+    <value>About you</value>
+  </data>
+  <data name="WobAboutPlaceholder" xml:space="preserve">
+    <value>Your experience, tools you can use, the work you want.</value>
+  </data>
+  <data name="WobFinishCta" xml:space="preserve">
+    <value>Finish and view profile</value>
+  </data>
+  <data name="SkillPrimaryBadge" xml:space="preserve">
+    <value>Primary</value>
+  </data>
+  <data name="HomeQuickActions" xml:space="preserve">
+    <value>Quick actions</value>
+  </data>
+  <data name="HomeSkillsCountFormat" xml:space="preserve">
+    <value>{0} skills</value>
+  </data>
+  <data name="HomeNoSkills" xml:space="preserve">
+    <value>No skills yet — complete onboarding to add them.</value>
+  </data>
+  <data name="HomeAboutSection" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="HomeCompletenessNote" xml:space="preserve">
+    <value>A complete profile helps employers understand your experience.</value>
+  </data>
+  <data name="HomeAccountSection" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="HomeBrowseJobsCta" xml:space="preserve">
+    <value>Find work</value>
+  </data>
+  <data name="FeedScreenTitle" xml:space="preserve">
+    <value>Find work</value>
+  </data>
+  <data name="FeedResultsFormat" xml:space="preserve">
+    <value>{0} vacancies</value>
+  </data>
+  <data name="FeedNoResultsTitle" xml:space="preserve">
+    <value>No vacancies match</value>
+  </data>
+  <data name="FeedNoResultsBody" xml:space="preserve">
+    <value>Try another emirate or a different keyword.</value>
+  </data>
+  <data name="FeedSearchHint" xml:space="preserve">
+    <value>Job title or skill</value>
+  </data>
+  <data name="FeedFilterLabel" xml:space="preserve">
+    <value>Filter by emirate</value>
+  </data>
+  <data name="FeedVerifiedCompany" xml:space="preserve">
+    <value>Verified company</value>
+  </data>
+  <data name="FeedNewVacanciesNote" xml:space="preserve">
+    <value>New vacancies appear here first.</value>
+  </data>
+  <data name="DetailSkillsTitle" xml:space="preserve">
+    <value>Skills required</value>
+  </data>
+  <data name="DetailAboutTitle" xml:space="preserve">
+    <value>About this role</value>
+  </data>
+  <data name="DetailNoteTitle" xml:space="preserve">
+    <value>Your note (optional)</value>
+  </data>
+  <data name="DetailOneApplicationNote" xml:space="preserve">
+    <value>You can apply once per vacancy. The employer sees your Skill Passport.</value>
+  </data>
+  <data name="DetailSalaryLabel" xml:space="preserve">
+    <value>Monthly pay</value>
+  </data>
+  <data name="DetailLocationLabel" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="DetailOpeningsLabel" xml:space="preserve">
+    <value>Openings</value>
+  </data>
+  <data name="ApplicationsEmptyTitle" xml:space="preserve">
+    <value>No applications yet</value>
+  </data>
+  <data name="ApplicationsEmptyBody" xml:space="preserve">
+    <value>When you apply to a vacancy it appears here with its live status.</value>
+  </data>
+  <data name="ApplicationsStatusNote" xml:space="preserve">
+    <value>Statuses update automatically when an employer reviews your application.</value>
+  </data>
+  <data name="AssessmentsHeadline" xml:space="preserve">
+    <value>Prove a skill</value>
+  </data>
+  <data name="AssessmentsBody" xml:space="preserve">
+    <value>A short test on a skill you declared. The server scores it, and a pass marks the skill as assessed on your passport.</value>
+  </data>
+  <data name="AssessmentsWhyTitle" xml:space="preserve">
+    <value>Why it matters</value>
+  </data>
+  <data name="AssessmentsWhyBody" xml:space="preserve">
+    <value>Employers trust an assessed skill more than a self-declared one. You can retake a test.</value>
+  </data>
+  <data name="AssessmentsPrivacyTitle" xml:space="preserve">
+    <value>Fair and private</value>
+  </data>
+  <data name="AssessmentsPrivacyBody" xml:space="preserve">
+    <value>Answers are graded on the server. Correct answers are never sent to your phone.</value>
+  </data>
+  <data name="AssessmentsEmptyTitle" xml:space="preserve">
+    <value>No skills to assess yet</value>
+  </data>
+  <data name="AssessmentsNotAssessed" xml:space="preserve">
+    <value>Not assessed yet</value>
+  </data>
+  <data name="RunnerQuestionFormat" xml:space="preserve">
+    <value>Question {0}</value>
+  </data>
+  <data name="RunnerSubmitNote" xml:space="preserve">
+    <value>You can submit once. Answers can't be changed after that.</value>
+  </data>
+  <data name="RunnerTapHint" xml:space="preserve">
+    <value>Tap an answer to select it.</value>
+  </data>
+  <data name="RunnerResultEyebrow" xml:space="preserve">
+    <value>Server result</value>
+  </data>
+  <data name="EmployerDashboard" xml:space="preserve">
+    <value>Hiring dashboard</value>
+  </data>
+  <data name="EmployerReviewTitle" xml:space="preserve">
+    <value>Every company is reviewed</value>
+  </data>
+  <data name="EmployerReviewBody" xml:space="preserve">
+    <value>An admin checks your trade licence before your vacancies can be published. Your company stays Pending until then.</value>
+  </data>
+  <data name="EmployerBusinessSection" xml:space="preserve">
+    <value>Business</value>
+  </data>
+  <data name="EmployerLocationSection" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="EmployerPendingTitle" xml:space="preserve">
+    <value>Verification in progress</value>
+  </data>
+  <data name="EmployerPendingBody" xml:space="preserve">
+    <value>An admin is reviewing your trade licence. You can prepare vacancies now, but they can't be published until the company is verified.</value>
+  </data>
+  <data name="EmployerVerifiedTitle" xml:space="preserve">
+    <value>Your company is verified</value>
+  </data>
+  <data name="EmployerVerifiedBody" xml:space="preserve">
+    <value>Your vacancies can go live as soon as you publish them.</value>
+  </data>
+  <data name="EmployerRejectedTitle" xml:space="preserve">
+    <value>Verification was not approved</value>
+  </data>
+  <data name="EmployerManageHiring" xml:space="preserve">
+    <value>Manage hiring</value>
+  </data>
+  <data name="EmployerTradeLicenceFormat" xml:space="preserve">
+    <value>Trade licence {0}</value>
+  </data>
+  <data name="EmployerLicenceApproved" xml:space="preserve">
+    <value>approved</value>
+  </data>
+  <data name="EmployerLicenceInReview" xml:space="preserve">
+    <value>in review</value>
+  </data>
+  <data name="EmployerVacanciesTile" xml:space="preserve">
+    <value>Vacancies</value>
+  </data>
+  <data name="EmployerApplicantsTile" xml:space="preserve">
+    <value>Applicants</value>
+  </data>
+  <data name="EmployerCompanyPill" xml:space="preserve">
+    <value>Company</value>
+  </data>
+  <data name="VacancySectionRole" xml:space="preserve">
+    <value>Role</value>
+  </data>
+  <data name="VacancySectionLocationPay" xml:space="preserve">
+    <value>Location &amp; pay</value>
+  </data>
+  <data name="VacancySkillsSelectedFormat" xml:space="preserve">
+    <value>Skills · {0} selected</value>
+  </data>
+  <data name="VacancySkillsHint" xml:space="preserve">
+    <value>Select every skill the job needs.</value>
+  </data>
+  <data name="VacancyDraftNote" xml:space="preserve">
+    <value>Draft vacancies are only visible to your company.</value>
+  </data>
+  <data name="VacancyNoApplicants" xml:space="preserve">
+    <value>No applicants yet</value>
+  </data>
+  <data name="VacancyEditBody" xml:space="preserve">
+    <value>Fill in the details workers will see.</value>
+  </data>
+  <data name="VacancyManageTitle" xml:space="preserve">
+    <value>Vacancies</value>
+  </data>
+  <data name="ApplicantsDecisions" xml:space="preserve">
+    <value>Decisions</value>
+  </data>
+  <data name="ApplicantsPhoneLabel" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="ApplicantsEmptyTitle" xml:space="preserve">
+    <value>No applicants yet</value>
+  </data>
+  <data name="ApplicantsEmptyBody" xml:space="preserve">
+    <value>Share the vacancy or publish it again to reach more workers.</value>
+  </data>
+  <data name="WorkerApplicationsCountFormat" xml:space="preserve">
+    <value>{0} applications</value>
+  </data>
+  <data name="FeedResultsLabel" xml:space="preserve">
+    <value>Results</value>
+  </data>
+  <data name="DetailAppliedNote" xml:space="preserve">
+    <value>Your application is with the employer. Track every step in My applications.</value>
+  </data>
+  <data name="SkillsSelectedCountFormat" xml:space="preserve">
+    <value>{0} selected</value>
+  </data>
+  <data name="VacancyEditFormSection" xml:space="preserve">
+    <value>Vacancy details</value>
+  </data>
+  <data name="VacancyEditLocationSection" xml:space="preserve">
+    <value>Location and pay</value>
+  </data>
+  <data name="VacancyEditSkillsSection" xml:space="preserve">
+    <value>Required skills</value>
+  </data>
+  <data name="VacancyEditSkillsHint" xml:space="preserve">
+    <value>Tap each skill this vacancy needs. Workers must match at least one to see it in their feed.</value>
+  </data>
+  <data name="CompanyVacanciesEmptyTitle" xml:space="preserve">
+    <value>No vacancies yet</value>
+  </data>
 </root>
