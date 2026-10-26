@@ -11,12 +11,21 @@ dusk palette files. They are not device screenshots and not the stale checked-in
 |---|---|
 | ![Current login, light theme](mockups/login-current-light.png) | ![Current login, dusk theme](mockups/login-current-dusk.png) |
 
-## After the senior-developer upgrade
+## Final rich palette and interaction fixes
 
-Richer three-stop clay gradients on page/card surfaces, a cobalt/navy adaptive
-icon, a gradient hero illustration, corrected theme-shadow dispatching, faster
-`CollectionView` measurement, and distinct offline/no-network/setup error states.
-Layout and copy are unchanged: Google stays honestly disabled.
+- **Rich midnight-navy dark theme**, not black: electric blue primary, mint accent,
+  indigo gradient surfaces and gradient `Button.Background` on Android.
+- **Day / Dusk toggle now works**: runtime switches instantiate compiled
+  `ClayPalette` / `ClayDuskPalette` dictionaries instead of a C# `Source`-only
+  dictionary that MAUI never loads.
+- **Crash hardening**: iterative cycle-safe clay-shadow refresh, deferred
+  dispatcher refresh, observed async page initialization, and malformed-JSON
+  handling in session refresh.
+- **Tap targets**: country rows use `InputTransparent="True"` on the label so the
+  `TapGestureRecognizer` always receives the tap; theme/country buttons explicitly
+  set `InputTransparent="False"`.
+- Google stays honestly disabled and greyed out until server-side identity
+  exchange exists. Offline/no-network/setup error states remain localized.
 
 | Light (default Clay) | Dusk |
 |---|---|

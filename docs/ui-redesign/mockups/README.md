@@ -39,13 +39,17 @@ Requirements:
 ```bash
 python3 -m venv /tmp/login-preview-venv
 /tmp/login-preview-venv/bin/pip install Pillow
-/tmp/login-preview-venv/bin/python tools/render-login-preview.py --theme light --out docs/ui-redesign/mockups/login-current-light.png
-/tmp/login-preview-venv/bin/python tools/render-login-preview.py --theme dusk --out docs/ui-redesign/mockups/login-current-dusk.png
+for theme in light dusk; do
+  /tmp/login-preview-venv/bin/python tools/render-login-preview.py --theme "$theme" \
+    --out "docs/ui-redesign/mockups/login-upgraded-$theme.png"
+done
 ```
 
-Those two files plus `docs/ui-redesign/app-icon-upgraded-preview.png` are the
-visual references for the current clay system and brand mark. The older `*.png`
-files remain for design history only.
+`login-current-*.png` are the pre-upgrade clay snapshots;
+`login-upgraded-*.png` are the **final rich light / midnight-navy dark** palettes.
+Together with `docs/ui-redesign/app-icon-upgraded-preview.png` they are the visual
+references for the shipped design. The older `*.png` files remain for design
+history only.
 
 The colour values in `mockup_kit.py` belong to the historical palette; the live
 palette is verified by `tools/verify-theme-contrast.py` and

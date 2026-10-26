@@ -137,6 +137,14 @@ catalog_sources = re.findall(r'"(Resources/[\w./]+\.xaml)"', CATALOG)
 ok(len(catalog_sources) >= 2, "ThemeCatalog: fewer than two themes registered")
 for source in catalog_sources:
     ok(os.path.exists(source), f"ThemeCatalog: palette file '{source}' does not exist")
+ok("CreatePalette" in CATALOG and "theme.CreatePalette()" in THEME_SERVICE,
+   "ThemeCatalog/ThemeService: a C# Source-only ResourceDictionary cannot load MAUI XAML at runtime")
+for code_behind in ("Resources/Styles/Colors.xaml.cs", "Resources/Themes/ClayDusk.xaml.cs"):
+    ok(os.path.isfile(code_behind) and "InitializeComponent" in read(code_behind),
+       f"{code_behind}: missing compiled palette code-behind")
+for palette in ["Resources/Styles/Colors.xaml"] + THEME_FILES:
+    ok('KaamLinkThemeId' in read(palette),
+       f"{palette}: missing runtime theme marker key")
 
 ok(re.search(r'Source="Resources/(Styles|Themes)/[\w-]+\.xaml"', APP_XAML) is not None,
    "App.xaml: no palette dictionary is merged")
@@ -382,6 +390,20 @@ for style_key in ("SurfaceCard", "PrimaryButton", "IconTile"):
        f"Styles.xaml: {style_key} has no clay elevation")
 hardcoded_colors = re.findall(r'Value="#[0-9A-Fa-f]{3,8}"', STYLES)
 ok(not hardcoded_colors, f"Styles.xaml: raw hex values {hardcoded_colors}")
+
+# Rich button material: Android renders Brush gradients on Button.Background.
+# BackgroundColor on a derived style would not override an inherited gradient.
+for style_key, brush_key in (("PrimaryButton", "ClayPrimaryBrush"),
+                             ("SecondaryButton", "ClayCardBrush")):
+    block = re.search(rf'x:Key="{style_key}">([\s\S]*?)</Style>', STYLES)
+    ok(block is not None
+       and f'Property="Background" Value="{{DynamicResource {brush_key}}}"' in block.group(1),
+       f"Styles.xaml: {style_key} lost its rich gradient Background")
+danger = re.search(r'x:Key="DangerSolidButton"[^>]*>([\s\S]*?)</Style>', STYLES)
+ok(danger is not None
+   and 'Property="Background" Value="{DynamicResource ErrorBrush}"' in danger.group(1)
+   and 'Property="BackgroundColor"' not in danger.group(1),
+   "Styles.xaml: DangerSolidButton still sets BackgroundColor over a gradient parent")
 
 # MAUI's Button does not expose HorizontalTextAlignment/VerticalTextAlignment.
 # Those are Label/Entry properties; a Button style or element using them fails

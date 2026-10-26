@@ -26,6 +26,11 @@ kit (`docs/ui-redesign/mockups/mockup_kit.py`) is byte-checked against the XAML 
 
 ## 1. Color tokens
 
+> **Historical spec.** The shipped palette was upgraded to rich electric-blue /
+> mint clay gradients and a midnight-navy dark theme. The authoritative current
+> values are in `04-claymorphism-theme.md` and the two `ResourceDictionary` files;
+> the table below documents the original flat-pass baseline.
+
 ### 1.1 Brand
 
 | Token | Hex | Use |

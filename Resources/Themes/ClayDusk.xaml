@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!--
-    KaamLink theme palette — "Clay Dusk" (alternate, dark clay).
+    KaamLink theme palette — "Clay Dusk" (alternate, rich midnight navy).
+    Deep blue-indigo surfaces, electric-blue primary, mint accent and warm status
+    colors. It is intentionally NOT black/AMOLED; modern apps use chromatic darks.
     Spec: docs/ui-redesign/04-claymorphism-theme.md
 
     Same key set as Resources/Styles/Colors.xaml — enforced by
@@ -13,85 +15,89 @@
 -->
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="KaamLink.Resources.Themes.ClayDuskPalette">
+
+    <!-- Runtime theme switch marker: must match Resources/Styles/Colors.xaml order. -->
+    <x:String x:Key="KaamLinkThemeId">clay-dusk</x:String>
 
     <!-- ================= Brand ================= -->
     <!-- `Primary` is the accent for TEXT and icons on dark clay, so it is light. -->
-    <Color x:Key="Primary">#9CC2F0</Color>
-    <Color x:Key="PrimaryTop">#B7D4F7</Color>
-    <Color x:Key="PrimaryBottom">#7FA9DC</Color>
-    <Color x:Key="PrimaryDark">#7FA9DC</Color>
-    <Color x:Key="PrimarySoft">#283440</Color>
-    <Color x:Key="PrimarySoftDeep">#32404E</Color>
+    <Color x:Key="Primary">#8DBBFF</Color>
+    <Color x:Key="PrimaryTop">#B7D5FF</Color>
+    <Color x:Key="PrimaryBottom">#5B91FF</Color>
+    <Color x:Key="PrimaryDark">#6FA5F5</Color>
+    <Color x:Key="PrimarySoft">#1C3A63</Color>
+    <Color x:Key="PrimarySoftDeep">#244A79</Color>
     <!-- Filled buttons keep a saturated clay body so white text stays legible. -->
-    <Color x:Key="PrimaryFill">#2E62A8</Color>
-    <Color x:Key="PrimaryFillTop">#3A72BC</Color>
-    <Color x:Key="PrimaryFillBottom">#234C86</Color>
+    <Color x:Key="PrimaryFill">#245BC8</Color>
+    <Color x:Key="PrimaryFillTop">#2F6FE0</Color>
+    <Color x:Key="PrimaryFillBottom">#1748A8</Color>
 
-    <Color x:Key="Secondary">#9CC2F0</Color>
-    <Color x:Key="Tertiary">#7FD8CB</Color>
+    <Color x:Key="Secondary">#8DBBFF</Color>
+    <Color x:Key="Tertiary">#62E6CF</Color>
 
-    <Color x:Key="Accent">#7FD8CB</Color>
-    <Color x:Key="AccentTop">#9AE6DA</Color>
-    <Color x:Key="AccentBottom">#5FB8AC</Color>
-    <Color x:Key="AccentDark">#5FB8AC</Color>
-    <Color x:Key="AccentSoft">#263E3D</Color>
-    <Color x:Key="AccentFill">#106B63</Color>
-    <Color x:Key="AccentFillTop">#17847A</Color>
-    <Color x:Key="AccentFillBottom">#0B544E</Color>
+    <Color x:Key="Accent">#62E6CF</Color>
+    <Color x:Key="AccentTop">#9CF5E5</Color>
+    <Color x:Key="AccentBottom">#3BD0B7</Color>
+    <Color x:Key="AccentDark">#3BD0B7</Color>
+    <Color x:Key="AccentSoft">#124039</Color>
+    <Color x:Key="AccentFill">#126C62</Color>
+    <Color x:Key="AccentFillTop">#1E7A6E</Color>
+    <Color x:Key="AccentFillBottom">#0A514B</Color>
 
     <!-- ================= Semantic status ================= -->
-    <Color x:Key="Success">#7EDCA4</Color>
-    <Color x:Key="SuccessSoft">#23372D</Color>
-    <Color x:Key="Warning">#F2C67C</Color>
-    <Color x:Key="WarningSoft">#3B3323</Color>
-    <Color x:Key="Error">#FFA098</Color>
-    <Color x:Key="ErrorSoft">#43282A</Color>
-    <Color x:Key="Info">#9CC2F0</Color>
-    <Color x:Key="InfoSoft">#293746</Color>
+    <Color x:Key="Success">#6FE3AC</Color>
+    <Color x:Key="SuccessSoft">#123B2D</Color>
+    <Color x:Key="Warning">#FFD07A</Color>
+    <Color x:Key="WarningSoft">#443016</Color>
+    <Color x:Key="Error">#FF9AA6</Color>
+    <Color x:Key="ErrorSoft">#4A2029</Color>
+    <Color x:Key="Info">#8FC2FF</Color>
+    <Color x:Key="InfoSoft">#1B3452</Color>
 
     <!-- ================= Neutrals ================= -->
     <Color x:Key="White">#FFFFFF</Color>
-    <Color x:Key="Black">#10151B</Color>
-    <Color x:Key="Gray50">#29323D</Color>
-    <Color x:Key="Gray100">#252E39</Color>
-    <Color x:Key="Gray200">#222A34</Color>
-    <Color x:Key="Gray300">#3A4654</Color>
-    <Color x:Key="Gray400">#718094</Color>
-    <Color x:Key="Gray500">#8797A9</Color>
-    <Color x:Key="Gray600">#A0ADBC</Color>
-    <Color x:Key="Gray700">#BEC9D5</Color>
-    <Color x:Key="Gray800">#D8E0E8</Color>
-    <Color x:Key="Gray900">#F1F4F7</Color>
+    <Color x:Key="Black">#050A12</Color>
+    <Color x:Key="Gray50">#1A2942</Color>
+    <Color x:Key="Gray100">#16243A</Color>
+    <Color x:Key="Gray200">#132038</Color>
+    <Color x:Key="Gray300">#2C4262</Color>
+    <Color x:Key="Gray400">#5C76A0</Color>
+    <Color x:Key="Gray500">#7C95B8</Color>
+    <Color x:Key="Gray600">#9AB1D0</Color>
+    <Color x:Key="Gray700">#BCCDEC</Color>
+    <Color x:Key="Gray800">#DCE6F8</Color>
+    <Color x:Key="Gray900">#F4F8FF</Color>
 
     <!-- ================= Surfaces ================= -->
-    <Color x:Key="PageBackground">#1F2732</Color>
-    <Color x:Key="PageBackgroundTop">#27313D</Color>
-    <Color x:Key="PageBackgroundBottom">#161D27</Color>
-    <Color x:Key="CardSurface">#242E3A</Color>
-    <Color x:Key="CardSurfaceTop">#303B49</Color>
-    <Color x:Key="CardSurfaceBottom">#1B232D</Color>
-    <Color x:Key="CardSurfaceAlt">#293541</Color>
-    <Color x:Key="CardSurfaceAltTop">#354250</Color>
-    <Color x:Key="CardSurfaceAltBottom">#1E2731</Color>
-    <Color x:Key="Border">#445261</Color>
-    <Color x:Key="BorderStrong">#9AAABD</Color>
-    <Color x:Key="Divider">#36424F</Color>
-    <Color x:Key="Scrim">#99000000</Color>
+    <Color x:Key="PageBackground">#101B2E</Color>
+    <Color x:Key="PageBackgroundTop">#172942</Color>
+    <Color x:Key="PageBackgroundBottom">#0A1322</Color>
+    <Color x:Key="CardSurface">#16263F</Color>
+    <Color x:Key="CardSurfaceTop">#223A5C</Color>
+    <Color x:Key="CardSurfaceBottom">#101D31</Color>
+    <Color x:Key="CardSurfaceAlt">#1B3352</Color>
+    <Color x:Key="CardSurfaceAltTop">#294A70</Color>
+    <Color x:Key="CardSurfaceAltBottom">#13263E</Color>
+    <Color x:Key="Border">#34527C</Color>
+    <Color x:Key="BorderStrong">#6C8FBF</Color>
+    <Color x:Key="Divider">#2A4364</Color>
+    <Color x:Key="Scrim">#990A1322</Color>
 
     <!-- ================= Clay material ================= -->
-    <Color x:Key="ClayHighlight">#3D4A58</Color>
-    <Color x:Key="ClayEdgeLow">#171D25</Color>
-    <Color x:Key="ClayShadow">#10151B</Color>
-    <Color x:Key="ClayShadowDeep">#10151B</Color>
-    <Color x:Key="ClayInset">#1C232C</Color>
+    <Color x:Key="ClayHighlight">#3B5B86</Color>
+    <Color x:Key="ClayEdgeLow">#091222</Color>
+    <Color x:Key="ClayShadow">#020812</Color>
+    <Color x:Key="ClayShadowDeep">#01050C</Color>
+    <Color x:Key="ClayInset">#0E1A2C</Color>
 
     <!-- ================= Text ================= -->
-    <Color x:Key="TextPrimary">#F1F4F7</Color>
-    <Color x:Key="TextSecondary">#D6DEE7</Color>
-    <Color x:Key="TextMuted">#B8C4D0</Color>
+    <Color x:Key="TextPrimary">#F4F8FF</Color>
+    <Color x:Key="TextSecondary">#C2D3EC</Color>
+    <Color x:Key="TextMuted">#90A8C8</Color>
     <Color x:Key="TextOnPrimary">#FFFFFF</Color>
-    <Color x:Key="TextDisabled">#718094</Color>
+    <Color x:Key="TextDisabled">#6D84A5</Color>
 
     <!-- ================= Brushes ================= -->
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}" />
@@ -103,6 +109,7 @@
     <SolidColorBrush x:Key="DividerBrush" Color="{StaticResource Divider}" />
     <SolidColorBrush x:Key="TextMutedBrush" Color="{StaticResource TextMuted}" />
     <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource Error}" />
+    <SolidColorBrush x:Key="ErrorSoftBrush" Color="{StaticResource ErrorSoft}" />
     <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource Success}" />
     <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource Warning}" />
     <SolidColorBrush x:Key="InfoBrush" Color="{StaticResource Info}" />

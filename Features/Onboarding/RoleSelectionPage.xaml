@@ -27,6 +27,7 @@
                        VerticalOptions="Center" />
                 <Button Grid.Column="2"
                         Style="{StaticResource ThemeToggleButton}"
+                        InputTransparent="False"
                         Command="{Binding ToggleThemeCommand}"
                         SemanticProperties.Description="{Binding ThemeToggleLabel}"
                         Text="{Binding ThemeToggleLabel}" />

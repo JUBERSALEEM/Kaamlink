@@ -37,7 +37,7 @@ The brush comes from `ClayShadowBrush`. `ThemeService` refreshes live-tree shado
 Preference  → "kaamlink.theme"
 ```
 
-`App` resolves the saved theme before creating the Shell. `IThemeService.Toggle()` returns the next theme id; the login and role-choice screens use native `Button`s and update their localized action label from that id. `DynamicResource` updates palette-bound colours in the live visual tree. Theme dictionaries retain a parity of resource keys and types, enforced by `tools/verify-ui-redesign.py`.
+`App` resolves the saved theme before creating the Shell. `IThemeService.Toggle()` returns the theme id that was **actually applied**; the login and role-choice screens use native `Button`s and update their localized action label from that id. `DynamicResource` updates palette-bound colours in the live visual tree. Runtime switches instantiate the compiled `ClayPalette` / `ClayDuskPalette` dictionaries — a C# `ResourceDictionary` with only `Source` set does not load MAUI XAML. Theme dictionaries retain a parity of resource keys and types, enforced by `tools/verify-ui-redesign.py`.
 
 ## 4. Current palettes
 
@@ -45,29 +45,31 @@ Preference  → "kaamlink.theme"
 
 | Role | Current value(s) |
 |---|---|
-| Page | `PageBackground #E8EFF9`; gradient stops `PageBackgroundTop #F4F8FE` → `PageBackgroundBottom #DCE7F5` |
-| Card | `CardSurface #EAF0F9`; gradient stops `CardSurfaceTop #FBFDFF` → `CardSurfaceBottom #D9E5F3` |
+| Page | `PageBackground #E8EFF9`; gradient stops `#F4F8FE` → `#DCE7F5` |
+| Card | `CardSurface #EAF0F9`; gradient stops `#FBFDFF` → `#D9E5F3` |
 | Quiet surface | `CardSurfaceAlt #DCE6F2`; gradient stops `#EFF5FD` → `#CFDDEE` |
-| Primary fill (top/body/base) | `#2E74C6 / #0B57A4 / #084A8C` |
-| Accent fill (top/body/base) | `#1B8078 / #0B6660 / #095651` |
+| Brand accent | `Primary #075FC2`; electric gradient `#5B91FF` → `#0A4FA8`; mint `AccentTop #4ED9BE` |
+| Primary fill (top/body/base) | `#1F67C8 / #075FC2 / #084A8C` |
+| Accent fill (top/body/base) | `#1B8078 / #0B6E68 / #095651` |
 | Ink (primary/secondary/muted) | `#172638 / #34475C / #50637A` |
 | Strong outline | `#6E8198` |
 | Shadow | `#9AA9BA` |
 
-### Clay Dusk
+### Clay Dusk — rich midnight navy, not black
 
 | Role | Current value(s) |
 |---|---|
-| Page | `PageBackground #1F2732`; gradient stops `#27313D` → `#161D27` |
-| Card | `CardSurface #242E3A`; gradient stops `#303B49` → `#1B232D` |
-| Quiet surface | `CardSurfaceAlt #293541`; gradient stops `#354250` → `#1E2731` |
-| Primary fill (top/body/base) | `#3A72BC / #2E62A8 / #234C86` |
-| Accent fill (top/body/base) | `#17847A / #106B63 / #0B544E` |
-| Ink (primary/secondary/muted) | `#F1F4F7 / #D6DEE7 / #B8C4D0` |
-| Strong outline | `#9AAABD` |
-| Shadow | `#10151B` |
+| Page | `PageBackground #101B2E`; gradient stops `#172942` → `#0A1322` |
+| Card | `CardSurface #16263F`; gradient stops `#223A5C` → `#101D31` |
+| Quiet surface | `CardSurfaceAlt #1B3352`; gradient stops `#294A70` → `#13263E` |
+| Brand accent | `Primary #8DBBFF`; electric gradient `#B7D5FF` → `#5B91FF`; mint `Accent #62E6CF` |
+| Primary fill (top/body/base) | `#2F6FE0 / #245BC8 / #1748A8` |
+| Accent fill (top/body/base) | `#1E7A6E / #126C62 / #0A514B` |
+| Ink (primary/secondary/muted) | `#F4F8FF / #C2D3EC / #90A8C8` |
+| Strong outline | `#6C8FBF` |
+| Shadow | `#020812` |
 
-`Primary` is an accent for text/icons; `PrimaryFill*` is the filled-button ramp. In dusk they must differ: a text accent needs to be light, while white-on-fill needs a saturated darker fill.
+`Primary` is an accent for text/icons; `PrimaryFill*` is the filled-button ramp. In dusk they must differ: a text accent needs to be light, while white-on-fill needs a saturated darker fill. Both button ramps also use `Button.Background` gradient brushes on Android, so the rich color is visible on the action surfaces themselves.
 
 ## 5. Static contrast result
 

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!--
     KaamLink theme palette — "Clay" (default, light).
+    Rich electric-blue / mint accents over cool blue-white clay surfaces.
     Spec: docs/ui-redesign/04-claymorphism-theme.md
 
     This file is a THEME DICTIONARY, not the whole design system:
@@ -21,32 +22,36 @@
 -->
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="KaamLink.Resources.Styles.ClayPalette">
+
+    <!-- Runtime theme switch marker: ThemeService identifies every palette by this key. -->
+    <x:String x:Key="KaamLinkThemeId">clay</x:String>
 
     <!-- ================= Brand ================= -->
-    <Color x:Key="Primary">#0B57A4</Color>
-    <Color x:Key="PrimaryTop">#2E74C6</Color>
-    <Color x:Key="PrimaryBottom">#084A8C</Color>
+    <Color x:Key="Primary">#075FC2</Color>
+    <Color x:Key="PrimaryTop">#5B91FF</Color>
+    <Color x:Key="PrimaryBottom">#0A4FA8</Color>
     <Color x:Key="PrimaryDark">#084A8C</Color>
     <Color x:Key="PrimarySoft">#DCE7F6</Color>
     <Color x:Key="PrimarySoftDeep">#C9DAF0</Color>
     <!-- Fill tokens are separate from `Primary`: on a dusk theme the accent used
          for text must be LIGHT (to sit on dark clay), while a filled button must
          stay saturated enough for white text. One key cannot be both. -->
-    <Color x:Key="PrimaryFill">#0B57A4</Color>
-    <Color x:Key="PrimaryFillTop">#2E74C6</Color>
+    <Color x:Key="PrimaryFill">#075FC2</Color>
+    <Color x:Key="PrimaryFillTop">#1F67C8</Color>
     <Color x:Key="PrimaryFillBottom">#084A8C</Color>
 
     <!-- Legacy aliases: kept so converter/style lookups keep resolving. -->
-    <Color x:Key="Secondary">#0B57A4</Color>
-    <Color x:Key="Tertiary">#0B6660</Color>
+    <Color x:Key="Secondary">#075FC2</Color>
+    <Color x:Key="Tertiary">#0B6E68</Color>
 
-    <Color x:Key="Accent">#0B6660</Color>
-    <Color x:Key="AccentTop">#1B8078</Color>
+    <Color x:Key="Accent">#0B6E68</Color>
+    <Color x:Key="AccentTop">#4ED9BE</Color>
     <Color x:Key="AccentBottom">#095651</Color>
     <Color x:Key="AccentDark">#095651</Color>
     <Color x:Key="AccentSoft">#D8EDEA</Color>
-    <Color x:Key="AccentFill">#0B6660</Color>
+    <Color x:Key="AccentFill">#0B6E68</Color>
     <Color x:Key="AccentFillTop">#1B8078</Color>
     <Color x:Key="AccentFillBottom">#095651</Color>
 
@@ -57,7 +62,7 @@
     <Color x:Key="WarningSoft">#FBEBD2</Color>
     <Color x:Key="Error">#B3261E</Color>
     <Color x:Key="ErrorSoft">#FADFDC</Color>
-    <Color x:Key="Info">#0B57A4</Color>
+    <Color x:Key="Info">#075FC2</Color>
     <Color x:Key="InfoSoft">#DCE7F6</Color>
 
     <!-- ================= Neutrals ================= -->
@@ -117,6 +122,7 @@
     <SolidColorBrush x:Key="DividerBrush" Color="{StaticResource Divider}" />
     <SolidColorBrush x:Key="TextMutedBrush" Color="{StaticResource TextMuted}" />
     <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource Error}" />
+    <SolidColorBrush x:Key="ErrorSoftBrush" Color="{StaticResource ErrorSoft}" />
     <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource Success}" />
     <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource Warning}" />
     <SolidColorBrush x:Key="InfoBrush" Color="{StaticResource Info}" />

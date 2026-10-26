@@ -24,6 +24,10 @@ namespace KaamLink.Core.Presentation.Clay
     /// </summary>
     public static class ClayMaterial
     {
+        // A defensive ceiling: a pathological platform visual tree must never be
+        // able to turn a cosmetic refresh into a stack overflow / "keeps stopping".
+        private const int MaxRefreshDepth = 64;
+
         public static readonly BindableProperty ElevationProperty = BindableProperty.CreateAttached(
             "Elevation",
             typeof(ClayElevation),
@@ -72,16 +76,55 @@ namespace KaamLink.Core.Presentation.Clay
 
         /// <summary>
         /// Re-applies shadows across a live tree. Called by the theme service after
-        /// the palette dictionary is swapped: the gradients repaint themselves
-        /// (they are DynamicResource), the shadows cannot.
+        /// the palette dictionary is swapped.
+        ///
+        /// Iterative + visited set on purpose: recursive GetVisualChildren()
+        /// traversal can cycle on some platform-specific visual trees, and a
+        /// StackOverflowException cannot be caught by ThemeService's try/catch.
         /// </summary>
         public static void Refresh(IVisualTreeElement root)
         {
-            if (root is VisualElement element && GetElevation(element) != ClayElevation.None)
-                Apply(element, GetElevation(element));
+            var visited = new HashSet<IVisualTreeElement>(ReferenceEqualityComparer.Instance);
+            var pending = new Stack<(IVisualTreeElement Element, int Depth)>();
+            pending.Push((root, 0));
 
-            foreach (var child in root.GetVisualChildren())
-                Refresh(child);
+            while (pending.Count > 0)
+            {
+                var (current, depth) = pending.Pop();
+                if (depth > MaxRefreshDepth || !visited.Add(current))
+                    continue;
+
+                ApplyShadowSafely(current);
+
+                IReadOnlyList<IVisualTreeElement> children;
+                try
+                {
+                    children = current.GetVisualChildren().ToArray();
+                }
+                catch (Exception exception)
+                {
+                    // One platform view exposing a broken visual child must not
+                    // abort the whole refresh or crash the theme toggle.
+                    Console.WriteLine($"[KaamLink] clay visual child enumeration failed: {exception}");
+                    continue;
+                }
+
+                foreach (var child in children)
+                    pending.Push((child, depth + 1));
+            }
+        }
+
+        private static void ApplyShadowSafely(IVisualTreeElement node)
+        {
+            try
+            {
+                if (node is VisualElement element && GetElevation(element) != ClayElevation.None)
+                    Apply(element, GetElevation(element));
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"[KaamLink] clay shadow apply failed: {exception}");
+            }
         }
 
         private static Brush ResolveBrush(string key)

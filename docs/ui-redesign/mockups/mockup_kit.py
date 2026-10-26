@@ -34,32 +34,33 @@ W_DP, H_DP = 360, 780
 W, H = W_DP * SCALE, H_DP * SCALE
 
 # --------------------------------------------------------------------------
-# Design tokens — kept byte-identical to Resources/Styles/Colors.xaml
-# (tools/verify-ui-redesign.py asserts this).
+# Historical mockup tokens. The CURRENT palette is parsed directly from
+# Resources/Styles/Colors.xaml by tools/render-login-preview.py; these values
+# only keep the original flat-design mockups internally consistent.
 # --------------------------------------------------------------------------
 T = {
-    "Primary": "#0B57A4",
-    "PrimaryDark": "#084A8C",
-    "PrimarySoft": "#E9F1F9",
-    "Accent": "#0E7C74",
-    "AccentSoft": "#E4F2F0",
-    "Success": "#157F3C",
-    "SuccessSoft": "#E7F4EC",
-    "Warning": "#9A5B00",
-    "WarningSoft": "#FCF3E3",
+    "Primary": "#075FC2",
+    "PrimaryDark": "#0A4FA8",
+    "PrimarySoft": "#DCE7F6",
+    "Accent": "#0B6E68",
+    "AccentSoft": "#D6F2ED",
+    "Success": "#14663C",
+    "SuccessSoft": "#DBF0E3",
+    "Warning": "#8A5300",
+    "WarningSoft": "#FBEBD2",
     "Error": "#B3261E",
-    "ErrorSoft": "#FBECEB",
-    "Info": "#0B57A4",
-    "InfoSoft": "#E9F1F9",
-    "TextPrimary": "#111A24",
-    "TextSecondary": "#3C4753",
-    "TextMuted": "#66717F",
+    "ErrorSoft": "#FADFDC",
+    "Info": "#075FC2",
+    "InfoSoft": "#DCE7F6",
+    "TextPrimary": "#172638",
+    "TextSecondary": "#34475C",
+    "TextMuted": "#50637A",
     "TextOnPrimary": "#FFFFFF",
-    "PageBackground": "#F5F7F9",
-    "CardSurface": "#FFFFFF",
-    "CardSurfaceAlt": "#FAFBFC",
-    "Border": "#DEE3E9",
-    "Divider": "#EDF0F4",
+    "PageBackground": "#E8EFF9",
+    "CardSurface": "#EAF0F9",
+    "CardSurfaceAlt": "#DCE6F2",
+    "Border": "#C2CCD9",
+    "Divider": "#CDD6E1",
     "White": "#FFFFFF",
     "Black": "#000000",
 }

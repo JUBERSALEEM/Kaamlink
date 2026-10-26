@@ -8,9 +8,10 @@ namespace KaamLink.Core.Presentation.Theming
     /// Swaps the palette <see cref="ResourceDictionary"/> merged into
     /// <see cref="Application.Resources"/> and re-applies clay shadows.
     ///
-    /// Everything else follows automatically because pages and styles reference
-    /// colour tokens with <c>{DynamicResource}</c>: replacing the palette
-    /// dictionary raises a resource change, and every element repaints.
+    /// The palette is a COMPILED XAML dictionary (ClayPalette / ClayDuskPalette).
+    /// Assigning <c>new ResourceDictionary { Source = ... }</c> from C# does not
+    /// actually load MAUI XAML, so the old implementation silently added an empty
+    /// dictionary and the theme toggle appeared to do nothing.
     /// </summary>
     public sealed class ThemeService : IThemeService
     {
@@ -30,81 +31,108 @@ namespace KaamLink.Core.Presentation.Theming
         {
             var theme = ThemeCatalog.Resolve(themeId);
 
-            void Swap()
+            // All resource-dictionary mutation must happen on the UI thread.
+            // Dispatcher is preferred over MainThread.IsMainThread: it is the same
+            // dispatcher MAUI uses to marshal resource-change notifications.
+            var dispatcher = Application.Current?.Dispatcher;
+            if (dispatcher is not null && dispatcher.IsDispatchRequired)
             {
                 try
                 {
-                    SwapCore();
+                    dispatcher.Dispatch(() => SwapSafely(theme));
                 }
                 catch (Exception exception)
                 {
-                    // Both callers are startup paths (CreateWindow) and the UI thread.
-                    // A failed palette load must degrade to the currently merged
-                    // palette, never take the process down.
-                    Console.WriteLine($"[KaamLink] theme '{theme.Id}' could not be applied: {exception}");
+                    Console.WriteLine($"[KaamLink] theme dispatch failed: {exception}");
                 }
+                return;
             }
 
-            void SwapCore()
-            {
-                // MergedDictionaries is ICollection<ResourceDictionary> in .NET MAUI -
-                // no indexer, no Insert, no RemoveAt. So the replacement is appended
-                // rather than placed back in the palette's slot. That is safe only
-                // because no key is defined by more than one merged dictionary
-                // (asserted by tools/verify-ui-redesign.py section K), so merge ORDER
-                // cannot change which value a key resolves to.
-                var merged = Application.Current?.Resources.MergedDictionaries;
-                if (merged is null)
-                    return;
-
-                var replacement = new ResourceDictionary
-                {
-                    Source = new Uri(theme.PaletteSource, UriKind.Relative)
-                };
-
-                // Remove then Add (rather than mutating in place) is what makes MAUI
-                // raise the change that repaints DynamicResource consumers. Every
-                // catalogue palette is removed, not just the tracked one: if a source
-                // path ever stops matching, a single lookup would leave the old palette
-                // merged and the collection would grow on every toggle.
-                foreach (var dictionary in merged.ToList())
-                {
-                    if (IsPalette(dictionary) || ReferenceEquals(dictionary, _palette))
-                        merged.Remove(dictionary);
-                }
-
-                merged.Add(replacement);
-                _palette = replacement;
-
-                CurrentThemeId = theme.Id;
-                WriteStoredThemeId(theme.Id);
-                ThemeChanged?.Invoke(this, theme.Id);
-
-                // Deferred by one dispatcher turn so the replacement dictionary is
-                // loaded before shadows read ClayShadowBrush from it; resolving too
-                // early would give every shadow the fallback colour.
-                var dispatcher = Application.Current?.Dispatcher;
-                if (dispatcher is not null && dispatcher.IsDispatchRequired)
-                    dispatcher.Dispatch(RefreshClayShadows);
-                else
-                    RefreshClayShadows();
-            }
-
-            if (MainThread.IsMainThread)
-                Swap();
-            else
-                MainThread.BeginInvokeOnMainThread(Swap);
+            SwapSafely(theme);
         }
 
         public string Toggle()
         {
             var next = ThemeCatalog.Next(CurrentThemeId);
             Apply(next.Id);
-            return next.Id;
+            // Return the state that was actually applied, not the requested one.
+            // If the palette load failed, the affordance must not lie.
+            return CurrentThemeId;
+        }
+
+        private void SwapSafely(ThemeDefinition theme)
+        {
+            try
+            {
+                SwapCore(theme);
+            }
+            catch (Exception exception)
+            {
+                // Startup and UI-tap paths both use this. A failed palette load must
+                // degrade to the currently merged palette, never stop the process.
+                Console.WriteLine($"[KaamLink] theme '{theme.Id}' could not be applied: {exception}");
+            }
+        }
+
+        private void SwapCore(ThemeDefinition theme)
+        {
+            var application = Application.Current;
+            var merged = application?.Resources.MergedDictionaries;
+            if (merged is null)
+                return;
+
+            var replacement = theme.CreatePalette();
+            if (!replacement.ContainsKey(ThemeCatalog.PaletteMarkerKey))
+                throw new InvalidOperationException(
+                    $"Palette '{theme.Id}' is missing {ThemeCatalog.PaletteMarkerKey}; it is not a theme dictionary.");
+
+            // MergedDictionaries is ICollection<ResourceDictionary> in .NET MAUI -
+            // no indexer, Insert or RemoveAt. Remove then Add makes MAUI raise the
+            // change that repaints DynamicResource consumers. Every catalogue
+            // palette is removed, not just the tracked one, so the collection
+            // cannot grow on every toggle.
+            foreach (var dictionary in merged.ToList())
+            {
+                if (IsPalette(dictionary) || ReferenceEquals(dictionary, _palette))
+                    merged.Remove(dictionary);
+            }
+
+            merged.Add(replacement);
+            _palette = replacement;
+
+            CurrentThemeId = theme.Id;
+            WriteStoredThemeId(theme.Id);
+
+            // Keep platform/native controls on the matching side too. This does not
+            // replace the palette swap; it just aligns status bars, dialogs, etc.
+            if (application is not null)
+                application.UserAppTheme = theme.Id == ThemeCatalog.ClayDusk
+                    ? AppTheme.Dark
+                    : AppTheme.Light;
+
+            ThemeChanged?.Invoke(this, theme.Id);
+
+            // Always defer one dispatcher turn so the replacement dictionary is
+            // fully loaded before shadows read ClayShadowBrush from it. Calling
+            // RefreshClayShadows synchronously here was a real crash path.
+            var dispatcher = application?.Dispatcher;
+            if (dispatcher is not null)
+                dispatcher.Dispatch(RefreshClayShadows);
+            else
+                RefreshClayShadows();
         }
 
         private static bool IsPalette(ResourceDictionary dictionary)
         {
+            // Compiled dictionaries carry the marker; the initial App.xaml palette
+            // is still Source-based, so keep the source check as a fallback.
+            if (dictionary.TryGetValue(ThemeCatalog.PaletteMarkerKey, out var marker)
+                && marker is string themeId
+                && ThemeCatalog.IsKnown(themeId))
+            {
+                return true;
+            }
+
             var source = Normalize(dictionary.Source);
             return source is not null
                 && ThemeCatalog.All.Any(theme =>

@@ -1,14 +1,17 @@
 namespace KaamLink.Core.Presentation.Theming
 {
     /// <summary>
-    /// One selectable theme: an id (stable, persisted) and the palette dictionary
-    /// that supplies every colour token for it.
+    /// One selectable theme: an id (stable, persisted), the XAML source (verified
+    /// by the static gates) and a compiled-dictionary factory.
     ///
-    /// A theme is a PALETTE SWAP. Layout, typography, spacing and control recipes
-    /// all live in Styles.xaml and are shared by every theme, which is what keeps
-    /// a new theme from becoming a second design.
+    /// The factory is important: .NET MAUI does not load a ResourceDictionary from
+    /// a relative Source assigned in C#. Runtime theme switches must instantiate
+    /// the XAML-generated dictionary class instead.
     /// </summary>
-    public sealed record ThemeDefinition(string Id, string PaletteSource);
+    public sealed record ThemeDefinition(
+        string Id,
+        string PaletteSource,
+        Func<ResourceDictionary> CreatePalette);
 
     /// <summary>The themes the app ships with, in the order the toggle cycles them.</summary>
     public static class ThemeCatalog
@@ -16,10 +19,15 @@ namespace KaamLink.Core.Presentation.Theming
         public const string Clay = "clay";
         public const string ClayDusk = "clay-dusk";
 
+        /// <summary>Key present in every palette so ThemeService can identify it without relying on Source.</summary>
+        public const string PaletteMarkerKey = "KaamLinkThemeId";
+
         public static readonly IReadOnlyList<ThemeDefinition> All =
         [
-            new(Clay, "Resources/Styles/Colors.xaml"),
-            new(ClayDusk, "Resources/Themes/ClayDusk.xaml")
+            new(Clay, "Resources/Styles/Colors.xaml",
+                () => new KaamLink.Resources.Styles.ClayPalette()),
+            new(ClayDusk, "Resources/Themes/ClayDusk.xaml",
+                () => new KaamLink.Resources.Themes.ClayDuskPalette())
         ];
 
         public static ThemeDefinition Resolve(string? id) =>

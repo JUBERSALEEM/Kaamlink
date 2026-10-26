@@ -145,6 +145,8 @@ light = read("Resources/Styles/Colors.xaml")
 dusk = read("Resources/Themes/ClayDusk.xaml")
 styles = read("Resources/Styles/Styles.xaml")
 theme_service = read("Core/Presentation/Theming/ThemeService.cs")
+theme_catalog = read("Core/Presentation/Theming/ThemeCatalog.cs")
+clay_material = read("Core/Presentation/Clay/ClayMaterial.cs")
 login_page = read("Features/Auth/LoginPage.xaml")
 appicon = read("Resources/AppIcon/appicon.svg")
 appiconfg = read("Resources/AppIcon/appiconfg.svg")
@@ -161,18 +163,46 @@ for name, text in (("light", light), ("dusk", dusk)):
 ok('Value="{DynamicResource ClayPageBrush}"' in styles,
    "global page style consumes the gradient page brush",
    "pages no longer use the themed page brush")
-ok("dispatcher.IsDispatchRequired" in theme_service
+ok("theme.CreatePalette()" in theme_service
+   and "PaletteMarkerKey" in theme_service
+   and "dispatcher.Dispatch(RefreshClayShadows)" in theme_service
    and "!dispatcher.IsDispatchRequired" not in theme_service,
-   "theme shadow refresh uses the correct dispatcher condition",
-   "ThemeService dispatcher condition is inverted again")
+   "theme toggle swaps compiled dictionaries and defers shadow refresh",
+   "ThemeService regressed to Source-only dictionaries or synchronous shadow refresh")
+ok("CreatePalette" in theme_catalog
+   and "ClayPalette" in theme_catalog
+   and "ClayDuskPalette" in theme_catalog,
+   "ThemeCatalog exposes compiled palette factories",
+   "ThemeCatalog no longer provides typed palette factories")
+ok("HashSet<IVisualTreeElement>" in clay_material
+   and "Stack<" in clay_material
+   and "MaxRefreshDepth" in clay_material,
+   "clay shadow refresh is iterative, cycle-safe and depth-limited",
+   "ClayMaterial.Refresh can recurse without a visited set (stack-overflow crash path)")
+ok("SafeInitializeAsync" in read("Features/Auth/LoginPage.xaml.cs")
+   and "SafeInitializeAsync" in read("Features/Onboarding/RoleSelectionPage.xaml.cs"),
+   "async page initialization is observed and cannot crash as an unobserved task",
+   "a page still fire-and-forgets initialization without a catch wrapper")
+role_page = read("Features/Onboarding/RoleSelectionPage.xaml")
+ok(login_page.count('InputTransparent="False"') >= 2
+   and 'InputTransparent="True"' in login_page
+   and 'InputTransparent="False"' in role_page,
+   "theme/country buttons and country-row gestures have explicit tap routing",
+   "a tappable control lost explicit InputTransparent routing (clicks can be swallowed)")
+ok('Text="{x:Static strings:AppStrings.LoginContinueGoogle}"' in login_page
+   and 'IsEnabled="False"' in login_page
+   and "LoginGoogleSetupNote" in login_page,
+   "Google sign-in remains visibly disabled with an explanation",
+   "Google button was enabled without a server-side identity exchange")
 ok("ItemSizingStrategy=\"MeasureFirstItem\"" in login_page,
    "country picker CollectionView uses a fast item-sizing strategy",
    "country picker lost its CollectionView optimization")
 ok("linearGradient" in appicon and "linearGradient" in mark and "linearGradient" in hero,
    "app icon, login mark and hero share the rich gradient language",
    "one brand asset regressed to flat colour")
-ok("59D6C2" in appicon and "59D6C2" in appiconfg and "59D6C2" in mark,
-   "adaptive icon foreground and login mark share the mint link accent",
+ok("62E6CF" in appicon and "62E6CF" in appiconfg and "62E6CF" in mark
+   and "5B91FF" in appicon and "5B91FF" in mark,
+   "adaptive icon foreground and login mark share the mint/electric-blue accents",
    "brand mark and app icon use different accent colours")
 
 section("Android resource filenames (Resizetizer)")

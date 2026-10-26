@@ -175,7 +175,7 @@ CASES = [
     (
         "theme palette missing a token",
         "Resources/Themes/ClayDusk.xaml",
-        ('    <Color x:Key="AccentSoft">#263E3D</Color>\n', ""),
+        ('    <Color x:Key="AccentSoft">#124039</Color>\n', ""),
         ["tools/verify-theme-contrast.py"],
     ),
     (
@@ -200,8 +200,8 @@ CASES = [
     (
         "IList member used on an ICollection framework property (the real CS1501)",
         "Core/Presentation/Theming/ThemeService.cs",
-        ("                merged.Add(replacement);",
-         "                merged.Insert(1, replacement);"),
+        ("            merged.Add(replacement);",
+         "            merged.Insert(1, replacement);"),
         ["tools/verify-compile-surface.py"],
     ),
     (
@@ -267,10 +267,21 @@ CASES = [
         ["tools/verify-connectivity.py"],
     ),
     (
-        "theme shadow dispatcher condition inverted",
+        "theme shadow refresh no longer deferred to the dispatcher",
         "Core/Presentation/Theming/ThemeService.cs",
-        ("if (dispatcher is not null && dispatcher.IsDispatchRequired)",
-         "if (dispatcher is not null && !dispatcher.IsDispatchRequired)"),
+        ("dispatcher.Dispatch(RefreshClayShadows);", "RefreshClayShadows();"),
+        ["tools/verify-connectivity.py"],
+    ),
+    (
+        "runtime theme switch drops compiled palette factory",
+        "Core/Presentation/Theming/ThemeService.cs",
+        ("var replacement = theme.CreatePalette();", "var replacement = new ResourceDictionary();"),
+        ["tools/verify-ui-redesign.py"],
+    ),
+    (
+        "clay shadow refresh loses its cycle guard",
+        "Core/Presentation/Clay/ClayMaterial.cs",
+        ("var visited = new HashSet<IVisualTreeElement>(ReferenceEqualityComparer.Instance);", ""),
         ["tools/verify-connectivity.py"],
     ),
     (
@@ -319,6 +330,25 @@ CASES = [
          "    <Style TargetType=\"Button\" x:Key=\"SecondaryButton\">\n"
          "        <Setter Property=\"HorizontalTextAlignment\" Value=\"Start\" />\n"),
         ["tools/verify-ui-redesign.py"],
+    ),
+    (
+        "primary button loses its gradient Background",
+        "Resources/Styles/Styles.xaml",
+        ('<Setter Property="Background" Value="{DynamicResource ClayPrimaryBrush}" />',
+         '<Setter Property="BackgroundColor" Value="{DynamicResource PrimaryFill}" />'),
+        ["tools/verify-ui-redesign.py"],
+    ),
+    (
+        "country row label swallows tap gestures",
+        "Features/Auth/LoginPage.xaml",
+        ('InputTransparent="True"', 'InputTransparent="False"'),
+        ["tools/verify-connectivity.py"],
+    ),
+    (
+        "Google button enabled without a backend",
+        "Features/Auth/LoginPage.xaml",
+        ('IsEnabled="False"', 'IsEnabled="True"'),
+        ["tools/verify-connectivity.py"],
     ),
 ]
 

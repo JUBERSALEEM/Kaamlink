@@ -13,7 +13,19 @@ namespace KaamLink.Features.Onboarding
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            _ = _viewModel.EnsureSessionRestoredAsync();
+            _ = SafeInitializeAsync();
+        }
+
+        private async Task SafeInitializeAsync()
+        {
+            try
+            {
+                await _viewModel.EnsureSessionRestoredAsync();
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"[KaamLink] role selection session restore failed: {exception}");
+            }
         }
     }
 }

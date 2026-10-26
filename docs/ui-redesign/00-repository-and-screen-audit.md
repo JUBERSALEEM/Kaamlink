@@ -429,8 +429,8 @@ The repo's identity is a **generic indigo/violet SaaS palette** (`#4F46E5` prima
 
 **Direction: "Marine Blue + Trust Teal"** — a disciplined, low-chrome identity:
 
-* A deep, confident **marine blue** for primary action and brand (`#0B57A4`), with a darker pressed state and a very light tint for selection surfaces.
-* A restrained **teal** (`#0E7C74`) as the single accent, reserved for *verification/trust* moments (verified marks, assessment accents) — it also aligns with the existing Android theme colour.
+* A deep, confident **electric marine blue** for primary action and brand (`#075FC2`), with a brighter `#5B91FF` gradient top and a darker pressed state — see the current palette in `04-claymorphism-theme.md`.
+* A restrained **mint teal** (`#0B6E68` / `#62E6CF`) as the single accent, reserved for *verification/trust* moments (verified marks, assessment accents).
 * Warm amber for pending states, calm green for success, explicit red for destructive/rejected — always paired with text, never colour alone.
 * Neutral, slightly cool greys for canvas/borders/text; **flat cards with 1px borders and no drop shadows** (faster on low-end devices, calmer visually).
 * Compact spacing rhythm (4/8/12/16/20/24; 16dp screen margin), 12–14dp radii, 48dp controls, 15sp body.

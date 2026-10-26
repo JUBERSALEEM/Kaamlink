@@ -13,7 +13,21 @@ namespace KaamLink.Features.Auth
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            _ = _viewModel.InitializeAsync();
+            _ = SafeInitializeAsync();
+        }
+
+        // OnAppearing cannot be async. An unobserved exception here used to surface
+        // as a random "KaamLink keeps stopping" after the login screen appeared.
+        private async Task SafeInitializeAsync()
+        {
+            try
+            {
+                await _viewModel.InitializeAsync();
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"[KaamLink] login initialization failed: {exception}");
+            }
         }
     }
 }

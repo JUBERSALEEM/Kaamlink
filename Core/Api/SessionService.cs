@@ -147,10 +147,14 @@ namespace KaamLink.Core.Api
                     IsAuthenticated = true;
                     return true;
                 }
-                catch (Exception exception) when (exception is HttpRequestException or OperationCanceledException)
+                catch (Exception exception) when (exception is HttpRequestException
+                                                    or OperationCanceledException
+                                                    or System.Text.Json.JsonException)
                 {
-                    // Offline/timeout: keep the pair — the next app start will try again.
-                    _logger.LogWarning(exception, "Refresh could not reach the server");
+                    // Offline/timeout/malformed 2xx body: keep the pair — the next
+                    // app start will try again. A captive portal returning HTML
+                    // used to escape as JsonException and crash the 401 retry path.
+                    _logger.LogWarning(exception, "Refresh could not complete against the server");
                     return false;
                 }
             }

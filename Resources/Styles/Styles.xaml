@@ -16,9 +16,9 @@
         and always through {DynamicResource} so a theme switch repaints the live
         screen. StaticResource is for styles, icons and converters only.
       * Text containers never get fixed heights (Arabic + large font scales).
-      * Buttons keep solid BackgroundColor: MAUI does not reliably paint a Brush
-        gradient on a Button on Android, and a transparent-looking primary action
-        is worse than a flat one.
+      * Buttons use the Brush-typed Background property (ClayPrimaryBrush /
+        ClayCardBrush), not BackgroundColor: gradient button backgrounds render on
+        Android, and the app is Android-only. Disabled opacity still greys them.
 -->
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
@@ -219,7 +219,7 @@
     <!-- ===================== Buttons ===================== -->
     <!-- Press feedback shared by every clay button style. -->
     <Style TargetType="Button" x:Key="PrimaryButton">
-        <Setter Property="BackgroundColor" Value="{DynamicResource PrimaryFill}" />
+        <Setter Property="Background" Value="{DynamicResource ClayPrimaryBrush}" />
         <Setter Property="TextColor" Value="{DynamicResource TextOnPrimary}" />
         <Setter Property="BorderColor" Value="{DynamicResource PrimaryFillTop}" />
         <Setter Property="BorderWidth" Value="1" />
@@ -250,7 +250,7 @@
     </Style>
 
     <Style TargetType="Button" x:Key="SecondaryButton">
-        <Setter Property="BackgroundColor" Value="{DynamicResource CardSurface}" />
+        <Setter Property="Background" Value="{DynamicResource ClayCardBrush}" />
         <Setter Property="TextColor" Value="{DynamicResource Primary}" />
         <Setter Property="BorderColor" Value="{DynamicResource BorderStrong}" />
         <Setter Property="BorderWidth" Value="1.25" />
@@ -320,10 +320,24 @@
                 <RoundRectangle CornerRadius="12" />
             </Setter.Value>
         </Setter>
+        <!-- A Border is not a native Button: give the tappable row visible press feedback. -->
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal" />
+                    <VisualState x:Name="Pressed">
+                        <VisualState.Setters>
+                            <Setter Property="Scale" Value="0.99" />
+                            <Setter Property="Opacity" Value="0.92" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
     </Style>
 
     <Style TargetType="Button" x:Key="SubtleButton">
-        <Setter Property="BackgroundColor" Value="{DynamicResource PrimarySoft}" />
+        <Setter Property="Background" Value="{DynamicResource ClayPrimarySoftBrush}" />
         <Setter Property="TextColor" Value="{DynamicResource Primary}" />
         <Setter Property="BorderColor" Value="{DynamicResource BorderStrong}" />
         <Setter Property="BorderWidth" Value="1" />
@@ -336,7 +350,7 @@
     </Style>
 
     <Style TargetType="Button" x:Key="DangerButton">
-        <Setter Property="BackgroundColor" Value="{DynamicResource ErrorSoft}" />
+        <Setter Property="Background" Value="{DynamicResource ErrorSoftBrush}" />
         <Setter Property="TextColor" Value="{DynamicResource Error}" />
         <Setter Property="BorderColor" Value="{DynamicResource BorderStrong}" />
         <Setter Property="BorderWidth" Value="1" />
@@ -349,7 +363,9 @@
     </Style>
 
     <Style TargetType="Button" x:Key="DangerSolidButton" BasedOn="{StaticResource PrimaryButton}">
-        <Setter Property="BackgroundColor" Value="{DynamicResource Error}" />
+        <!-- Override the inherited gradient Background, not BackgroundColor: both
+             properties set together fight on Android native buttons. -->
+        <Setter Property="Background" Value="{DynamicResource ErrorBrush}" />
         <Setter Property="BorderColor" Value="{DynamicResource ErrorSoft}" />
         <Setter Property="TextColor" Value="{DynamicResource TextOnPrimary}" />
     </Style>

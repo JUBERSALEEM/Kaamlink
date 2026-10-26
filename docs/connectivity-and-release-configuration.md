@@ -45,6 +45,8 @@ break was configuration and deployment:
 | Android image resources | `kaamlink-mark.svg` / `login-hero.svg` contained hyphens and failed `Microsoft.Maui.Resizetizer` | Renamed to `kaamlink_mark.svg` / `login_hero.svg`; all XAML references, docs and the new `verify-connectivity.py` gate updated |
 | Source-generated JSON | `CountryPhoneDirectoryJsonContext.cs` used `JsonSerializerDefaults.Web` without importing `System.Text.Json` (CS0103 in a real .NET build) | Added `using System.Text.Json;`; `verify-compile-surface.py` and `verify-global-phone-directory.py` now assert the STJ namespace imports |
 | Country picker rows | `CountryListButton` applied `HorizontalTextAlignment` to a MAUI `Button` (XLS0431 / XC0001) | Rebuilt as `Border` + `Label` + `TapGestureRecognizer`; `verify-ui-redesign.py` now rejects text-alignment setters on Button styles/elements |
+| Theme switch / crash hardening | A C# `ResourceDictionary { Source = ... }` does not load MAUI XAML, so Day/Dusk clicks appeared dead; recursive clay-shadow refresh could cycle | Compiled `ClayPalette` / `ClayDuskPalette` dictionaries with a theme marker, deferred dispatcher refresh, iterative cycle-safe shadow traversal, and observed async page init |
+| Rich color | Dusk was a near-black charcoal; buttons were solid | Midnight-navy/indigo surfaces, electric-blue and mint accents, gradient `Button.Background` on Android, richer light palette, updated icon/hero/splash SVGs |
 
 ## Build commands
 
@@ -128,7 +130,7 @@ bash tools/verify-all.sh
 ```
 
 That runs all ten static gates, including `verify-global-phone-directory.py`
-(37 checks), `verify-connectivity.py` (44 checks), `verify-ui-redesign.py`
-(468 checks) and 47 injected-defect negative tests. These are static/source-level gates. A `dotnet build` and a real-device network
+(37 checks), `verify-connectivity.py` (49 checks), `verify-ui-redesign.py`
+(476 checks) and 52 injected-defect negative tests. These are static/source-level gates. A `dotnet build` and a real-device network
 journey are still required before declaring production readiness; this
 workspace does not have the Android/.NET 10 toolchain or a hosted backend.
