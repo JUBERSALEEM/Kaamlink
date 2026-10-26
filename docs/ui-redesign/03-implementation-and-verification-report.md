@@ -1,6 +1,8 @@
 # KaamLink UI Redesign — Implementation & Verification Report
 
-Status: **implementation complete, static verification green, build/runtime verification BLOCKED (no SDK or device in
+Status: **redesigned (v1 marine-blue system), then reskinned to a claymorphism material with a
+runtime theme engine ([04-claymorphism-theme.md](04-claymorphism-theme.md)); static verification green,
+build/runtime verification BLOCKED (no SDK or device in
 this environment).** A dedicated release-verification pass was run afterwards and is recorded in [§9](#9-post-fix-release-verification-gate);
 it found and fixed ten defects — one a login blocker and one a build blocker reported by the
 real compiler — and it does not change the build/runtime verdict (§9.12). The first emulator run
@@ -748,3 +750,29 @@ through its real code path. It is **not** evidence that the app builds or runs. 
 single next step that would change this verdict is executing §9.6 and §9.7 on a machine with
 the .NET 10 SDK and an Android device; a Release candidate additionally needs the real API base
 URL (R8). Until then this report must not be read as a release approval.
+
+### 9.14 Claymorphism reskin and theme engine (v2)
+
+The UI was reskinned from the flat marine-blue system to **claymorphism** — a soft, moulded
+material built from a lit vertical gradient, a 1–1.5dp light edge, generous radii (18–26dp on
+surfaces, 999 on pills) and a wide, low-opacity cast shadow — and a **theme engine** was added
+so the whole app can switch palette at runtime.
+
+| Item | Result |
+|---|---|
+| New design doc | `04-claymorphism-theme.md` (material, palettes, engine, contrast, limits) |
+| Themes | `clay` (default, light) and `clay-dusk` (dark); a theme is a palette dictionary, never a layout |
+| Engine | `IThemeService`/`ThemeService` + `ThemeCatalog`; swaps the merged palette dictionary, persists to `Preferences`, applies the stored theme before the shell is built |
+| Per-element depth | `ClayMaterial.Elevation` attached property creates a fresh `Shadow` per element (a style-set `Shadow` would be shared) and re-applies after a switch |
+| Theme-awareness | 49 colour references in pages moved from `StaticResource` to `DynamicResource`, otherwise a switch cannot repaint them |
+| Icons | moved to `Resources/Styles/Icons.xaml` (43 glyphs) because they never change with a palette |
+| Contrast | 25 AA pairs × 2 palettes, 0 failures (`tools/verify-theme-contrast.py`) |
+| Localization | +3 keys, 315 / 315 / 315 EN-AR-Designer |
+| New gate rules | palette baked with `StaticResource`, unknown icon key, dropped clay elevation, theme parity, engine wiring; **30 injected defects, 30 detected** |
+| Still unverified | every pixel of it: no device/emulator render, and the Android shadow appearance in particular (see the theme doc §8) |
+
+Two defects in the first draft of this work were caught by the gates themselves: the redesign
+gate silently lost its 41 icon checks when the icons moved (an empty scan passes), and the
+first clay styles set `Button` gradients that Android does not reliably paint — buttons now use
+solid clay fills with a light border, and the gradient is reserved for `Border` surfaces where
+it is known to render.

@@ -1,5 +1,12 @@
 # KaamLink Design System — v1.0 "Marine Blue + Trust Teal"
 
+
+> **v2 update — clay material.** The typography, spacing, control inventory and
+> accessibility rules in this document still apply unchanged. The *visual material*
+> (surfaces, elevation, palette, and how a theme is applied at runtime) is now
+> claymorphism and is specified in [`04-claymorphism-theme.md`](04-claymorphism-theme.md).
+> Where this document names a flat card or a 12–14dp radius, the clay spec supersedes it.
+
 **Applies to:** the whole Android MAUI app (`net10.0-android`, min SDK 21)
 **Baseline device:** 360 × 780 dp, 2× density; must also work at 320 dp and 412 dp
 **Direction chosen after the audit:** the old palette was a generic indigo/violet SaaS set
