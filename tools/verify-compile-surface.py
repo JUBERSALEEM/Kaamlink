@@ -267,6 +267,36 @@ for path in source_files():
                f"namespace '{owner}' without `using {owner};` (CS0246)")
             break
 
+# Framework types are not declared in this repo, so the project-type lookup above
+# cannot see them. MAUI's implicit global usings cover Microsoft.Maui.Storage and
+# friends, but NOT System.Text.Json; a missing `using System.Text.Json;` for
+# JsonSerializerDefaults is a real CS0103 on the Android build. Assert the few STJ
+# names the client uses.
+BCL_TYPE_NAMESPACES = {
+    "JsonSerializerDefaults": "System.Text.Json",
+    "JsonSerializer": "System.Text.Json",
+    "JsonDocument": "System.Text.Json",
+    "JsonElement": "System.Text.Json",
+    "JsonSerializerOptions": "System.Text.Json",
+    "JsonSerializerContext": "System.Text.Json.Serialization",
+    "JsonSourceGenerationOptionsAttribute": "System.Text.Json.Serialization",
+    "JsonSerializableAttribute": "System.Text.Json.Serialization",
+}
+for path in source_files():
+    text = strip_noise(read(path))
+    ns_match = NAMESPACE.search(text)
+    namespace = ns_match.group(1) if ns_match else ""
+    usings = set(re.findall(r"^\s*using\s+(?:static\s+)?([\w.]+)\s*;", text, re.M))
+    visible = usings | GLOBAL_USINGS
+    for name, owner in BCL_TYPE_NAMESPACES.items():
+        if owner in visible or namespace == owner or namespace.startswith(owner + "."):
+            continue
+        match = re.search(rf"(?<![\w.]){name}\b", text)
+        if match:
+            ok(False,
+               f"{path}:{line_of(text, match.start())}: uses framework type {name} "
+               f"without `using {owner};` (CS0103/CS0246)")
+
 # ------------------------------------------------ G. MVVM source-generator surface
 # [ObservableProperty] on `_isBusy` generates `IsBusy`; a duplicate field, a clashing
 # member or a mismatched `partial void OnIsBusyChanged(...)` is a hard compile error

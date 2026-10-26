@@ -17,6 +17,7 @@ root = Path(__file__).resolve().parent.parent
 asset = root / "Resources/Raw/country-calling-codes.json"
 project = (root / "KaamLink.csproj").read_text(encoding="utf-8")
 directory = (root / "Core/Text/CountryPhoneDirectory.cs").read_text(encoding="utf-8")
+context = (root / "Core/Text/CountryPhoneDirectoryJsonContext.cs").read_text(encoding="utf-8")
 normalizer = (root / "Core/Text/PhoneInput.cs").read_text(encoding="utf-8")
 vm = (root / "Features/Auth/LoginViewModel.cs").read_text(encoding="utf-8")
 page = (root / "Features/Auth/LoginPage.xaml").read_text(encoding="utf-8")
@@ -54,9 +55,12 @@ check('<MauiAsset Include="Resources\\Raw\\**"' in project,
 check('OpenAppPackageFileAsync(AssetName)' in directory and '"country-calling-codes.json"' in directory,
       "directory loader does not open the bundled logical asset")
 check("CountryPhoneDirectoryJsonContext.Default.CountryPhoneDirectoryData" in directory
-      and "[JsonSerializable(typeof(CountryPhoneDirectoryData))]" in
-      (root / "Core/Text/CountryPhoneDirectoryJsonContext.cs").read_text(encoding="utf-8"),
+      and "[JsonSerializable(typeof(CountryPhoneDirectoryData))]" in context,
       "bundled JSON is not using its trim-safe source-generated serializer")
+check("using System.Text.Json;" in context
+      and "using System.Text.Json.Serialization;" in context,
+      "CountryPhoneDirectoryJsonContext is missing a System.Text.Json import "
+      "(JsonSerializerDefaults / JsonSerializerContext CS0103)")
 check("Microsoft.Maui.Storage" in directory, "MAUI FileSystem namespace is not imported")
 check("GetDeviceRegionIsoCode" in vm and "CountryPhoneDirectory.LoadAsync" in vm,
       "login view model does not initialize region/default country from offline metadata")

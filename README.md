@@ -36,8 +36,8 @@ implementation/verification report live in [docs/ui-redesign/](docs/ui-redesign)
 Static gates: `tools/verify-all.sh` runs `verify-phase03.py` (105),
 `verify-phase04.py` (105), `verify-phase05.py` (88), `verify-bindings.py` (368 compiled
 bindings), `verify-theme-contrast.py` (55), `verify-ui-redesign.py` (441),
-`verify-compile-surface.py` (347) and `verify-connectivity.py` (44), plus the negative
-gate self-tests. Connectivity/Release setup is documented in
+`verify-global-phone-directory.py` (37), `verify-compile-surface.py` (347) and
+`verify-connectivity.py` (44), plus 46 negative gate self-tests. Connectivity/Release setup is documented in
 [docs/connectivity-and-release-configuration.md](docs/connectivity-and-release-configuration.md).
 **The redesign has not been built or run in this environment: no .NET/Android SDK** —
 see §4 of the report.

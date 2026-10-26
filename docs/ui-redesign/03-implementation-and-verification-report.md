@@ -786,7 +786,8 @@ This section is additive; the historical counts above describe their own commit.
 | Theme | both palettes use `LinearGradientBrush` for page/card/soft-card surfaces; new tokens are contrast-checked; the theme dispatcher condition was corrected; `CollectionView` item sizing/scroll retention added on three lists |
 | Brand | `appicon.svg`, `appiconfg.svg`, `kaamlink_mark.svg`, `splash.svg` and `login_hero.svg` now share a rich cobalt/navy gradient and mint linked-K mark. The two `Resources/Images` assets were renamed from hyphenated filenames because `Microsoft.Maui.Resizetizer` rejects hyphens in Android resource names |
 | Previews | `tools/render-login-preview.py` reads the shipped palette + strings to draw current light/dusk login screens; old `02-login.png` is explicitly historical |
-| New gate | `tools/verify-connectivity.py` (44 checks, incl. Android-safe image filenames) plus 9 new injected defects in `verify-gates-selftest.py`; `tools/verify-all.sh` runs the whole suite |
+| New gate | `tools/verify-connectivity.py` (44 checks, incl. Android-safe image filenames) plus 11 new injected defects in `verify-gates-selftest.py`; `tools/verify-all.sh` runs the whole suite |
+| Real-compiler follow-up | `CountryPhoneDirectoryJsonContext.cs` was missing `using System.Text.Json;` for `JsonSerializerDefaults.Web` (CS0103). Fixed and covered by framework-type using checks in `verify-compile-surface.py` and `verify-global-phone-directory.py` |
 | Still unverified | `dotnet build`, XamlC, real-device network journey on mobile data, Android shadow/gradient rendering, production OTP delivery and performance profiling. No public HTTPS API URL or SMS credentials were supplied |
 
 Two defects in the first draft of this work were caught by the gates themselves: the redesign

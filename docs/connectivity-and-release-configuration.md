@@ -43,6 +43,7 @@ break was configuration and deployment:
 | Theme/shadows | Dispatcher condition inverted on background threads | Correct `IsDispatchRequired` branch |
 | Lists | Default `CollectionView` measurement | `ItemSizingStrategy="MeasureFirstItem"` + `KeepScrollOffset` on the country picker and job lists |
 | Android image resources | `kaamlink-mark.svg` / `login-hero.svg` contained hyphens and failed `Microsoft.Maui.Resizetizer` | Renamed to `kaamlink_mark.svg` / `login_hero.svg`; all XAML references, docs and the new `verify-connectivity.py` gate updated |
+| Source-generated JSON | `CountryPhoneDirectoryJsonContext.cs` used `JsonSerializerDefaults.Web` without importing `System.Text.Json` (CS0103 in a real .NET build) | Added `using System.Text.Json;`; `verify-compile-surface.py` and `verify-global-phone-directory.py` now assert the STJ namespace imports |
 
 ## Build commands
 
@@ -125,7 +126,8 @@ and prevents another silently broken Release build.
 bash tools/verify-all.sh
 ```
 
-That runs all ten static gates, including `verify-connectivity.py` (44 checks) and
-44 injected-defect negative tests. These are static/source-level gates. A `dotnet build` and a real-device network
+That runs all ten static gates, including `verify-global-phone-directory.py`
+(37 checks), `verify-connectivity.py` (44 checks) and 46 injected-defect negative
+tests. These are static/source-level gates. A `dotnet build` and a real-device network
 journey are still required before declaring production readiness; this
 workspace does not have the Android/.NET 10 toolchain or a hosted backend.

@@ -300,6 +300,18 @@ CASES = [
         ('Source="kaamlink_mark.svg"', 'Source="kaamlink-mark.svg"'),
         ["tools/verify-connectivity.py"],
     ),
+    (
+        "JsonSerializerDefaults used without System.Text.Json import",
+        "Core/Text/CountryPhoneDirectoryJsonContext.cs",
+        ("using System.Text.Json;\n", ""),
+        ["tools/verify-global-phone-directory.py"],
+    ),
+    (
+        "framework STJ using gap in API contracts (CS0103)",
+        "Core/Api/ApiContracts.cs",
+        ("using System.Text.Json;\n", ""),
+        ["tools/verify-compile-surface.py"],
+    ),
 ]
 
 
