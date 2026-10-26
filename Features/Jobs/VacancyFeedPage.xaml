@@ -3,86 +3,214 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:KaamLink.Features.Jobs"
              xmlns:strings="clr-namespace:KaamLink.Resources.Strings"
+             xmlns:controls="clr-namespace:KaamLink.Controls"
              x:Class="KaamLink.Features.Jobs.VacancyFeedPage"
              x:Name="Page"
              x:DataType="vm:VacancyFeedViewModel"
-             Title="{x:Static strings:AppStrings.FeedTitle}">
+             Title="{x:Static strings:AppStrings.FeedScreenTitle}"
+             Shell.NavBarIsVisible="False">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="24" Spacing="16">
+    <!-- Worker job feed. Filters keep the original SelectedEmirate binding; the
+         list is a CollectionView so long feeds virtualise (the old version built
+         every card inside a ScrollView). -->
+    <Grid RowDefinitions="Auto,*">
 
-            <!-- Filters -->
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                <Entry Grid.Column="0"
-                       Placeholder="{x:Static strings:AppStrings.FeedSearchPlaceholder}"
-                       ReturnType="Search"
-                       Text="{Binding SearchText}" />
-                <Button Grid.Column="1"
-                        Command="{Binding SearchCommand}"
-                        SemanticProperties.Description="{x:Static strings:AppStrings.FeedSearchCta}"
-                        Text="{x:Static strings:AppStrings.FeedSearchCta}" />
+        <!-- Search + filter header (fixed while the list scrolls) -->
+        <VerticalStackLayout Grid.Row="0"
+                             Padding="16,8,16,10"
+                             Spacing="10">
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="4">
+                <Button Grid.Column="0"
+                        Style="{StaticResource TextButton}"
+                        Command="{Binding BackCommand}"
+                        MinimumWidthRequest="48"
+                        SemanticProperties.Description="{x:Static strings:AppStrings.BackCta}"
+                        Text="{x:Static strings:AppStrings.BackCta}" />
+                <Label Grid.Column="1"
+                       Style="{StaticResource SectionText}"
+                       FontSize="18"
+                       Text="{x:Static strings:AppStrings.FeedScreenTitle}"
+                       VerticalOptions="Center" />
             </Grid>
-            <Picker ItemDisplayBinding="{Binding Label}"
-                    ItemsSource="{Binding EmirateOptions}"
-                    SelectedItem="{Binding SelectedEmirate}" />
 
-            <ActivityIndicator HorizontalOptions="Center"
-                               IsRunning="{Binding IsBusy}"
-                               IsVisible="{Binding IsBusy}" />
+            <Border Style="{StaticResource FieldBox}" Padding="12,0">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="4">
+                    <Entry Grid.Column="0"
+                           AutomationProperties.Name="{x:Static strings:AppStrings.FeedSearchHint}"
+                           BackgroundColor="Transparent"
+                           Placeholder="{x:Static strings:AppStrings.FeedSearchHint}"
+                           ReturnCommand="{Binding SearchCommand}"
+                           ReturnType="Search"
+                           Text="{Binding SearchText}" />
+                    <Button Grid.Column="1"
+                            Style="{StaticResource TextButton}"
+                            FontFamily="Lucide"
+                            FontSize="18"
+                            HeightRequest="48"
+                            WidthRequest="48"
+                            Padding="0"
+                            Command="{Binding SearchCommand}"
+                            SemanticProperties.Description="{x:Static strings:AppStrings.FeedSearchCta}"
+                            Text="{StaticResource IconSearch}" />
+                </Grid>
+            </Border>
 
-            <VerticalStackLayout IsVisible="{Binding HasError}" Spacing="12">
-                <Label Style="{StaticResource Body}"
-                       Text="{Binding ErrorMessage}"
-                       TextColor="{StaticResource Error}" />
-                <Button Command="{Binding SearchCommand}"
-                        SemanticProperties.Description="{x:Static strings:AppStrings.RetryCta}"
-                        Text="{x:Static strings:AppStrings.RetryCta}" />
-            </VerticalStackLayout>
-
-            <Label IsVisible="{Binding IsEmpty}"
-                   Style="{StaticResource BodySecondary}"
-                   Text="{x:Static strings:AppStrings.FeedEmpty}" />
-
-            <!-- Vacancy cards -->
-            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Items}" Spacing="12">
-                <BindableLayout.ItemTemplate>
-                    <DataTemplate x:DataType="vm:VacancyCardModel">
-                        <Border Style="{StaticResource Card}">
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer
-                                    Command="{Binding BindingContext.OpenVacancyCommand, Source={x:Reference Page}}"
-                                    CommandParameter="{Binding}" />
-                            </Border.GestureRecognizers>
-                            <VerticalStackLayout Spacing="6">
-                                <Label SemanticProperties.HeadingLevel="Level2"
-                                       Style="{StaticResource SectionTitle}"
-                                       Text="{Binding Title}" />
-                                <Label FontFamily="OpenSansSemibold"
-                                       Style="{StaticResource Body}"
-                                       Text="{Binding CompanyLine}" />
-                                <Label Style="{StaticResource BodySecondary}"
-                                       Text="{Binding LocationLine}" />
-                                <Label Style="{StaticResource Body}"
-                                       Text="{Binding SalaryText}" />
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <Label Grid.Column="0"
-                                           Style="{StaticResource Caption}"
-                                           Text="{Binding SkillsLine}"
-                                           VerticalOptions="Center" />
-                                    <Label Grid.Column="1"
-                                           Style="{StaticResource Caption}"
-                                           Text="{Binding HeadcountText}" />
-                                </Grid>
-                            </VerticalStackLayout>
-                        </Border>
-                    </DataTemplate>
-                </BindableLayout.ItemTemplate>
-            </VerticalStackLayout>
-
-            <Button Command="{Binding LoadMoreCommand}"
-                    IsVisible="{Binding HasMore}"
-                    SemanticProperties.Description="{x:Static strings:AppStrings.FeedLoadMoreCta}"
-                    Text="{x:Static strings:AppStrings.FeedLoadMoreCta}" />
+            <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="8">
+                <Label Grid.Column="0"
+                       Style="{StaticResource IconGlyph}"
+                       Text="{StaticResource IconSliders}" />
+                <Label Grid.Column="1"
+                       Style="{StaticResource CaptionText}"
+                       Text="{x:Static strings:AppStrings.FeedFilterLabel}"
+                       VerticalOptions="Center" />
+                <Border Grid.Column="2" Style="{StaticResource FieldBox}" Padding="10,0">
+                    <Picker ItemDisplayBinding="{Binding Label}"
+                            ItemsSource="{Binding EmirateOptions}"
+                            BackgroundColor="Transparent"
+                            SelectedItem="{Binding SelectedEmirate}" />
+                </Border>
+            </Grid>
         </VerticalStackLayout>
-    </ScrollView>
+
+        <!-- Results -->
+        <CollectionView Grid.Row="1"
+                        ItemsSource="{Binding Items}"
+                        SelectionMode="None"
+                        Margin="16,0,16,0">
+
+            <CollectionView.Header>
+                <VerticalStackLayout Spacing="10" Padding="0,0,0,10">
+                    <Label Style="{StaticResource CaptionText}"
+                           IsVisible="{Binding IsLoaded}"
+                           Text="{Binding ResultsText}" />
+                </VerticalStackLayout>
+            </CollectionView.Header>
+
+            <CollectionView.EmptyView>
+                <VerticalStackLayout Spacing="10" Padding="0,20,0,0">
+                    <controls:NoticeBanner Kind="danger"
+                                           IsVisible="{Binding HasError}"
+                                           Title="{x:Static strings:AppStrings.CommonErrorTitle}"
+                                           Message="{Binding ErrorMessage}" />
+                    <Button Style="{StaticResource SecondaryButton}"
+                            IsVisible="{Binding HasError}"
+                            Command="{Binding SearchCommand}"
+                            SemanticProperties.Description="{x:Static strings:AppStrings.RetryCta}"
+                            Text="{x:Static strings:AppStrings.RetryCta}" />
+
+                    <controls:StatePanel Kind="empty"
+                                         IsVisible="{Binding IsEmpty}"
+                                         Glyph="{StaticResource IconBriefcase}"
+                                         Title="{x:Static strings:AppStrings.FeedNoResultsTitle}"
+                                         Message="{x:Static strings:AppStrings.FeedNoResultsBody}" />
+
+                    <VerticalStackLayout Spacing="8" IsVisible="{Binding IsBusy}">
+                        <ActivityIndicator IsRunning="{Binding IsBusy}" HorizontalOptions="Center" />
+                        <Label Style="{StaticResource CaptionText}"
+                               HorizontalTextAlignment="Center"
+                               Text="{x:Static strings:AppStrings.CommonLoading}" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="vm:VacancyCardModel">
+                    <Border Style="{StaticResource SurfaceCardDense}" Margin="0,0,0,10">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding BindingContext.OpenVacancyCommand, Source={x:Reference Page}}"
+                                                  CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout Spacing="8">
+
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                <Border Grid.Column="0"
+                                        Style="{StaticResource IconTile}"
+                                        VerticalOptions="Start">
+                                    <Label Style="{StaticResource IconGlyphPrimary}"
+                                           FontSize="17"
+                                           Text="{StaticResource IconBuilding}"
+                                           HorizontalOptions="Center" />
+                                </Border>
+                                <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                    <Label SemanticProperties.HeadingLevel="Level2"
+                                           Style="{StaticResource CardTitleText}"
+                                           MaxLines="2"
+                                           Text="{Binding Title}" />
+                                    <Label Style="{StaticResource CaptionText}"
+                                           Text="{Binding CompanyLine}" />
+                                </VerticalStackLayout>
+                            </Grid>
+
+                            <controls:StatusPill IsVisible="{Binding CompanyVerificationState, Converter={StaticResource StringEquals}, ConverterParameter=Verified}"
+                                                 Glyph="{StaticResource IconBadgeCheck}"
+                                                 Text="{x:Static strings:AppStrings.FeedVerifiedCompany}"
+                                                 Tone="{Binding CompanyVerificationState, Converter={StaticResource VerificationStateColorConverter}}"
+                                                 ToneSoft="{Binding CompanyVerificationState, Converter={StaticResource VerificationStateSoftColorConverter}}" />
+
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                                <Label Grid.Column="0"
+                                       Style="{StaticResource IconGlyph}"
+                                       Text="{StaticResource IconPin}" />
+                                <Label Grid.Column="1"
+                                       Style="{StaticResource CaptionText}"
+                                       Text="{Binding LocationLine}"
+                                       VerticalOptions="Center" />
+                            </Grid>
+
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                                <Label Grid.Column="0"
+                                       Style="{StaticResource IconGlyph}"
+                                       Text="{StaticResource IconBanknote}" />
+                                <Label Grid.Column="1"
+                                       Style="{StaticResource SmallStrongText}"
+                                       Text="{Binding SalaryText}"
+                                       VerticalOptions="Center" />
+                            </Grid>
+
+                            <FlexLayout BindableLayout.ItemsSource="{Binding Skills}"
+                                        Direction="Row"
+                                        Wrap="Wrap"
+                                        JustifyContent="Start"
+                                        AlignItems="Start">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="x:String">
+                                        <Border Margin="0,0,6,6"
+                                                Padding="10,4"
+                                                BackgroundColor="{StaticResource CardSurface}"
+                                                Stroke="{StaticResource Border}"
+                                                StrokeThickness="1">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="11" />
+                                            </Border.StrokeShape>
+                                            <Label Style="{StaticResource SmallText}"
+                                                   Text="{Binding .}" />
+                                        </Border>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </FlexLayout>
+
+                            <Label Style="{StaticResource CaptionText}"
+                                   Text="{Binding HeadcountText}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+            <CollectionView.Footer>
+                <VerticalStackLayout Padding="0,4,0,16" Spacing="8">
+                    <ActivityIndicator HorizontalOptions="Center"
+                                       IsRunning="{Binding IsBusy}"
+                                       IsVisible="{Binding IsBusy}" />
+                    <Button Style="{StaticResource SecondaryButton}"
+                            Command="{Binding LoadMoreCommand}"
+                            IsVisible="{Binding HasMore}"
+                            SemanticProperties.Description="{x:Static strings:AppStrings.FeedLoadMoreCta}"
+                            Text="{x:Static strings:AppStrings.FeedLoadMoreCta}" />
+                    <Label Style="{StaticResource CaptionText}"
+                           HorizontalTextAlignment="Center"
+                           Text="{x:Static strings:AppStrings.FeedNewVacanciesNote}" />
+                </VerticalStackLayout>
+            </CollectionView.Footer>
+        </CollectionView>
+    </Grid>
 </ContentPage>

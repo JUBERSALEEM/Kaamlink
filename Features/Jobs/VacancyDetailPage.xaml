@@ -3,92 +3,177 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:KaamLink.Features.Jobs"
              xmlns:strings="clr-namespace:KaamLink.Resources.Strings"
+             xmlns:controls="clr-namespace:KaamLink.Controls"
              x:Class="KaamLink.Features.Jobs.VacancyDetailPage"
              x:DataType="vm:VacancyDetailViewModel"
-             Title="{x:Static strings:AppStrings.FeedTitle}">
+             Title="{Binding Title}"
+             Shell.NavBarIsVisible="False">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="24" Spacing="16">
+    <!-- Vacancy detail + apply. The apply panel only renders when the server says
+         the worker can apply (CanApply); once an application exists the banner
+         shows the server's own status instead. -->
+    <Grid RowDefinitions="*,Auto">
 
-            <ActivityIndicator HorizontalOptions="Center"
-                               IsRunning="{Binding IsBusy}"
-                               IsVisible="{Binding IsBusy}" />
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Style="{StaticResource PageStack}" Spacing="14">
 
-            <VerticalStackLayout IsVisible="{Binding HasError}" Spacing="12">
-                <Label Style="{StaticResource Body}"
-                       Text="{Binding ErrorMessage}"
-                       TextColor="{StaticResource Error}" />
-                <Button Command="{Binding LoadCommand}"
-                        SemanticProperties.Description="{x:Static strings:AppStrings.RetryCta}"
-                        Text="{x:Static strings:AppStrings.RetryCta}" />
-            </VerticalStackLayout>
+                <Button Style="{StaticResource TextButton}"
+                        Command="{Binding BackCommand}"
+                        HorizontalOptions="Start"
+                        MinimumWidthRequest="48"
+                        SemanticProperties.Description="{x:Static strings:AppStrings.BackCta}"
+                        Text="{x:Static strings:AppStrings.BackCta}" />
+                <controls:StatePanel Kind="loading"
+                                     IsVisible="{Binding IsBusy}"
+                                     Title="{x:Static strings:AppStrings.CommonLoading}" />
 
-            <VerticalStackLayout IsVisible="{Binding IsLoaded}" Spacing="14">
+                <VerticalStackLayout IsVisible="{Binding HasError}" Spacing="10">
+                    <controls:NoticeBanner Kind="danger"
+                                           Title="{x:Static strings:AppStrings.CommonErrorTitle}"
+                                           Message="{Binding ErrorMessage}" />
+                    <Button Style="{StaticResource SecondaryButton}"
+                            Command="{Binding LoadCommand}"
+                            SemanticProperties.Description="{x:Static strings:AppStrings.RetryCta}"
+                            Text="{x:Static strings:AppStrings.RetryCta}" />
+                </VerticalStackLayout>
 
-                <Label SemanticProperties.HeadingLevel="Level1"
-                       Style="{StaticResource Title1}"
-                       Text="{Binding Title}" />
+                <VerticalStackLayout IsVisible="{Binding IsLoaded}" Spacing="14">
 
-                <Grid ColumnDefinitions="*,Auto">
-                    <Label Grid.Column="0"
-                           FontFamily="OpenSansSemibold"
-                           Style="{StaticResource Body}"
-                           Text="{Binding CompanyLine}"
-                           VerticalOptions="Center" />
-                    <Border Grid.Column="1"
-                            Padding="10,3"
-                            Stroke="{Binding CompanyVerificationState, Converter={StaticResource VerificationStateColorConverter}}"
-                            StrokeShape="RoundRectangle 12">
-                        <Label FontFamily="OpenSansSemibold"
-                               Style="{StaticResource Caption}"
-                               Text="{Binding CompanyVerificationLabel}"
-                               TextColor="{Binding CompanyVerificationState, Converter={StaticResource VerificationStateColorConverter}}" />
+                    <!-- Head -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label SemanticProperties.HeadingLevel="Level1"
+                               Style="{StaticResource TitleText}"
+                               Text="{Binding Title}" />
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                            <Border Grid.Column="0" Style="{StaticResource IconTile}" VerticalOptions="Center">
+                                <Label Style="{StaticResource IconGlyphPrimary}"
+                                       FontSize="17"
+                                       Text="{StaticResource IconBuilding}"
+                                       HorizontalOptions="Center" />
+                            </Border>
+                            <Label Grid.Column="1"
+                                   Style="{StaticResource BodyStrongText}"
+                                   Text="{Binding CompanyLine}"
+                                   VerticalOptions="Center" />
+                            <controls:StatusPill Grid.Column="2"
+                                                 VerticalOptions="Center"
+                                                 Glyph="{StaticResource IconBadgeCheck}"
+                                                 Text="{Binding CompanyVerificationLabel}"
+                                                 Tone="{Binding CompanyVerificationState, Converter={StaticResource VerificationStateColorConverter}}"
+                                                 ToneSoft="{Binding CompanyVerificationState, Converter={StaticResource VerificationStateSoftColorConverter}}" />
+                        </Grid>
+                    </VerticalStackLayout>
+
+                    <!-- Meta -->
+                    <Border Style="{StaticResource SurfaceCardDense}">
+                        <VerticalStackLayout Spacing="12">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                <Label Grid.Column="0"
+                                       Style="{StaticResource IconGlyph}"
+                                       Text="{StaticResource IconPin}" />
+                                <VerticalStackLayout Grid.Column="1" Spacing="1">
+                                    <Label Style="{StaticResource CaptionText}"
+                                           Text="{x:Static strings:AppStrings.DetailLocationLabel}" />
+                                    <Label Style="{StaticResource BodyStrongText}"
+                                           Text="{Binding LocationLine}" />
+                                </VerticalStackLayout>
+                            </Grid>
+                            <BoxView Style="{StaticResource DividerLine}" />
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                <Label Grid.Column="0"
+                                       Style="{StaticResource IconGlyph}"
+                                       Text="{StaticResource IconBanknote}" />
+                                <VerticalStackLayout Grid.Column="1" Spacing="1">
+                                    <Label Style="{StaticResource CaptionText}"
+                                           Text="{x:Static strings:AppStrings.DetailSalaryLabel}" />
+                                    <Label Style="{StaticResource BodyStrongText}"
+                                           Text="{Binding SalaryText}" />
+                                </VerticalStackLayout>
+                            </Grid>
+                            <BoxView Style="{StaticResource DividerLine}" />
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                <Label Grid.Column="0"
+                                       Style="{StaticResource IconGlyph}"
+                                       Text="{StaticResource IconUsers}" />
+                                <VerticalStackLayout Grid.Column="1" Spacing="1">
+                                    <Label Style="{StaticResource CaptionText}"
+                                           Text="{x:Static strings:AppStrings.DetailOpeningsLabel}" />
+                                    <Label Style="{StaticResource BodyStrongText}"
+                                           Text="{Binding HeadcountText}" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </VerticalStackLayout>
                     </Border>
-                </Grid>
 
-                <Label Style="{StaticResource BodySecondary}"
-                       Text="{Binding LocationLine}" />
-                <Label Style="{StaticResource Body}"
-                       Text="{Binding SalaryText}" />
-                <Grid ColumnDefinitions="*,Auto">
-                    <Label Grid.Column="0"
-                           Style="{StaticResource Caption}"
-                           Text="{Binding SkillsLine}"
-                           VerticalOptions="Center" />
-                    <Label Grid.Column="1"
-                           Style="{StaticResource Caption}"
-                           Text="{Binding HeadcountText}" />
-                </Grid>
+                    <!-- Skills -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Style="{StaticResource OverlineText}"
+                               Text="{x:Static strings:AppStrings.DetailSkillsTitle}" />
+                        <Label Style="{StaticResource BodyText}"
+                               Text="{Binding SkillsLine}" />
+                    </VerticalStackLayout>
 
-                <Label IsVisible="{Binding HasDescription}"
-                       Style="{StaticResource Body}"
-                       Text="{Binding Description}" />
+                    <!-- Description -->
+                    <VerticalStackLayout IsVisible="{Binding HasDescription}" Spacing="8">
+                        <Label Style="{StaticResource OverlineText}"
+                               Text="{x:Static strings:AppStrings.DetailAboutTitle}" />
+                        <Label Style="{StaticResource BodyText}"
+                               Text="{Binding Description}" />
+                    </VerticalStackLayout>
 
-                <!-- Own application state (server truth) -->
-                <Border IsVisible="{Binding HasOwnApplication}"
-                        Padding="10,3"
-                        Stroke="{Binding OwnApplicationStatus, Converter={StaticResource StatusColorConverter}}"
-                        StrokeShape="RoundRectangle 12">
-                    <Label FontFamily="OpenSansSemibold"
-                           Style="{StaticResource Caption}"
-                           Text="{Binding OwnApplicationLabel}"
-                           TextColor="{Binding OwnApplicationStatus, Converter={StaticResource StatusColorConverter}}" />
-                </Border>
+                    <!-- Own application (server truth) -->
+                    <Border IsVisible="{Binding HasOwnApplication}"
+                            BackgroundColor="{StaticResource CardSurfaceAlt}"
+                            StrokeThickness="0"
+                            Padding="14">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                            <Label Grid.Column="0"
+                                   Style="{StaticResource IconGlyph}"
+                                   Text="{StaticResource IconCheckCircle}" />
+                            <Label Grid.Column="1"
+                                   Style="{StaticResource SmallText}"
+                                   Text="{x:Static strings:AppStrings.DetailAppliedNote}"
+                                   VerticalOptions="Center" />
+                            <controls:StatusPill Grid.Column="2"
+                                                 VerticalOptions="Center"
+                                                 Text="{Binding OwnApplicationLabel}"
+                                                 Tone="{Binding OwnApplicationStatus, Converter={StaticResource StatusColorConverter}}"
+                                                 ToneSoft="{Binding OwnApplicationStatus, Converter={StaticResource StatusSoftColorConverter}}" />
+                        </Grid>
+                    </Border>
 
-                <!-- Apply -->
-                <VerticalStackLayout IsVisible="{Binding CanApply}" Spacing="10">
-                    <Label SemanticProperties.HeadingLevel="Level2"
-                           Style="{StaticResource SectionTitle}"
-                           Text="{x:Static strings:AppStrings.DetailApplySectionTitle}" />
-                    <Editor AutoSize="TextChanges"
-                            HeightRequest="96"
-                            Placeholder="{x:Static strings:AppStrings.DetailCoverNotePlaceholder}"
-                            Text="{Binding CoverNote}" />
-                    <Button Command="{Binding ApplyCommand}"
-                            SemanticProperties.Description="{x:Static strings:AppStrings.ApplyCta}"
-                            Text="{x:Static strings:AppStrings.ApplyCta}" />
+                    <!-- Apply -->
+                    <VerticalStackLayout IsVisible="{Binding CanApply}" Spacing="10">
+                        <Label Style="{StaticResource OverlineText}"
+                               Text="{x:Static strings:AppStrings.DetailNoteTitle}" />
+                        <Border Style="{StaticResource FieldBox}" Padding="12,6">
+                            <Editor AutomationProperties.Name="{x:Static strings:AppStrings.DetailNoteTitle}"
+                                    AutoSize="TextChanges"
+                                    BackgroundColor="Transparent"
+                                    MinimumHeightRequest="90"
+                                    Placeholder="{x:Static strings:AppStrings.DetailCoverNotePlaceholder}"
+                                    Text="{Binding CoverNote}" />
+                        </Border>
+                        <Label Style="{StaticResource CaptionText}"
+                               Text="{x:Static strings:AppStrings.DetailOneApplicationNote}" />
+                    </VerticalStackLayout>
+
                 </VerticalStackLayout>
             </VerticalStackLayout>
-        </VerticalStackLayout>
-    </ScrollView>
+        </ScrollView>
+
+        <!-- Sticky apply action -->
+        <Grid Grid.Row="1"
+              Style="{StaticResource BottomDock}"
+              IsVisible="{Binding CanApply}">
+            <Button Style="{StaticResource PrimaryButton}"
+                    Command="{Binding ApplyCommand}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}, FallbackValue=True}"
+                    SemanticProperties.Description="{x:Static strings:AppStrings.ApplyCta}"
+                    Text="{x:Static strings:AppStrings.ApplyCta}" />
+        </Grid>
+    </Grid>
 </ContentPage>

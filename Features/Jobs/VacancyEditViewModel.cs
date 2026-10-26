@@ -19,7 +19,13 @@ namespace KaamLink.Features.Jobs
         private Guid _companyId;
         private Guid _vacancyId;
 
-        public VacancyEditViewModel(IApiClient api) => _api = api;
+        public VacancyEditViewModel(IApiClient api)
+        {
+            _api = api;
+            SelectedSkills.CollectionChanged += (_, _) => SelectedSkillsText = string.Format(
+                AppStrings.SkillsSelectedCountFormat,
+                SelectedSkills.Count);
+        }
 
         [ObservableProperty]
         private bool _isBusy;
@@ -54,6 +60,10 @@ namespace KaamLink.Features.Jobs
         [ObservableProperty]
         private string _pageTitle = string.Empty;
 
+        /// <summary>Carried from the vacancy list so the form can return there.</summary>
+        [ObservableProperty]
+        private string _companyName = string.Empty;
+
         public IReadOnlyList<EnumOption> EmirateOptions => EnumDisplay.Emirates;
 
         [ObservableProperty]
@@ -63,6 +73,10 @@ namespace KaamLink.Features.Jobs
 
         public ObservableCollection<object> SelectedSkills { get; } = [];
 
+        /// <summary>Selected-skill count shown under the skills picker (display only).</summary>
+        [ObservableProperty]
+        private string _selectedSkillsText = string.Empty;
+
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
             if (query.TryGetValue("companyId", out var companyValue)
@@ -70,6 +84,9 @@ namespace KaamLink.Features.Jobs
             {
                 _companyId = companyId;
             }
+
+            if (query.TryGetValue("companyName", out var companyNameValue))
+                CompanyName = Uri.UnescapeDataString(companyNameValue?.ToString() ?? string.Empty);
 
             if (query.TryGetValue("vacancyId", out var vacancyValue)
                 && Guid.TryParse(vacancyValue?.ToString(), out var vacancyId))
@@ -172,7 +189,7 @@ namespace KaamLink.Features.Jobs
                 else
                     await _api.UpdateVacancyAsync(_companyId, _vacancyId, request);
 
-                await Shell.Current.GoToAsync(".."); // back to the company's vacancy list
+                await ReturnToListAsync(); // back to the company's vacancy list
             }
             catch (ApiException exception) when (SessionErrors.IsExpiredSession(exception))
             {
@@ -193,5 +210,14 @@ namespace KaamLink.Features.Jobs
                 IsBusy = false;
             }
         }
+
+        /// <summary>Explicit back affordance (the Shell nav bar is hidden on this page).</summary>
+        [RelayCommand]
+        private Task BackAsync() => ReturnToListAsync();
+
+        private Task ReturnToListAsync() =>
+            Shell.Current.GoToAsync(
+                $"{AppRoutes.Absolute(AppRoutes.CompanyVacancies)}" +
+                $"?companyId={_companyId}&companyName={Uri.EscapeDataString(CompanyName)}");
     }
 }

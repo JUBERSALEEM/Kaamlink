@@ -3,97 +3,129 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:KaamLink.Features.Jobs"
              xmlns:strings="clr-namespace:KaamLink.Resources.Strings"
+             xmlns:controls="clr-namespace:KaamLink.Controls"
              x:Class="KaamLink.Features.Jobs.CompanyVacanciesPage"
              x:Name="Page"
              x:DataType="vm:CompanyVacanciesViewModel"
-             Title="{x:Static strings:AppStrings.CompanyVacanciesTitle}">
+             Title="{x:Static strings:AppStrings.CompanyVacanciesTitle}"
+             Shell.NavBarIsVisible="False">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="24" Spacing="16">
+    <!-- Employer vacancy management. Status is server-owned: the row shows the
+         returned status, and the only status actions offered are the ones the
+         server would accept (CanActivate / CanPause / CanClose). -->
+    <Grid RowDefinitions="Auto,*,Auto">
 
-            <Grid ColumnDefinitions="*,Auto">
-                <Label Grid.Column="0"
-                       SemanticProperties.HeadingLevel="Level1"
-                       Style="{StaticResource Title1}"
-                       Text="{Binding CompanyName}"
-                       VerticalOptions="Center" />
-                <Button Grid.Column="1"
-                        Command="{Binding NewVacancyCommand}"
-                        SemanticProperties.Description="{x:Static strings:AppStrings.NewVacancyCta}"
-                        Text="{x:Static strings:AppStrings.NewVacancyCta}" />
-            </Grid>
-
-            <ActivityIndicator HorizontalOptions="Center"
-                               IsRunning="{Binding IsBusy}"
-                               IsVisible="{Binding IsBusy}" />
-
-            <VerticalStackLayout IsVisible="{Binding HasError}" Spacing="12">
-                <Label Style="{StaticResource Body}"
-                       Text="{Binding ErrorMessage}"
-                       TextColor="{StaticResource Error}" />
-                <Button Command="{Binding LoadCommand}"
-                        SemanticProperties.Description="{x:Static strings:AppStrings.RetryCta}"
-                        Text="{x:Static strings:AppStrings.RetryCta}" />
-            </VerticalStackLayout>
-
-            <Label IsVisible="{Binding IsEmpty}"
-                   Style="{StaticResource BodySecondary}"
-                   Text="{x:Static strings:AppStrings.CompanyVacanciesEmpty}" />
-
-            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Items}" Spacing="12">
-                <BindableLayout.ItemTemplate>
-                    <DataTemplate x:DataType="vm:EmployerVacancyRowModel">
-                        <Border Style="{StaticResource Card}">
-                            <VerticalStackLayout Spacing="8">
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <Label Grid.Column="0"
-                                           SemanticProperties.HeadingLevel="Level2"
-                                           Style="{StaticResource SectionTitle}"
-                                           Text="{Binding Title}" />
-                                    <Border Grid.Column="1"
-                                            Padding="10,3"
-                                            Stroke="{Binding Status, Converter={StaticResource StatusColorConverter}}"
-                                            StrokeShape="RoundRectangle 12">
-                                        <Label FontFamily="OpenSansSemibold"
-                                               Style="{StaticResource Caption}"
-                                               Text="{Binding StatusLabel}"
-                                               TextColor="{Binding Status, Converter={StaticResource StatusColorConverter}}" />
-                                    </Border>
-                                </Grid>
-
-                                <Label Style="{StaticResource BodySecondary}"
-                                       Text="{Binding MetaLine}" />
-
-                                <Button BackgroundColor="Transparent"
-                                        Command="{Binding BindingContext.OpenApplicationsCommand, Source={x:Reference Page}}"
-                                        CommandParameter="{Binding}"
-                                        HorizontalOptions="Start"
-                                        Padding="0"
-                                        SemanticProperties.Description="{x:Static strings:AppStrings.VacancyApplicationsTitle}"
-                                        Text="{Binding ApplicationsCountText}"
-                                        TextColor="{StaticResource Primary}" />
-
-                                <HorizontalStackLayout Spacing="8">
-                                    <Button Command="{Binding BindingContext.ActivateCommand, Source={x:Reference Page}}"
-                                            CommandParameter="{Binding}"
-                                            IsVisible="{Binding CanActivate}"
-                                            Text="{x:Static strings:AppStrings.ActivateCta}" />
-                                    <Button Command="{Binding BindingContext.PauseCommand, Source={x:Reference Page}}"
-                                            CommandParameter="{Binding}"
-                                            IsVisible="{Binding CanPause}"
-                                            Text="{x:Static strings:AppStrings.PauseCta}" />
-                                    <Button BackgroundColor="Transparent"
-                                            Command="{Binding BindingContext.CloseCommand, Source={x:Reference Page}}"
-                                            CommandParameter="{Binding}"
-                                            IsVisible="{Binding CanClose}"
-                                            Text="{x:Static strings:AppStrings.CloseCta}"
-                                            TextColor="{StaticResource Error}" />
-                                </HorizontalStackLayout>
-                            </VerticalStackLayout>
-                        </Border>
-                    </DataTemplate>
-                </BindableLayout.ItemTemplate>
-            </VerticalStackLayout>
+        <VerticalStackLayout Grid.Row="0" Padding="16,12,16,10" Spacing="2">
+            <Button Style="{StaticResource TextButton}"
+                    Command="{Binding BackCommand}"
+                    HorizontalOptions="Start"
+                    MinimumWidthRequest="48"
+                    SemanticProperties.Description="{x:Static strings:AppStrings.BackCta}"
+                    Text="{x:Static strings:AppStrings.BackCta}" />
+            <Label SemanticProperties.HeadingLevel="Level1"
+                   Style="{StaticResource TitleText}"
+                   Text="{Binding CompanyName}" />
+            <Label Style="{StaticResource CaptionText}"
+                   Text="{x:Static strings:AppStrings.CompanyVacanciesTitle}" />
         </VerticalStackLayout>
-    </ScrollView>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="16,0,16,24" Spacing="12">
+
+                <controls:StatePanel Kind="loading"
+                                     IsVisible="{Binding IsBusy}"
+                                     Title="{x:Static strings:AppStrings.CommonLoading}" />
+
+                <VerticalStackLayout IsVisible="{Binding HasError}" Spacing="10">
+                    <controls:NoticeBanner Kind="danger"
+                                           Title="{x:Static strings:AppStrings.CommonErrorTitle}"
+                                           Message="{Binding ErrorMessage}" />
+                    <Button Style="{StaticResource SecondaryButton}"
+                            Command="{Binding LoadCommand}"
+                            SemanticProperties.Description="{x:Static strings:AppStrings.RetryCta}"
+                            Text="{x:Static strings:AppStrings.RetryCta}" />
+                </VerticalStackLayout>
+
+                <controls:StatePanel Kind="empty"
+                                     IsVisible="{Binding IsEmpty}"
+                                     Glyph="{StaticResource IconBriefcase}"
+                                     Title="{x:Static strings:AppStrings.CompanyVacanciesEmptyTitle}"
+                                     Message="{x:Static strings:AppStrings.CompanyVacanciesEmpty}" />
+
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Items}"
+                                     Spacing="12">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="vm:EmployerVacancyRowModel">
+                            <Border Style="{StaticResource SurfaceCard}">
+                                <VerticalStackLayout Spacing="10">
+
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                        <Label Grid.Column="0"
+                                               SemanticProperties.HeadingLevel="Level2"
+                                               Style="{StaticResource CardTitleText}"
+                                               MaxLines="2"
+                                               Text="{Binding Title}" />
+                                        <controls:StatusPill Grid.Column="1"
+                                                             VerticalOptions="Start"
+                                                             Text="{Binding StatusLabel}"
+                                                             Tone="{Binding Status, Converter={StaticResource StatusColorConverter}}"
+                                                             ToneSoft="{Binding Status, Converter={StaticResource StatusSoftColorConverter}}" />
+                                    </Grid>
+
+                                    <Label Style="{StaticResource CaptionText}"
+                                           Text="{Binding MetaLine}" />
+
+                                    <BoxView Style="{StaticResource DividerLine}" />
+
+                                    <Button Style="{StaticResource TextButton}"
+                                            Command="{Binding BindingContext.OpenApplicationsCommand, Source={x:Reference Page}}"
+                                            CommandParameter="{Binding .}"
+                                            HorizontalOptions="Start"
+                                            SemanticProperties.Description="{x:Static strings:AppStrings.VacancyApplicationsTitle}"
+                                            Text="{Binding ApplicationsCountText}" />
+
+                                    <!-- Wraps instead of overflowing: Arabic labels are
+                                         longer than the English ones at 320dp. -->
+                                    <FlexLayout Direction="Row"
+                                                Wrap="Wrap"
+                                                JustifyContent="Start"
+                                                AlignItems="Start">
+                                        <Button Style="{StaticResource SubtleButton}"
+                                                Command="{Binding BindingContext.ActivateCommand, Source={x:Reference Page}}"
+                                                CommandParameter="{Binding .}"
+                                                IsVisible="{Binding CanActivate}"
+                                                Margin="0,0,8,8"
+                                                SemanticProperties.Description="{x:Static strings:AppStrings.ActivateCta}"
+                                                Text="{x:Static strings:AppStrings.ActivateCta}" />
+                                        <Button Style="{StaticResource SubtleButton}"
+                                                Command="{Binding BindingContext.PauseCommand, Source={x:Reference Page}}"
+                                                CommandParameter="{Binding .}"
+                                                IsVisible="{Binding CanPause}"
+                                                Margin="0,0,8,8"
+                                                SemanticProperties.Description="{x:Static strings:AppStrings.PauseCta}"
+                                                Text="{x:Static strings:AppStrings.PauseCta}" />
+                                        <Button Style="{StaticResource DangerButton}"
+                                                Command="{Binding BindingContext.CloseCommand, Source={x:Reference Page}}"
+                                                CommandParameter="{Binding .}"
+                                                IsVisible="{Binding CanClose}"
+                                                Margin="0,0,8,8"
+                                                SemanticProperties.Description="{x:Static strings:AppStrings.CloseCta}"
+                                                Text="{x:Static strings:AppStrings.CloseCta}" />
+                                    </FlexLayout>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- New vacancy is the primary task on this screen, so it is pinned. -->
+        <Grid Grid.Row="2" Style="{StaticResource BottomDock}">
+            <Button Style="{StaticResource PrimaryButton}"
+                    Command="{Binding NewVacancyCommand}"
+                    SemanticProperties.Description="{x:Static strings:AppStrings.NewVacancyCta}"
+                    Text="{x:Static strings:AppStrings.NewVacancyCta}" />
+        </Grid>
+    </Grid>
 </ContentPage>

@@ -3,65 +3,139 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:KaamLink.Features.Employer"
              xmlns:strings="clr-namespace:KaamLink.Resources.Strings"
+             xmlns:controls="clr-namespace:KaamLink.Controls"
              x:Class="KaamLink.Features.Employer.EmployerOnboardingPage"
              x:DataType="vm:EmployerOnboardingViewModel"
-             Title="{x:Static strings:AppStrings.EobTitle}">
+             Title="{x:Static strings:AppStrings.EobTitle}"
+             Shell.NavBarIsVisible="False">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="24" Spacing="16">
+    <!-- Company registration. The review explainer is the first thing an employer
+         reads: the submit button says "Submit for review" and the copy never
+         implies instant verification. -->
+    <Grid RowDefinitions="*,Auto">
 
-            <VerticalStackLayout Spacing="4">
-                <Label SemanticProperties.HeadingLevel="Level1"
-                       Style="{StaticResource Title2}"
-                       Text="{x:Static strings:AppStrings.EobTitle}" />
-                <Label Style="{StaticResource BodySecondary}"
-                       Text="{x:Static strings:AppStrings.EobSubtitle}" />
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Style="{StaticResource PageStack}" Spacing="14">
+
+                <Button Style="{StaticResource TextButton}"
+                        Command="{Binding BackCommand}"
+                        HorizontalOptions="Start"
+                        MinimumWidthRequest="48"
+                        SemanticProperties.Description="{x:Static strings:AppStrings.BackCta}"
+                        Text="{x:Static strings:AppStrings.BackCta}" />
+
+                <VerticalStackLayout Spacing="6">
+                    <Label SemanticProperties.HeadingLevel="Level1"
+                           Style="{StaticResource TitleText}"
+                           Text="{x:Static strings:AppStrings.EobTitle}" />
+                    <Label Style="{StaticResource BodyText}"
+                           Text="{x:Static strings:AppStrings.EobSubtitle}" />
+                </VerticalStackLayout>
+
+                <controls:NoticeBanner Kind="warning"
+                                       Title="{x:Static strings:AppStrings.EmployerReviewTitle}"
+                                       Message="{x:Static strings:AppStrings.EmployerReviewBody}" />
+
+                <Border IsVisible="{Binding HasError}"
+                        BackgroundColor="{StaticResource ErrorSoft}"
+                        StrokeThickness="0"
+                        Padding="14">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                        <Label Grid.Column="0"
+                               Style="{StaticResource IconGlyph}"
+                               TextColor="{StaticResource Error}"
+                               Text="{StaticResource IconAlertCircle}"
+                               VerticalOptions="Start" />
+                        <Label Grid.Column="1"
+                               Style="{StaticResource SmallText}"
+                               Text="{Binding ErrorMessage}" />
+                    </Grid>
+                </Border>
+
+                <Label Style="{StaticResource OverlineText}"
+                       Text="{x:Static strings:AppStrings.EmployerBusinessSection}" />
+                <Border Style="{StaticResource SurfaceCardDense}">
+                    <VerticalStackLayout Style="{StaticResource FormStack}">
+                        <VerticalStackLayout Style="{StaticResource FieldStack}">
+                            <Label Style="{StaticResource LabelText}"
+                                   Text="{x:Static strings:AppStrings.CompanyNameLabel}" />
+                            <Border Style="{StaticResource FieldBox}">
+                                <Entry AutomationProperties.Name="{x:Static strings:AppStrings.CompanyNameLabel}"
+                                       BackgroundColor="Transparent"
+                                       Text="{Binding CompanyName}" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Style="{StaticResource FieldStack}">
+                            <Label Style="{StaticResource LabelText}"
+                                   Text="{x:Static strings:AppStrings.CompanyCategoryLabel}" />
+                            <Border Style="{StaticResource FieldBox}">
+                                <Picker ItemDisplayBinding="{Binding Label}"
+                                        ItemsSource="{Binding BusinessCategories}"
+                                        BackgroundColor="Transparent"
+                                        SelectedItem="{Binding SelectedCategory}"
+                                        Title="{x:Static strings:AppStrings.CompanyCategoryLabel}" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Style="{StaticResource FieldStack}">
+                            <Label Style="{StaticResource LabelText}"
+                                   Text="{x:Static strings:AppStrings.TradeLicenseLabel}" />
+                            <Border Style="{StaticResource FieldBox}">
+                                <Entry AutomationProperties.Name="{x:Static strings:AppStrings.TradeLicenseLabel}"
+                                       BackgroundColor="Transparent"
+                                       Keyboard="Numeric"
+                                       Text="{Binding TradeLicenseNumber}" />
+                            </Border>
+                            <Label Style="{StaticResource FieldHint}"
+                                   Text="{x:Static strings:AppStrings.TradeLicenseHint}" />
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Label Style="{StaticResource OverlineText}"
+                       Text="{x:Static strings:AppStrings.EmployerLocationSection}" />
+                <Border Style="{StaticResource SurfaceCardDense}">
+                    <VerticalStackLayout Style="{StaticResource FormStack}">
+                        <VerticalStackLayout Style="{StaticResource FieldStack}">
+                            <Label Style="{StaticResource LabelText}"
+                                   Text="{x:Static strings:AppStrings.EmirateLabel}" />
+                            <Border Style="{StaticResource FieldBox}">
+                                <Picker ItemDisplayBinding="{Binding Label}"
+                                        ItemsSource="{Binding Emirates}"
+                                        BackgroundColor="Transparent"
+                                        SelectedItem="{Binding SelectedEmirate}"
+                                        Title="{x:Static strings:AppStrings.EmirateLabel}" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Style="{StaticResource FieldStack}">
+                            <Label Style="{StaticResource LabelText}"
+                                   Text="{x:Static strings:AppStrings.AreaLabel}" />
+                            <Border Style="{StaticResource FieldBox}">
+                                <Entry AutomationProperties.Name="{x:Static strings:AppStrings.AreaLabel}"
+                                       BackgroundColor="Transparent"
+                                       Text="{Binding Area}" />
+                            </Border>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                   IsVisible="{Binding IsBusy}"
+                                   HorizontalOptions="Center" />
             </VerticalStackLayout>
+        </ScrollView>
 
-            <Label IsVisible="{Binding HasError}"
-                   Style="{StaticResource Body}"
-                   Text="{Binding ErrorMessage}"
-                   TextColor="{StaticResource Error}" />
-
-            <Label Style="{StaticResource SectionTitle}"
-                   Text="{x:Static strings:AppStrings.CompanyNameLabel}" />
-            <Entry AutomationProperties.Name="{x:Static strings:AppStrings.CompanyNameLabel}"
-                   Text="{Binding CompanyName}" />
-
-            <Label Style="{StaticResource SectionTitle}"
-                   Text="{x:Static strings:AppStrings.CompanyCategoryLabel}" />
-            <Picker ItemDisplayBinding="{Binding Label}"
-                    ItemsSource="{Binding BusinessCategories}"
-                    SelectedItem="{Binding SelectedCategory}"
-                    Title="{x:Static strings:AppStrings.CompanyCategoryLabel}" />
-
-            <Label Style="{StaticResource SectionTitle}"
-                   Text="{x:Static strings:AppStrings.EmirateLabel}" />
-            <Picker ItemDisplayBinding="{Binding Label}"
-                    ItemsSource="{Binding Emirates}"
-                    SelectedItem="{Binding SelectedEmirate}"
-                    Title="{x:Static strings:AppStrings.EmirateLabel}" />
-
-            <Label Style="{StaticResource SectionTitle}"
-                   Text="{x:Static strings:AppStrings.AreaLabel}" />
-            <Entry AutomationProperties.Name="{x:Static strings:AppStrings.AreaLabel}"
-                   Text="{Binding Area}" />
-
-            <Label Style="{StaticResource SectionTitle}"
-                   Text="{x:Static strings:AppStrings.TradeLicenseLabel}" />
-            <Entry AutomationProperties.Name="{x:Static strings:AppStrings.TradeLicenseLabel}"
-                   Text="{Binding TradeLicenseNumber}" />
-            <Label Style="{StaticResource Caption}"
-                   Text="{x:Static strings:AppStrings.TradeLicenseHint}" />
-
-            <Button Command="{Binding SubmitCommand}"
+        <Grid Grid.Row="1" Style="{StaticResource BottomDock}">
+            <Button Style="{StaticResource PrimaryButton}"
+                    Command="{Binding SubmitCommand}"
                     IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}, FallbackValue=True}"
                     SemanticProperties.Description="{x:Static strings:AppStrings.EobSubmitCta}"
                     Text="{x:Static strings:AppStrings.EobSubmitCta}" />
-
-            <ActivityIndicator IsRunning="{Binding IsBusy}"
-                               IsVisible="{Binding IsBusy}" />
-
-        </VerticalStackLayout>
-    </ScrollView>
+        </Grid>
+    </Grid>
 </ContentPage>

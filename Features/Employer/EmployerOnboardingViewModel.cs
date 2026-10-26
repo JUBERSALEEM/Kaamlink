@@ -1,4 +1,5 @@
 using KaamLink.Core.Api;
+using KaamLink.Core.Navigation;
 using KaamLink.Core.Presentation;
 using KaamLink.Resources.Strings;
 
@@ -117,5 +118,10 @@ namespace KaamLink.Features.Employer
             ErrorMessage = null;
             HasError = false;
         }
+
+        /// <summary>Leave registration and return to the role chooser (nothing is lost
+        /// on the server until Submit).</summary>
+        [RelayCommand]
+        private Task BackAsync() => Shell.Current.GoToAsync(AppRoutes.Absolute(AppRoutes.Welcome));
     }
 }

@@ -8,71 +8,158 @@
              Title="{x:Static strings:AppStrings.AppName}"
              Shell.NavBarIsVisible="False">
 
+    <!-- Welcome / role selection. Brand-led hero, two role cards, trust strip.
+         Nothing here invents a feature: the two buttons are the app's real entry
+         commands and the trust points describe behaviour that already ships. -->
     <ScrollView>
-        <VerticalStackLayout Padding="24"
-                             Spacing="24"
-                             VerticalOptions="Center">
+        <VerticalStackLayout Padding="16,20,16,24"
+                             Spacing="16">
 
-            <!-- Brand header -->
-            <VerticalStackLayout Spacing="8">
-                <Label SemanticProperties.HeadingLevel="Level1"
-                       Style="{StaticResource Title1}"
+            <!-- Brand row -->
+            <Grid ColumnDefinitions="Auto,*"
+                  ColumnSpacing="10">
+                <Border Grid.Column="0"
+                        Style="{StaticResource IconTileLarge}"
+                        VerticalOptions="Center">
+                    <Label Style="{StaticResource IconGlyphBrand}"
+                           FontSize="24"
+                           Text="{StaticResource IconHardHat}"
+                           HorizontalOptions="Center" />
+                </Border>
+                <Label Grid.Column="1"
+                       Style="{StaticResource SectionText}"
+                       FontSize="18"
+                       TextColor="{StaticResource Primary}"
                        Text="{x:Static strings:AppStrings.AppName}"
-                       TextColor="{StaticResource Primary}" />
-                <Label Style="{StaticResource BodySecondary}"
-                       Text="{x:Static strings:AppStrings.AppTagline}" />
+                       VerticalOptions="Center" />
+            </Grid>
+
+            <!-- Hero -->
+            <VerticalStackLayout Spacing="10"
+                                 Padding="0,4,0,0">
+                <Label SemanticProperties.HeadingLevel="Level1"
+                       Style="{StaticResource DisplayText}"
+                       Text="{x:Static strings:AppStrings.WelcomeHeadline}" />
+                <Label Style="{StaticResource BodyText}"
+                       Text="{x:Static strings:AppStrings.WelcomeBody}" />
             </VerticalStackLayout>
 
-            <!-- Role prompt -->
-            <VerticalStackLayout Padding="0,8,0,0" Spacing="4">
-                <Label SemanticProperties.HeadingLevel="Level2"
-                       Style="{StaticResource Title2}"
-                       Text="{x:Static strings:AppStrings.RoleSelectionTitle}" />
-                <Label Style="{StaticResource BodySecondary}"
-                       Text="{x:Static strings:AppStrings.RoleSelectionSubtitle}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               HorizontalOptions="Start" />
+
+            <!-- Worker -->
+            <Border Style="{StaticResource SurfaceCard}">
+                <VerticalStackLayout Spacing="12">
+                    <Grid ColumnDefinitions="Auto,*"
+                          ColumnSpacing="12">
+                        <Border Grid.Column="0"
+                                Style="{StaticResource IconTileLarge}"
+                                BackgroundColor="{StaticResource AccentSoft}"
+                                VerticalOptions="Start">
+                            <Label Style="{StaticResource IconGlyph}"
+                                   FontSize="22"
+                                   TextColor="{StaticResource Accent}"
+                                   Text="{StaticResource IconHardHat}"
+                                   HorizontalOptions="Center" />
+                        </Border>
+                        <VerticalStackLayout Grid.Column="1" Spacing="3">
+                            <Label SemanticProperties.HeadingLevel="Level2"
+                                   Style="{StaticResource SectionText}"
+                                   Text="{x:Static strings:AppStrings.RoleWorkerTitle}" />
+                            <Label Style="{StaticResource SmallText}"
+                                   Text="{x:Static strings:AppStrings.RoleWorkerCardBody}" />
+                        </VerticalStackLayout>
+                    </Grid>
+                    <Button Style="{StaticResource PrimaryButton}"
+                            Command="{Binding NavigateToWorkerCommand}"
+                            SemanticProperties.Description="{x:Static strings:AppStrings.WorkerOnboardingCta}"
+                            Text="{x:Static strings:AppStrings.WorkerOnboardingCta}" />
+                    <Label Style="{StaticResource CaptionText}"
+                           HorizontalTextAlignment="Center"
+                           Text="{x:Static strings:AppStrings.WelcomeFreeNote}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Employer -->
+            <Border Style="{StaticResource SurfaceCard}">
+                <VerticalStackLayout Spacing="12">
+                    <Grid ColumnDefinitions="Auto,*"
+                          ColumnSpacing="12">
+                        <Border Grid.Column="0"
+                                Style="{StaticResource IconTileLarge}"
+                                VerticalOptions="Start">
+                            <Label Style="{StaticResource IconGlyph}"
+                                   FontSize="22"
+                                   TextColor="{StaticResource Primary}"
+                                   Text="{StaticResource IconBuilding}"
+                                   HorizontalOptions="Center" />
+                        </Border>
+                        <VerticalStackLayout Grid.Column="1" Spacing="3">
+                            <Label SemanticProperties.HeadingLevel="Level2"
+                                   Style="{StaticResource SectionText}"
+                                   Text="{x:Static strings:AppStrings.RoleEmployerTitle}" />
+                            <Label Style="{StaticResource SmallText}"
+                                   Text="{x:Static strings:AppStrings.RoleEmployerCardBody}" />
+                        </VerticalStackLayout>
+                    </Grid>
+                    <Button Style="{StaticResource SecondaryButton}"
+                            Command="{Binding NavigateToEmployerCommand}"
+                            SemanticProperties.Description="{x:Static strings:AppStrings.EmployerOnboardingCta}"
+                            Text="{x:Static strings:AppStrings.EmployerOnboardingCta}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Trust strip -->
+            <Label Style="{StaticResource OverlineText}"
+                   Text="{x:Static strings:AppStrings.WhyKaamlinkTitle}"
+                   Margin="0,6,0,0" />
+
+            <VerticalStackLayout Spacing="10">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                    <Label Grid.Column="0"
+                           Style="{StaticResource IconGlyphPrimary}"
+                           Text="{StaticResource IconShieldCheck}"
+                           VerticalOptions="Start" />
+                    <VerticalStackLayout Grid.Column="1" Spacing="1">
+                        <Label Style="{StaticResource SmallStrongText}"
+                               Text="{x:Static strings:AppStrings.WhyVerifiedTitle}" />
+                        <Label Style="{StaticResource CaptionText}"
+                               Text="{x:Static strings:AppStrings.WhyVerifiedBody}" />
+                    </VerticalStackLayout>
+                </Grid>
+                <BoxView Style="{StaticResource DividerLine}" />
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                    <Label Grid.Column="0"
+                           Style="{StaticResource IconGlyphPrimary}"
+                           Text="{StaticResource IconBadgeCheck}"
+                           VerticalOptions="Start" />
+                    <VerticalStackLayout Grid.Column="1" Spacing="1">
+                        <Label Style="{StaticResource SmallStrongText}"
+                               Text="{x:Static strings:AppStrings.WhySkillTitle}" />
+                        <Label Style="{StaticResource CaptionText}"
+                               Text="{x:Static strings:AppStrings.WhySkillBody}" />
+                    </VerticalStackLayout>
+                </Grid>
+                <BoxView Style="{StaticResource DividerLine}" />
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                    <Label Grid.Column="0"
+                           Style="{StaticResource IconGlyphPrimary}"
+                           Text="{StaticResource IconGlobe}"
+                           VerticalOptions="Start" />
+                    <VerticalStackLayout Grid.Column="1" Spacing="1">
+                        <Label Style="{StaticResource SmallStrongText}"
+                               Text="{x:Static strings:AppStrings.WhyLangTitle}" />
+                        <Label Style="{StaticResource CaptionText}"
+                               Text="{x:Static strings:AppStrings.WhyLangBody}" />
+                    </VerticalStackLayout>
+                </Grid>
             </VerticalStackLayout>
 
-            <!-- Worker card -->
-            <Border Style="{StaticResource Card}">
-                <Grid ColumnDefinitions="Auto,*"
-                      ColumnSpacing="16">
-                    <Label Grid.Column="0"
-                           FontSize="40"
-                           SemanticProperties.Description="{x:Static strings:AppStrings.RoleWorkerTitle}"
-                           Text="👷"
-                           VerticalOptions="Center" />
-                    <VerticalStackLayout Grid.Column="1" Spacing="8">
-                        <Label Style="{StaticResource SectionTitle}"
-                               Text="{x:Static strings:AppStrings.RoleWorkerTitle}" />
-                        <Label Style="{StaticResource BodySecondary}"
-                               Text="{x:Static strings:AppStrings.RoleWorkerDescription}" />
-                        <Button Command="{Binding NavigateToWorkerCommand}"
-                                SemanticProperties.Description="{x:Static strings:AppStrings.WorkerCta}"
-                                Text="{x:Static strings:AppStrings.WorkerCta}" />
-                    </VerticalStackLayout>
-                </Grid>
-            </Border>
-
-            <!-- Employer card -->
-            <Border Style="{StaticResource Card}">
-                <Grid ColumnDefinitions="Auto,*"
-                      ColumnSpacing="16">
-                    <Label Grid.Column="0"
-                           FontSize="40"
-                           SemanticProperties.Description="{x:Static strings:AppStrings.RoleEmployerTitle}"
-                           Text="🏭"
-                           VerticalOptions="Center" />
-                    <VerticalStackLayout Grid.Column="1" Spacing="8">
-                        <Label Style="{StaticResource SectionTitle}"
-                               Text="{x:Static strings:AppStrings.RoleEmployerTitle}" />
-                        <Label Style="{StaticResource BodySecondary}"
-                               Text="{x:Static strings:AppStrings.RoleEmployerDescription}" />
-                        <Button Command="{Binding NavigateToEmployerCommand}"
-                                SemanticProperties.Description="{x:Static strings:AppStrings.EmployerCta}"
-                                Text="{x:Static strings:AppStrings.EmployerCta}" />
-                    </VerticalStackLayout>
-                </Grid>
-            </Border>
+            <Label Style="{StaticResource CaptionText}"
+                   HorizontalTextAlignment="Center"
+                   Margin="0,8,0,0"
+                   Text="{x:Static strings:AppStrings.WelcomeTermsNote}" />
 
         </VerticalStackLayout>
     </ScrollView>

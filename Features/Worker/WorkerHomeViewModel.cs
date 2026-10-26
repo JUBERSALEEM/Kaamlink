@@ -130,9 +130,9 @@ namespace KaamLink.Features.Worker
             Skills.Clear();
             foreach (var skill in profile.Skills.OrderByDescending(s => s.IsPrimary).ThenByDescending(s => s.YearsExperience))
             {
-                var label = skill.IsPrimary
-                    ? "★ " + LocalizationHelpers.LocalizedSkill(skill) // ★ = main profession
-                    : LocalizationHelpers.LocalizedSkill(skill);
+                // No text glyph in the label: the row draws a real icon and a
+                // localized "Primary" badge instead (see WorkerHomePage.xaml).
+                var label = LocalizationHelpers.LocalizedSkill(skill);
                 Skills.Add(new SkillRowModel(
                     label,
                     $"{skill.YearsExperience} {AppStrings.YearsShort}",

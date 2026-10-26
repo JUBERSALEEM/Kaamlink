@@ -3,68 +3,104 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:KaamLink.Features.Assessments"
              xmlns:strings="clr-namespace:KaamLink.Resources.Strings"
+             xmlns:controls="clr-namespace:KaamLink.Controls"
              x:Class="KaamLink.Features.Assessments.MyAssessmentsPage"
+             x:Name="Page"
              x:DataType="vm:MyAssessmentsViewModel"
-             Title="{x:Static strings:AppStrings.AssessmentsTitle}">
+             Title="{x:Static strings:AppStrings.AssessmentsTitle}"
+             Shell.NavBarIsVisible="False">
 
-    <Grid RowDefinitions="Auto,*" Padding="20" RowSpacing="12">
+    <!-- Skills the worker declared, with the server's assessment availability,
+         verification state and last score. Nothing here is optimistically
+         updated: a pass appears only after the server returns it. -->
+    <Grid RowDefinitions="Auto,*">
 
-        <ActivityIndicator Grid.Row="0"
-                           HorizontalOptions="Center"
-                           IsRunning="{Binding IsBusy}"
-                           IsVisible="{Binding IsBusy}" />
-
-        <VerticalStackLayout Grid.Row="1" IsVisible="{Binding HasError}" Spacing="10">
-            <Label Style="{StaticResource Body}"
-                   Text="{Binding ErrorMessage}"
-                   TextColor="{StaticResource Error}" />
-            <Button Command="{Binding LoadCommand}"
-                    Text="{x:Static strings:AppStrings.RetryCta}" />
+        <VerticalStackLayout Grid.Row="0" Padding="16,12,16,8" Spacing="8">
+            <Button Style="{StaticResource TextButton}"
+                    Command="{Binding BackCommand}"
+                    HorizontalOptions="Start"
+                    MinimumWidthRequest="48"
+                    SemanticProperties.Description="{x:Static strings:AppStrings.BackCta}"
+                    Text="{x:Static strings:AppStrings.BackCta}" />
+            <Label SemanticProperties.HeadingLevel="Level1"
+                   Style="{StaticResource TitleText}"
+                   Text="{x:Static strings:AppStrings.AssessmentsHeadline}" />
+            <Label Style="{StaticResource BodyText}"
+                   Text="{x:Static strings:AppStrings.AssessmentsBody}" />
         </VerticalStackLayout>
 
-        <VerticalStackLayout Grid.Row="1" IsVisible="{Binding IsEmpty}" Spacing="10">
-            <Label Style="{StaticResource BodySecondary}"
-                   Text="{x:Static strings:AppStrings.AssessmentsEmpty}" />
-        </VerticalStackLayout>
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="16,4,16,20" Spacing="12">
 
-        <CollectionView Grid.Row="1"
-                        IsVisible="{Binding IsLoaded}"
-                        ItemsSource="{Binding Items}">
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="vm:AssessmentRowModel">
-                    <Border Style="{StaticResource Card}" Margin="0,0,0,12" Padding="16">
-                        <VerticalStackLayout Spacing="8">
-                            <Grid ColumnDefinitions="*,Auto">
-                                <Label Grid.Column="0"
-                                       Style="{StaticResource SectionTitle}"
-                                       Text="{Binding SkillName}" />
-                                <Border Grid.Column="1"
-                                        Padding="10,3"
-                                        Stroke="{Binding StateRaw, Converter={StaticResource StatusColorConverter}}"
-                                        StrokeShape="RoundRectangle 12">
-                                    <Label FontFamily="OpenSansSemibold"
-                                           Style="{StaticResource Caption}"
-                                           Text="{Binding StateLabel}"
-                                           TextColor="{Binding StateRaw, Converter={StaticResource StatusColorConverter}}" />
-                                </Border>
-                            </Grid>
+                <controls:StatePanel Kind="loading"
+                                     IsVisible="{Binding IsBusy}"
+                                     Title="{x:Static strings:AppStrings.CommonLoading}" />
 
-                            <Label IsVisible="{Binding HasScore}"
-                                   Style="{StaticResource BodySecondary}"
-                                   Text="{Binding ScoreLine}" />
+                <VerticalStackLayout IsVisible="{Binding HasError}" Spacing="10">
+                    <controls:NoticeBanner Kind="danger"
+                                           Title="{x:Static strings:AppStrings.CommonErrorTitle}"
+                                           Message="{Binding ErrorMessage}" />
+                    <Button Style="{StaticResource SecondaryButton}"
+                            Command="{Binding LoadCommand}"
+                            SemanticProperties.Description="{x:Static strings:AppStrings.RetryCta}"
+                            Text="{x:Static strings:AppStrings.RetryCta}" />
+                </VerticalStackLayout>
 
-                            <Label IsVisible="{Binding Available, Converter={StaticResource InvertedBoolConverter}}"
-                                   Style="{StaticResource Caption}"
-                                   Text="{x:Static strings:AppStrings.AssessmentNotAvailable}" />
+                <controls:NoticeBanner Kind="info"
+                                       IsVisible="{Binding IsLoaded}"
+                                       Title="{x:Static strings:AppStrings.AssessmentsWhyTitle}"
+                                       Message="{x:Static strings:AppStrings.AssessmentsWhyBody}" />
 
-                            <Button Command="{Binding DataContext.OpenAssessmentCommand, Source={RelativeSource AncestorType={x:Type vm:MyAssessmentsViewModel}}}"
-                                    CommandParameter="{Binding .}"
-                                    IsVisible="{Binding Available}"
-                                    Text="{x:Static strings:AppStrings.AssessmentStartCta}" />
-                        </VerticalStackLayout>
-                    </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+                <controls:StatePanel Kind="empty"
+                                     IsVisible="{Binding IsEmpty}"
+                                     Glyph="{StaticResource IconBadgeCheck}"
+                                     Title="{x:Static strings:AppStrings.AssessmentsEmptyTitle}"
+                                     Message="{x:Static strings:AppStrings.AssessmentsEmpty}" />
+
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Items}"
+                                     Spacing="10">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="vm:AssessmentRowModel">
+                            <Border Style="{StaticResource SurfaceCardDense}">
+                                <VerticalStackLayout Spacing="8">
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                        <Label Grid.Column="0"
+                                               Style="{StaticResource CardTitleText}"
+                                               Text="{Binding SkillName}"
+                                               VerticalOptions="Center" />
+                                        <controls:StatusPill Grid.Column="1"
+                                                             VerticalOptions="Center"
+                                                             Text="{Binding StateLabel}"
+                                                             Tone="{Binding StateRaw, Converter={StaticResource StatusColorConverter}}"
+                                                             ToneSoft="{Binding StateRaw, Converter={StaticResource StatusSoftColorConverter}}" />
+                                    </Grid>
+
+                                    <Label IsVisible="{Binding HasScore}"
+                                           Style="{StaticResource SmallText}"
+                                           Text="{Binding ScoreLine}" />
+
+                                    <Label IsVisible="{Binding Available, Converter={StaticResource InvertedBoolConverter}}"
+                                           Style="{StaticResource CaptionText}"
+                                           Text="{x:Static strings:AppStrings.AssessmentNotAvailable}" />
+
+                                    <Button Style="{StaticResource SubtleButton}"
+                                            Command="{Binding BindingContext.OpenAssessmentCommand, Source={x:Reference Page}}"
+                                            CommandParameter="{Binding .}"
+                                            HorizontalOptions="Start"
+                                            IsVisible="{Binding Available}"
+                                            SemanticProperties.Description="{x:Static strings:AppStrings.AssessmentStartCta}"
+                                            Text="{x:Static strings:AppStrings.AssessmentStartCta}" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+                <controls:NoticeBanner Kind="success"
+                                       IsVisible="{Binding IsLoaded}"
+                                       Title="{x:Static strings:AppStrings.AssessmentsPrivacyTitle}"
+                                       Message="{x:Static strings:AppStrings.AssessmentsPrivacyBody}" />
+            </VerticalStackLayout>
+        </ScrollView>
     </Grid>
 </ContentPage>

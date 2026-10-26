@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using KaamLink.Core.Api;
+using KaamLink.Core.Navigation;
 using KaamLink.Core.Presentation;
 using KaamLink.Resources.Strings;
 
@@ -106,5 +107,10 @@ namespace KaamLink.Features.Jobs
                 ErrorMessage = exception.IsOffline ? AppStrings.ErrorOffline : AppStrings.ErrorGeneric;
             }
         }
+
+        /// <summary>Explicit back affordance: pages hide the Shell nav bar, so each
+        /// screen carries its own parent route (absolute, like all app navigation).</summary>
+        [RelayCommand]
+        private Task BackAsync() => Shell.Current.GoToAsync(AppRoutes.Absolute(AppRoutes.WorkerHome));
     }
 }

@@ -119,5 +119,10 @@ namespace KaamLink.Features.Assessments
                 hasScore,
                 item.AssessmentAvailable);
         }
+
+        /// <summary>Explicit back affordance: pages hide the Shell nav bar, so each
+        /// screen carries its own parent route (absolute, like all app navigation).</summary>
+        [RelayCommand]
+        private Task BackAsync() => Shell.Current.GoToAsync(AppRoutes.Absolute(AppRoutes.WorkerHome));
     }
 }

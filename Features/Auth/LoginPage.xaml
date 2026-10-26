@@ -8,41 +8,109 @@
              Title="{x:Static strings:AppStrings.LoginTitle}"
              Shell.NavBarIsVisible="False">
 
+    <!-- Phone-first sign-in. One field, one primary action, visible role context
+         and a real way back to role selection. -->
     <ScrollView>
-        <VerticalStackLayout Padding="24"
-                             Spacing="20"
-                             VerticalOptions="Center">
+        <VerticalStackLayout Padding="16,24,16,24" Spacing="16">
 
-            <VerticalStackLayout Spacing="8">
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                <Border Grid.Column="0"
+                        Style="{StaticResource IconTile}"
+                        VerticalOptions="Center">
+                    <Label Style="{StaticResource IconGlyphPrimary}"
+                           Text="{StaticResource IconHardHat}"
+                           HorizontalOptions="Center" />
+                </Border>
+                <Label Grid.Column="1"
+                       Style="{StaticResource SectionText}"
+                       FontSize="18"
+                       TextColor="{StaticResource Primary}"
+                       Text="{x:Static strings:AppStrings.AppName}"
+                       VerticalOptions="Center" />
+            </Grid>
+
+            <VerticalStackLayout Spacing="8" Padding="0,6,0,0">
                 <Label SemanticProperties.HeadingLevel="Level1"
-                       Style="{StaticResource Title1}"
+                       Style="{StaticResource TitleText}"
                        Text="{x:Static strings:AppStrings.LoginTitle}" />
-                <Label Style="{StaticResource BodySecondary}"
+                <Label Style="{StaticResource BodyText}"
                        Text="{x:Static strings:AppStrings.LoginSubtitle}" />
             </VerticalStackLayout>
 
-            <Border Style="{StaticResource Card}">
-                <VerticalStackLayout Spacing="12">
-                    <Label Style="{StaticResource SectionTitle}"
-                           Text="{x:Static strings:AppStrings.PhoneLabel}" />
-                    <Entry AutomationProperties.Name="{x:Static strings:AppStrings.PhoneLabel}"
-                           IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}, FallbackValue=True}"
-                           Keyboard="Telephone"
-                           Placeholder="{x:Static strings:AppStrings.PhonePlaceholder}"
-                           Text="{Binding Phone}" />
-                    <Label IsVisible="{Binding HasError}"
-                           Style="{StaticResource Caption}"
-                           Text="{Binding ErrorMessage}"
-                           TextColor="{StaticResource Error}" />
-                    <Button Command="{Binding SendCodeCommand}"
+            <Border Style="{StaticResource SurfaceCard}">
+                <VerticalStackLayout Style="{StaticResource FormStack}">
+
+                    <VerticalStackLayout Style="{StaticResource FieldStack}">
+                        <Label Style="{StaticResource LabelText}"
+                               Text="{x:Static strings:AppStrings.PhoneLabel}" />
+                        <Border Style="{StaticResource FieldBox}">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                                <Label Grid.Column="0"
+                                       Style="{StaticResource IconGlyph}"
+                                       Text="{StaticResource IconPhone}" />
+                                <Entry Grid.Column="1"
+                                       AutomationProperties.Name="{x:Static strings:AppStrings.PhoneLabel}"
+                                       BackgroundColor="Transparent"
+                                       IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}, FallbackValue=True}"
+                                       Keyboard="Telephone"
+                                       Placeholder="{x:Static strings:AppStrings.PhonePlaceholder}"
+                                       Text="{Binding Phone}" />
+                            </Grid>
+                        </Border>
+                        <Label Style="{StaticResource FieldHint}"
+                               Text="{x:Static strings:AppStrings.PhonePlaceholder}" />
+                    </VerticalStackLayout>
+
+                    <!-- Validation summary: a banner, not a bare red line. -->
+                    <Border IsVisible="{Binding HasError}"
+                            BackgroundColor="{StaticResource ErrorSoft}"
+                            StrokeThickness="0"
+                            Padding="12">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                            <Label Grid.Column="0"
+                                   Style="{StaticResource IconGlyph}"
+                                   TextColor="{StaticResource Error}"
+                                   Text="{StaticResource IconAlertCircle}"
+                                   VerticalOptions="Start" />
+                            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                <Label Style="{StaticResource SmallStrongText}"
+                                       TextColor="{StaticResource Error}"
+                                       Text="{x:Static strings:AppStrings.LoginPhoneErrorTitle}" />
+                                <Label Style="{StaticResource SmallText}"
+                                       Text="{Binding ErrorMessage}" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Border>
+
+                    <Button Style="{StaticResource PrimaryButton}"
+                            Command="{Binding SendCodeCommand}"
                             IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}, FallbackValue=True}"
                             SemanticProperties.Description="{x:Static strings:AppStrings.SendCodeCta}"
                             Text="{x:Static strings:AppStrings.SendCodeCta}" />
+
+                    <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                       IsVisible="{Binding IsBusy}"
+                                       HorizontalOptions="Center" />
                 </VerticalStackLayout>
             </Border>
 
-            <ActivityIndicator IsRunning="{Binding IsBusy}"
-                               IsVisible="{Binding IsBusy}" />
+            <Label Style="{StaticResource CaptionText}"
+                   Text="{x:Static strings:AppStrings.LoginPrivacyNote}" />
+
+            <BoxView Style="{StaticResource DividerLine}" Margin="0,4" />
+
+            <VerticalStackLayout Spacing="4">
+                <Label Style="{StaticResource SmallStrongText}"
+                       Text="{x:Static strings:AppStrings.LoginWrongRoleTitle}" />
+                <Button Style="{StaticResource TextButton}"
+                        Command="{Binding BackToRolesCommand}"
+                        HorizontalOptions="Start"
+                        SemanticProperties.Description="{x:Static strings:AppStrings.LoginBackToRoles}"
+                        Text="{x:Static strings:AppStrings.LoginBackToRoles}" />
+            </VerticalStackLayout>
 
         </VerticalStackLayout>
     </ScrollView>

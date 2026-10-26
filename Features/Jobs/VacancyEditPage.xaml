@@ -4,73 +4,214 @@
              xmlns:vm="clr-namespace:KaamLink.Features.Jobs"
              xmlns:api="clr-namespace:KaamLink.Core.Api"
              xmlns:strings="clr-namespace:KaamLink.Resources.Strings"
+             xmlns:controls="clr-namespace:KaamLink.Controls"
              x:Class="KaamLink.Features.Jobs.VacancyEditPage"
              x:DataType="vm:VacancyEditViewModel"
-             Title="{Binding PageTitle}">
+             Title="{Binding PageTitle}"
+             Shell.NavBarIsVisible="False">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="24" Spacing="14">
+    <!-- Vacancy create/edit. Field order, labels and validation are unchanged; only
+         the presentation and the sticky Save are new. Skills stay a multi-select
+         list (the API needs skill ids, and editing re-asks for them by design). -->
+    <Grid RowDefinitions="*,Auto">
 
-            <ActivityIndicator HorizontalOptions="Center"
-                               IsRunning="{Binding IsBusy}"
-                               IsVisible="{Binding IsBusy}" />
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Style="{StaticResource PageStack}" Spacing="14">
 
-            <VerticalStackLayout IsVisible="{Binding HasError}" Spacing="12">
-                <Label Style="{StaticResource Body}"
-                       Text="{Binding ErrorMessage}"
-                       TextColor="{StaticResource Error}" />
+                <Button Style="{StaticResource TextButton}"
+                        Command="{Binding BackCommand}"
+                        HorizontalOptions="Start"
+                        MinimumWidthRequest="48"
+                        SemanticProperties.Description="{x:Static strings:AppStrings.BackCta}"
+                        Text="{x:Static strings:AppStrings.BackCta}" />
+                <Label SemanticProperties.HeadingLevel="Level1"
+                       Style="{StaticResource TitleText}"
+                       Text="{Binding PageTitle}" />
+
+                <controls:StatePanel Kind="loading"
+                                     IsVisible="{Binding IsBusy}"
+                                     Title="{x:Static strings:AppStrings.CommonLoading}" />
+
+                <VerticalStackLayout IsVisible="{Binding HasError}" Spacing="10">
+                    <controls:NoticeBanner Kind="danger"
+                                           Title="{x:Static strings:AppStrings.CommonErrorTitle}"
+                                           Message="{Binding ErrorMessage}" />
+                    <Button Style="{StaticResource SecondaryButton}"
+                            Command="{Binding LoadCommand}"
+                            SemanticProperties.Description="{x:Static strings:AppStrings.RetryCta}"
+                            Text="{x:Static strings:AppStrings.RetryCta}" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout IsVisible="{Binding IsLoaded}" Spacing="14">
+
+                    <Label Style="{StaticResource OverlineText}"
+                           Text="{x:Static strings:AppStrings.VacancyEditFormSection}" />
+                    <Border Style="{StaticResource SurfaceCardDense}">
+                        <VerticalStackLayout Style="{StaticResource FormStack}">
+                            <VerticalStackLayout Style="{StaticResource FieldStack}">
+                                <Label Style="{StaticResource LabelText}"
+                                       Text="{x:Static strings:AppStrings.FieldTitleLabel}" />
+                                <Border Style="{StaticResource FieldBox}">
+                                    <Entry AutomationProperties.Name="{x:Static strings:AppStrings.FieldTitleLabel}"
+                                           BackgroundColor="Transparent"
+                                           MaxLength="120"
+                                           Text="{Binding Title}" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Style="{StaticResource FieldStack}">
+                                <Label Style="{StaticResource LabelText}"
+                                       Text="{x:Static strings:AppStrings.FieldDescriptionLabel}" />
+                                <Border Style="{StaticResource FieldBox}" Padding="12,6">
+                                    <Editor AutomationProperties.Name="{x:Static strings:AppStrings.FieldDescriptionLabel}"
+                                            AutoSize="TextChanges"
+                                            BackgroundColor="Transparent"
+                                            MaxLength="4000"
+                                            MinimumHeightRequest="110"
+                                            Text="{Binding Description}" />
+                                </Border>
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Label Style="{StaticResource OverlineText}"
+                           Text="{x:Static strings:AppStrings.VacancyEditLocationSection}" />
+                    <Border Style="{StaticResource SurfaceCardDense}">
+                        <VerticalStackLayout Style="{StaticResource FormStack}">
+
+                            <VerticalStackLayout Style="{StaticResource FieldStack}">
+                                <Label Style="{StaticResource LabelText}"
+                                       Text="{x:Static strings:AppStrings.FieldEmirateLabel}" />
+                                <Border Style="{StaticResource FieldBox}">
+                                    <Picker ItemDisplayBinding="{Binding Label}"
+                                            ItemsSource="{Binding EmirateOptions}"
+                                            BackgroundColor="Transparent"
+                                            SelectedItem="{Binding SelectedEmirate}"
+                                            Title="{x:Static strings:AppStrings.FieldEmirateLabel}" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Style="{StaticResource FieldStack}">
+                                <Label Style="{StaticResource LabelText}"
+                                       Text="{x:Static strings:AppStrings.FieldAreaLabel}" />
+                                <Border Style="{StaticResource FieldBox}">
+                                    <Entry AutomationProperties.Name="{x:Static strings:AppStrings.FieldAreaLabel}"
+                                           BackgroundColor="Transparent"
+                                           MaxLength="120"
+                                           Text="{Binding Area}" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                                <VerticalStackLayout Grid.Column="0" Style="{StaticResource FieldStack}">
+                                    <Label Style="{StaticResource LabelText}"
+                                           Text="{x:Static strings:AppStrings.FieldSalaryMinLabel}" />
+                                    <Border Style="{StaticResource FieldBox}">
+                                        <Entry AutomationProperties.Name="{x:Static strings:AppStrings.FieldSalaryMinLabel}"
+                                               BackgroundColor="Transparent"
+                                               Keyboard="Numeric"
+                                               Text="{Binding SalaryMinText}" />
+                                    </Border>
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1" Style="{StaticResource FieldStack}">
+                                    <Label Style="{StaticResource LabelText}"
+                                           Text="{x:Static strings:AppStrings.FieldSalaryMaxLabel}" />
+                                    <Border Style="{StaticResource FieldBox}">
+                                        <Entry AutomationProperties.Name="{x:Static strings:AppStrings.FieldSalaryMaxLabel}"
+                                               BackgroundColor="Transparent"
+                                               Keyboard="Numeric"
+                                               Text="{Binding SalaryMaxText}" />
+                                    </Border>
+                                </VerticalStackLayout>
+                            </Grid>
+
+                            <VerticalStackLayout Style="{StaticResource FieldStack}">
+                                <Label Style="{StaticResource LabelText}"
+                                       Text="{x:Static strings:AppStrings.FieldHeadcountLabel}" />
+                                <Border Style="{StaticResource FieldBox}">
+                                    <Entry AutomationProperties.Name="{x:Static strings:AppStrings.FieldHeadcountLabel}"
+                                           BackgroundColor="Transparent"
+                                           Keyboard="Numeric"
+                                           Text="{Binding HeadcountText}" />
+                                </Border>
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                        <Label Grid.Column="0"
+                               Style="{StaticResource OverlineText}"
+                               Text="{x:Static strings:AppStrings.VacancyEditSkillsSection}" />
+                        <Label Grid.Column="1"
+                               Style="{StaticResource CaptionText}"
+                               TextColor="{StaticResource Primary}"
+                               Text="{Binding SelectedSkillsText}" />
+                    </Grid>
+                    <Label Style="{StaticResource FieldHint}"
+                           Text="{x:Static strings:AppStrings.VacancyEditSkillsHint}" />
+
+                    <Border Style="{StaticResource SurfaceCardDense}" Padding="8">
+                        <CollectionView HeightRequest="260"
+                                        ItemsSource="{Binding SkillOptions}"
+                                        SelectedItems="{Binding SelectedSkills}"
+                                        SelectionMode="Multiple">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="api:SkillItemDto">
+                                    <Border Padding="12,10"
+                                            Margin="0,0,0,6"
+                                            StrokeThickness="1"
+                                            BackgroundColor="{StaticResource CardSurface}"
+                                            Stroke="{StaticResource Border}">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="10" />
+                                        </Border.StrokeShape>
+                                        <VisualStateManager.VisualStateGroups>
+                                            <VisualStateGroupList>
+                                                <VisualStateGroup x:Name="CommonStates">
+                                                    <VisualState x:Name="Normal">
+                                                        <VisualState.Setters>
+                                                            <Setter TargetName="SkillCheck" Property="Label.IsVisible" Value="False" />
+                                                        </VisualState.Setters>
+                                                    </VisualState>
+                                                    <VisualState x:Name="Selected">
+                                                        <VisualState.Setters>
+                                                            <Setter Property="BackgroundColor" Value="{StaticResource PrimarySoft}" />
+                                                            <Setter Property="Stroke" Value="{StaticResource Primary}" />
+                                                            <Setter TargetName="SkillCheck" Property="Label.IsVisible" Value="True" />
+                                                        </VisualState.Setters>
+                                                    </VisualState>
+                                                </VisualStateGroup>
+                                            </VisualStateGroupList>
+                                        </VisualStateManager.VisualStateGroups>
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                            <Label Grid.Column="0"
+                                                   Style="{StaticResource SmallStrongText}"
+                                                   Text="{Binding LocalizedName}"
+                                                   VerticalOptions="Center" />
+                                            <Label x:Name="SkillCheck"
+                                                   Grid.Column="1"
+                                                   Style="{StaticResource IconGlyphPrimary}"
+                                                   FontSize="15"
+                                                   IsVisible="False"
+                                                   Text="{StaticResource IconCheck}" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </Border>
+                </VerticalStackLayout>
             </VerticalStackLayout>
+        </ScrollView>
 
-            <VerticalStackLayout IsVisible="{Binding IsLoaded}" Spacing="14">
-
-                <Label Style="{StaticResource Caption}" Text="{x:Static strings:AppStrings.FieldTitleLabel}" />
-                <Entry MaxLength="120" Text="{Binding Title}" />
-
-                <Label Style="{StaticResource Caption}" Text="{x:Static strings:AppStrings.FieldDescriptionLabel}" />
-                <Editor AutoSize="TextChanges" HeightRequest="96" MaxLength="4000" Text="{Binding Description}" />
-
-                <Label Style="{StaticResource Caption}" Text="{x:Static strings:AppStrings.FieldEmirateLabel}" />
-                <Picker ItemDisplayBinding="{Binding Label}"
-                        ItemsSource="{Binding EmirateOptions}"
-                        SelectedItem="{Binding SelectedEmirate}" />
-
-                <Label Style="{StaticResource Caption}" Text="{x:Static strings:AppStrings.FieldAreaLabel}" />
-                <Entry MaxLength="120" Text="{Binding Area}" />
-
-                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
-                    <VerticalStackLayout Grid.Column="0">
-                        <Label Style="{StaticResource Caption}" Text="{x:Static strings:AppStrings.FieldSalaryMinLabel}" />
-                        <Entry Keyboard="Numeric" Text="{Binding SalaryMinText}" />
-                    </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Column="1">
-                        <Label Style="{StaticResource Caption}" Text="{x:Static strings:AppStrings.FieldSalaryMaxLabel}" />
-                        <Entry Keyboard="Numeric" Text="{Binding SalaryMaxText}" />
-                    </VerticalStackLayout>
-                </Grid>
-
-                <Label Style="{StaticResource Caption}" Text="{x:Static strings:AppStrings.FieldHeadcountLabel}" />
-                <Entry Keyboard="Numeric" Text="{Binding HeadcountText}" />
-
-                <Label Style="{StaticResource Caption}" Text="{x:Static strings:AppStrings.FieldSkillsLabel}" />
-                <Border Padding="8" Stroke="{StaticResource Border}" StrokeShape="RoundRectangle 12">
-                    <CollectionView HeightRequest="220"
-                                    ItemsSource="{Binding SkillOptions}"
-                                    SelectedItems="{Binding SelectedSkills}"
-                                    SelectionMode="Multiple">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="api:SkillItemDto">
-                                <Label Padding="8,6"
-                                       Style="{StaticResource Body}"
-                                       Text="{Binding LocalizedName}" />
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </Border>
-
-                <Button Command="{Binding SaveCommand}"
-                        SemanticProperties.Description="{x:Static strings:AppStrings.SaveCta}"
-                        Text="{x:Static strings:AppStrings.SaveCta}" />
-            </VerticalStackLayout>
-        </VerticalStackLayout>
-    </ScrollView>
+        <Grid Grid.Row="1"
+              Style="{StaticResource BottomDock}"
+              IsVisible="{Binding IsLoaded}">
+            <Button Style="{StaticResource PrimaryButton}"
+                    Command="{Binding SaveCommand}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}, FallbackValue=True}"
+                    SemanticProperties.Description="{x:Static strings:AppStrings.SaveCta}"
+                    Text="{x:Static strings:AppStrings.SaveCta}" />
+        </Grid>
+    </Grid>
 </ContentPage>

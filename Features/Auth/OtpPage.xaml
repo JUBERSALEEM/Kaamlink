@@ -8,53 +8,127 @@
              Title="{x:Static strings:AppStrings.OtpTitle}"
              Shell.NavBarIsVisible="False">
 
+    <!-- OTP verification. The code entry is the hero; the resend action keeps the
+         server-driven countdown and stays a text action so it never competes with
+         "Verify". -->
     <ScrollView>
-        <VerticalStackLayout Padding="24"
-                             Spacing="20"
-                             VerticalOptions="Center">
+        <VerticalStackLayout Padding="16,24,16,24" Spacing="16">
 
-            <VerticalStackLayout Spacing="8">
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                <Border Grid.Column="0"
+                        Style="{StaticResource IconTile}"
+                        VerticalOptions="Center">
+                    <Label Style="{StaticResource IconGlyphPrimary}"
+                           Text="{StaticResource IconLock}"
+                           HorizontalOptions="Center" />
+                </Border>
+                <Label Grid.Column="1"
+                       Style="{StaticResource SectionText}"
+                       FontSize="18"
+                       TextColor="{StaticResource Primary}"
+                       Text="{x:Static strings:AppStrings.AppName}"
+                       VerticalOptions="Center" />
+            </Grid>
+
+            <VerticalStackLayout Spacing="8" Padding="0,6,0,0">
                 <Label SemanticProperties.HeadingLevel="Level1"
-                       Style="{StaticResource Title1}"
-                       Text="{x:Static strings:AppStrings.OtpTitle}" />
-                <Label Style="{StaticResource BodySecondary}"
-                       Text="{x:Static strings:AppStrings.OtpSubtitle}" />
-                <Label FontFamily="OpenSansSemibold"
-                       Style="{StaticResource Body}"
+                       Style="{StaticResource TitleText}"
+                       Text="{x:Static strings:AppStrings.OtpHeadline}" />
+                <Label Style="{StaticResource BodyText}"
+                       Text="{x:Static strings:AppStrings.OtpSentTo}" />
+                <Label Style="{StaticResource BodyStrongText}"
+                       FontSize="16"
                        Text="{Binding Phone}" />
             </VerticalStackLayout>
 
-            <Border Style="{StaticResource Card}">
-                <VerticalStackLayout Spacing="12">
-                    <Label Style="{StaticResource SectionTitle}"
-                           Text="{x:Static strings:AppStrings.OtpCodeLabel}" />
-                    <Entry AutomationProperties.Name="{x:Static strings:AppStrings.OtpCodeLabel}"
-                           FontSize="24"
-                           HorizontalTextAlignment="Center"
-                           IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}, FallbackValue=True}"
-                           Keyboard="Numeric"
-                           MaxLength="6"
-                           Placeholder="••••••"
-                           Text="{Binding Code}" />
-                    <Label IsVisible="{Binding HasError}"
-                           Style="{StaticResource Caption}"
-                           Text="{Binding ErrorMessage}"
-                           TextColor="{StaticResource Error}" />
-                    <Button Command="{Binding VerifyCommand}"
+            <Border Style="{StaticResource SurfaceCard}">
+                <VerticalStackLayout Style="{StaticResource FormStack}">
+
+                    <VerticalStackLayout Style="{StaticResource FieldStack}">
+                        <Label Style="{StaticResource LabelText}"
+                               Text="{x:Static strings:AppStrings.OtpCodeLabel}" />
+                        <Border Style="{StaticResource FieldBox}">
+                            <Entry AutomationProperties.Name="{x:Static strings:AppStrings.OtpCodeLabel}"
+                                   BackgroundColor="Transparent"
+                                   CharacterSpacing="8"
+                                   FontFamily="OpenSansSemibold"
+                                   FontSize="22"
+                                   HorizontalTextAlignment="Center"
+                                   IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}, FallbackValue=True}"
+                                   Keyboard="Numeric"
+                                   MaxLength="6"
+                                   Placeholder="••••••"
+                                   Text="{Binding Code}" />
+                        </Border>
+                        <Label Style="{StaticResource FieldHint}"
+                               Text="{x:Static strings:AppStrings.OtpExpiryNote}" />
+                    </VerticalStackLayout>
+
+                    <Border IsVisible="{Binding CanResend, Converter={StaticResource InvertedBoolConverter}}"
+                            BackgroundColor="{StaticResource CardSurfaceAlt}"
+                            StrokeThickness="0"
+                            Padding="12,8">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="10" />
+                        </Border.StrokeShape>
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                            <Label Grid.Column="0"
+                                   Style="{StaticResource IconGlyph}"
+                                   TextColor="{StaticResource Warning}"
+                                   Text="{StaticResource IconClock}" />
+                            <Label Grid.Column="1"
+                                   Style="{StaticResource SmallText}"
+                                   Text="{Binding ResendText}"
+                                   VerticalOptions="Center" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Validation summary -->
+                    <Border IsVisible="{Binding HasError}"
+                            BackgroundColor="{StaticResource ErrorSoft}"
+                            StrokeThickness="0"
+                            Padding="12">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                            <Label Grid.Column="0"
+                                   Style="{StaticResource IconGlyph}"
+                                   TextColor="{StaticResource Error}"
+                                   Text="{StaticResource IconAlertCircle}"
+                                   VerticalOptions="Start" />
+                            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                <Label Style="{StaticResource SmallStrongText}"
+                                       TextColor="{StaticResource Error}"
+                                       Text="{x:Static strings:AppStrings.OtpErrorTitle}" />
+                                <Label Style="{StaticResource SmallText}"
+                                       Text="{Binding ErrorMessage}" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Border>
+
+                    <Button Style="{StaticResource PrimaryButton}"
+                            Command="{Binding VerifyCommand}"
                             IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}, FallbackValue=True}"
                             SemanticProperties.Description="{x:Static strings:AppStrings.VerifyCta}"
                             Text="{x:Static strings:AppStrings.VerifyCta}" />
-                    <Button BackgroundColor="Transparent"
+
+                    <Button Style="{StaticResource TextButton}"
                             Command="{Binding ResendCommand}"
+                            HorizontalOptions="Center"
                             IsEnabled="{Binding CanResend}"
                             SemanticProperties.Description="{x:Static strings:AppStrings.ResendCta}"
-                            Text="{Binding ResendText}"
-                            TextColor="{StaticResource Primary}" />
+                            Text="{x:Static strings:AppStrings.ResendCta}" />
+
+                    <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                       IsVisible="{Binding IsBusy}"
+                                       HorizontalOptions="Center" />
                 </VerticalStackLayout>
             </Border>
 
-            <ActivityIndicator IsRunning="{Binding IsBusy}"
-                               IsVisible="{Binding IsBusy}" />
+            <Label Style="{StaticResource CaptionText}"
+                   HorizontalTextAlignment="Center"
+                   Text="{x:Static strings:AppStrings.OtpWrongNumberNote}" />
 
         </VerticalStackLayout>
     </ScrollView>

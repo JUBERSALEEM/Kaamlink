@@ -3,93 +3,159 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:KaamLink.Features.Jobs"
              xmlns:strings="clr-namespace:KaamLink.Resources.Strings"
+             xmlns:controls="clr-namespace:KaamLink.Controls"
              x:Class="KaamLink.Features.Jobs.VacancyApplicationsPage"
              x:Name="Page"
              x:DataType="vm:VacancyApplicationsViewModel"
-             Title="{x:Static strings:AppStrings.VacancyApplicationsTitle}">
+             Title="{x:Static strings:AppStrings.VacancyApplicationsTitle}"
+             Shell.NavBarIsVisible="False">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="24" Spacing="16">
+    <!-- Employer decision list for one vacancy. Actions keep their server-side
+         gates (CanMarkViewed / CanDecide) and are laid out 2x2 so each stays a
+         48dp target on a 360dp screen instead of squeezing four across. -->
+    <Grid RowDefinitions="Auto,*">
 
+        <VerticalStackLayout Grid.Row="0" Padding="16,12,16,10" Spacing="2">
+            <Button Style="{StaticResource TextButton}"
+                    Command="{Binding BackCommand}"
+                    HorizontalOptions="Start"
+                    MinimumWidthRequest="48"
+                    SemanticProperties.Description="{x:Static strings:AppStrings.BackCta}"
+                    Text="{x:Static strings:AppStrings.BackCta}" />
             <Label SemanticProperties.HeadingLevel="Level1"
-                   Style="{StaticResource Title1}"
+                   Style="{StaticResource TitleText}"
+                   MaxLines="2"
                    Text="{Binding VacancyTitle}" />
-
-            <ActivityIndicator HorizontalOptions="Center"
-                               IsRunning="{Binding IsBusy}"
-                               IsVisible="{Binding IsBusy}" />
-
-            <VerticalStackLayout IsVisible="{Binding HasError}" Spacing="12">
-                <Label Style="{StaticResource Body}"
-                       Text="{Binding ErrorMessage}"
-                       TextColor="{StaticResource Error}" />
-                <Button Command="{Binding LoadCommand}"
-                        SemanticProperties.Description="{x:Static strings:AppStrings.RetryCta}"
-                        Text="{x:Static strings:AppStrings.RetryCta}" />
-            </VerticalStackLayout>
-
-            <Label IsVisible="{Binding IsEmpty}"
-                   Style="{StaticResource BodySecondary}"
-                   Text="{x:Static strings:AppStrings.ApplicantsEmpty}" />
-
-            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Items}" Spacing="12">
-                <BindableLayout.ItemTemplate>
-                    <DataTemplate x:DataType="vm:ApplicantRowModel">
-                        <Border Style="{StaticResource Card}">
-                            <VerticalStackLayout Spacing="8">
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <Label Grid.Column="0"
-                                           SemanticProperties.HeadingLevel="Level2"
-                                           Style="{StaticResource SectionTitle}"
-                                           Text="{Binding WorkerDisplayName}" />
-                                    <Border Grid.Column="1"
-                                            Padding="10,3"
-                                            Stroke="{Binding Status, Converter={StaticResource StatusColorConverter}}"
-                                            StrokeShape="RoundRectangle 12">
-                                        <Label FontFamily="OpenSansSemibold"
-                                               Style="{StaticResource Caption}"
-                                               Text="{Binding StatusLabel}"
-                                               TextColor="{Binding Status, Converter={StaticResource StatusColorConverter}}" />
-                                    </Border>
-                                </Grid>
-
-                                <Label FontFamily="OpenSansSemibold"
-                                       Style="{StaticResource Body}"
-                                       Text="{Binding WorkerPhoneNumber}" />
-                                <Label Style="{StaticResource BodySecondary}"
-                                       Text="{Binding MetaLine}" />
-
-                                <VerticalStackLayout IsVisible="{Binding HasCoverNote}" Spacing="2">
-                                    <Label Style="{StaticResource Caption}"
-                                           Text="{x:Static strings:AppStrings.CoverNoteLabel}" />
-                                    <Label Style="{StaticResource Body}"
-                                           Text="{Binding CoverNote}" />
-                                </VerticalStackLayout>
-
-                                <HorizontalStackLayout IsVisible="{Binding CanDecide}" Spacing="8">
-                                    <Button BackgroundColor="Transparent"
-                                            Command="{Binding BindingContext.MarkViewedCommand, Source={x:Reference Page}}"
-                                            CommandParameter="{Binding}"
-                                            IsVisible="{Binding CanMarkViewed}"
-                                            Text="{x:Static strings:AppStrings.ActionMarkViewed}"
-                                            TextColor="{StaticResource Primary}" />
-                                    <Button Command="{Binding BindingContext.ShortlistCommand, Source={x:Reference Page}}"
-                                            CommandParameter="{Binding}"
-                                            Text="{x:Static strings:AppStrings.ActionShortlist}" />
-                                    <Button Command="{Binding BindingContext.HireCommand, Source={x:Reference Page}}"
-                                            CommandParameter="{Binding}"
-                                            Text="{x:Static strings:AppStrings.ActionHire}" />
-                                    <Button BackgroundColor="Transparent"
-                                            Command="{Binding BindingContext.RejectCommand, Source={x:Reference Page}}"
-                                            CommandParameter="{Binding}"
-                                            Text="{x:Static strings:AppStrings.ActionReject}"
-                                            TextColor="{StaticResource Error}" />
-                                </HorizontalStackLayout>
-                            </VerticalStackLayout>
-                        </Border>
-                    </DataTemplate>
-                </BindableLayout.ItemTemplate>
-            </VerticalStackLayout>
+            <Label Style="{StaticResource OverlineText}"
+                   Text="{Binding ApplicantCountText}" />
         </VerticalStackLayout>
-    </ScrollView>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="16,0,16,24" Spacing="12">
+
+                <controls:StatePanel Kind="loading"
+                                     IsVisible="{Binding IsBusy}"
+                                     Title="{x:Static strings:AppStrings.CommonLoading}" />
+
+                <VerticalStackLayout IsVisible="{Binding HasError}" Spacing="10">
+                    <controls:NoticeBanner Kind="danger"
+                                           Title="{x:Static strings:AppStrings.CommonErrorTitle}"
+                                           Message="{Binding ErrorMessage}" />
+                    <Button Style="{StaticResource SecondaryButton}"
+                            Command="{Binding LoadCommand}"
+                            SemanticProperties.Description="{x:Static strings:AppStrings.RetryCta}"
+                            Text="{x:Static strings:AppStrings.RetryCta}" />
+                </VerticalStackLayout>
+
+                <controls:StatePanel Kind="empty"
+                                     IsVisible="{Binding IsEmpty}"
+                                     Glyph="{StaticResource IconUsers}"
+                                     Title="{x:Static strings:AppStrings.ApplicantsEmptyTitle}"
+                                     Message="{x:Static strings:AppStrings.ApplicantsEmpty}" />
+
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Items}"
+                                     Spacing="12">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ApplicantRowModel">
+                            <Border Style="{StaticResource SurfaceCard}">
+                                <VerticalStackLayout Spacing="10">
+
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                        <Border Grid.Column="0"
+                                                Style="{StaticResource IconTileLarge}"
+                                                BackgroundColor="{StaticResource PrimarySoft}"
+                                                VerticalOptions="Start">
+                                            <Label Style="{StaticResource SmallStrongText}"
+                                                   FontSize="15"
+                                                   TextColor="{StaticResource Primary}"
+                                                   Text="{Binding Initials}"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center" />
+                                        </Border>
+                                        <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                            <Label SemanticProperties.HeadingLevel="Level2"
+                                                   Style="{StaticResource CardTitleText}"
+                                                   MaxLines="2"
+                                                   Text="{Binding WorkerDisplayName}" />
+                                            <Label Style="{StaticResource CaptionText}"
+                                                   Text="{Binding MetaLine}" />
+                                        </VerticalStackLayout>
+                                        <controls:StatusPill Grid.Column="2"
+                                                             VerticalOptions="Start"
+                                                             Text="{Binding StatusLabel}"
+                                                             Tone="{Binding Status, Converter={StaticResource StatusColorConverter}}"
+                                                             ToneSoft="{Binding Status, Converter={StaticResource StatusSoftColorConverter}}" />
+                                    </Grid>
+
+                                    <BoxView Style="{StaticResource DividerLine}" />
+
+                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                                        <Label Grid.Column="0"
+                                               Style="{StaticResource IconGlyph}"
+                                               FontSize="15"
+                                               Text="{StaticResource IconPhone}" />
+                                        <Label Grid.Column="1"
+                                               Style="{StaticResource SmallStrongText}"
+                                               Text="{Binding WorkerPhoneNumber}"
+                                               VerticalOptions="Center" />
+                                    </Grid>
+
+                                    <VerticalStackLayout IsVisible="{Binding HasCoverNote}" Spacing="4">
+                                        <Label Style="{StaticResource OverlineText}"
+                                               Text="{x:Static strings:AppStrings.CoverNoteLabel}" />
+                                        <Border BackgroundColor="{StaticResource CardSurfaceAlt}"
+                                                StrokeThickness="0"
+                                                Padding="12">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="10" />
+                                            </Border.StrokeShape>
+                                            <Label Style="{StaticResource SmallText}"
+                                                   Text="{Binding CoverNote}" />
+                                        </Border>
+                                    </VerticalStackLayout>
+
+                                    <!-- Decisions: primary + secondary on top, quiet + destructive below -->
+                                    <Grid ColumnDefinitions="*,*"
+                                          RowDefinitions="Auto,Auto"
+                                          ColumnSpacing="8"
+                                          RowSpacing="8"
+                                          IsVisible="{Binding CanDecide}">
+                                        <Button Grid.Row="0"
+                                                Grid.Column="0"
+                                                Style="{StaticResource SecondaryButton}"
+                                                Command="{Binding BindingContext.ShortlistCommand, Source={x:Reference Page}}"
+                                                CommandParameter="{Binding .}"
+                                                SemanticProperties.Description="{x:Static strings:AppStrings.ActionShortlist}"
+                                                Text="{x:Static strings:AppStrings.ActionShortlist}" />
+                                        <Button Grid.Row="0"
+                                                Grid.Column="1"
+                                                Style="{StaticResource PrimaryButton}"
+                                                Command="{Binding BindingContext.HireCommand, Source={x:Reference Page}}"
+                                                CommandParameter="{Binding .}"
+                                                SemanticProperties.Description="{x:Static strings:AppStrings.ActionHire}"
+                                                Text="{x:Static strings:AppStrings.ActionHire}" />
+                                        <Button Grid.Row="1"
+                                                Grid.Column="0"
+                                                Style="{StaticResource SubtleButton}"
+                                                Command="{Binding BindingContext.MarkViewedCommand, Source={x:Reference Page}}"
+                                                CommandParameter="{Binding .}"
+                                                IsVisible="{Binding CanMarkViewed}"
+                                                SemanticProperties.Description="{x:Static strings:AppStrings.ActionMarkViewed}"
+                                                Text="{x:Static strings:AppStrings.ActionMarkViewed}" />
+                                        <Button Grid.Row="1"
+                                                Grid.Column="1"
+                                                Style="{StaticResource DangerButton}"
+                                                Command="{Binding BindingContext.RejectCommand, Source={x:Reference Page}}"
+                                                CommandParameter="{Binding .}"
+                                                SemanticProperties.Description="{x:Static strings:AppStrings.ActionReject}"
+                                                Text="{x:Static strings:AppStrings.ActionReject}" />
+                                    </Grid>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
 </ContentPage>

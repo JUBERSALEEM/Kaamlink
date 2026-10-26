@@ -3,72 +3,99 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:KaamLink.Features.Jobs"
              xmlns:strings="clr-namespace:KaamLink.Resources.Strings"
+             xmlns:controls="clr-namespace:KaamLink.Controls"
              x:Class="KaamLink.Features.Jobs.MyApplicationsPage"
              x:Name="Page"
              x:DataType="vm:MyApplicationsViewModel"
-             Title="{x:Static strings:AppStrings.MyApplicationsTitle}">
+             Title="{x:Static strings:AppStrings.MyApplicationsTitle}"
+             Shell.NavBarIsVisible="False">
 
+    <!-- The worker's applications with the server's live status. Withdraw stays a
+         quiet destructive action gated by CanWithdraw (server enforces it too). -->
     <ScrollView>
-        <VerticalStackLayout Padding="24" Spacing="16">
+        <VerticalStackLayout Style="{StaticResource PageStack}" Spacing="12">
 
-            <ActivityIndicator HorizontalOptions="Center"
-                               IsRunning="{Binding IsBusy}"
-                               IsVisible="{Binding IsBusy}" />
+            <Button Style="{StaticResource TextButton}"
+                    Command="{Binding BackCommand}"
+                    HorizontalOptions="Start"
+                    MinimumWidthRequest="48"
+                    SemanticProperties.Description="{x:Static strings:AppStrings.BackCta}"
+                    Text="{x:Static strings:AppStrings.BackCta}" />
+            <Label SemanticProperties.HeadingLevel="Level1"
+                   Style="{StaticResource TitleText}"
+                   Text="{x:Static strings:AppStrings.MyApplicationsTitle}" />
 
-            <VerticalStackLayout IsVisible="{Binding HasError}" Spacing="12">
-                <Label Style="{StaticResource Body}"
-                       Text="{Binding ErrorMessage}"
-                       TextColor="{StaticResource Error}" />
-                <Button Command="{Binding LoadCommand}"
+            <controls:StatePanel Kind="loading"
+                                 IsVisible="{Binding IsBusy}"
+                                 Title="{x:Static strings:AppStrings.CommonLoading}" />
+
+            <VerticalStackLayout IsVisible="{Binding HasError}" Spacing="10">
+                <controls:NoticeBanner Kind="danger"
+                                       Title="{x:Static strings:AppStrings.CommonErrorTitle}"
+                                       Message="{Binding ErrorMessage}" />
+                <Button Style="{StaticResource SecondaryButton}"
+                        Command="{Binding LoadCommand}"
                         SemanticProperties.Description="{x:Static strings:AppStrings.RetryCta}"
                         Text="{x:Static strings:AppStrings.RetryCta}" />
             </VerticalStackLayout>
 
-            <Label IsVisible="{Binding IsEmpty}"
-                   Style="{StaticResource BodySecondary}"
-                   Text="{x:Static strings:AppStrings.MyApplicationsEmpty}" />
+            <controls:StatePanel Kind="empty"
+                                 IsVisible="{Binding IsEmpty}"
+                                 Glyph="{StaticResource IconClipboard}"
+                                 Title="{x:Static strings:AppStrings.ApplicationsEmptyTitle}"
+                                 Message="{x:Static strings:AppStrings.ApplicationsEmptyBody}" />
 
-            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Items}" Spacing="12">
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Items}"
+                                 Spacing="10">
                 <BindableLayout.ItemTemplate>
                     <DataTemplate x:DataType="vm:ApplicationRowModel">
-                        <Border Style="{StaticResource Card}">
-                            <VerticalStackLayout Spacing="6">
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <Label Grid.Column="0"
-                                           SemanticProperties.HeadingLevel="Level2"
-                                           Style="{StaticResource SectionTitle}"
-                                           Text="{Binding VacancyTitle}" />
-                                    <Border Grid.Column="1"
-                                            Padding="10,3"
-                                            Stroke="{Binding Status, Converter={StaticResource StatusColorConverter}}"
-                                            StrokeShape="RoundRectangle 12">
-                                        <Label FontFamily="OpenSansSemibold"
-                                               Style="{StaticResource Caption}"
-                                               Text="{Binding StatusLabel}"
-                                               TextColor="{Binding Status, Converter={StaticResource StatusColorConverter}}" />
-                                    </Border>
+                        <Border Style="{StaticResource SurfaceCardDense}">
+                            <VerticalStackLayout Spacing="8">
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                        <Label SemanticProperties.HeadingLevel="Level2"
+                                               Style="{StaticResource CardTitleText}"
+                                               MaxLines="2"
+                                               Text="{Binding VacancyTitle}" />
+                                        <Label Style="{StaticResource CaptionText}"
+                                               Text="{Binding CompanyName}" />
+                                    </VerticalStackLayout>
+                                    <controls:StatusPill Grid.Column="1"
+                                                         VerticalOptions="Start"
+                                                         Text="{Binding StatusLabel}"
+                                                         Tone="{Binding Status, Converter={StaticResource StatusColorConverter}}"
+                                                         ToneSoft="{Binding Status, Converter={StaticResource StatusSoftColorConverter}}" />
                                 </Grid>
-                                <Grid ColumnDefinitions="*,Auto">
+
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
                                     <Label Grid.Column="0"
-                                           Style="{StaticResource BodySecondary}"
-                                           Text="{Binding CompanyName}" />
+                                           Style="{StaticResource IconGlyph}"
+                                           FontSize="14"
+                                           Text="{StaticResource IconCalendar}" />
                                     <Label Grid.Column="1"
-                                           Style="{StaticResource Caption}"
-                                           Text="{Binding AppliedDate}" />
+                                           Style="{StaticResource CaptionText}"
+                                           Text="{Binding AppliedDate}"
+                                           VerticalOptions="Center" />
                                 </Grid>
-                                <Button BackgroundColor="Transparent"
+
+                                <BoxView Style="{StaticResource DividerLine}"
+                                         IsVisible="{Binding CanWithdraw}" />
+                                <Button Style="{StaticResource DangerButton}"
                                         Command="{Binding BindingContext.WithdrawCommand, Source={x:Reference Page}}"
-                                        CommandParameter="{Binding}"
+                                        CommandParameter="{Binding .}"
                                         HorizontalOptions="Start"
                                         IsVisible="{Binding CanWithdraw}"
                                         SemanticProperties.Description="{x:Static strings:AppStrings.WithdrawCta}"
-                                        Text="{x:Static strings:AppStrings.WithdrawCta}"
-                                        TextColor="{StaticResource Error}" />
+                                        Text="{x:Static strings:AppStrings.WithdrawCta}" />
                             </VerticalStackLayout>
                         </Border>
                     </DataTemplate>
                 </BindableLayout.ItemTemplate>
             </VerticalStackLayout>
+
+            <Label Style="{StaticResource CaptionText}"
+                   IsVisible="{Binding IsLoaded}"
+                   Text="{x:Static strings:AppStrings.ApplicationsStatusNote}" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

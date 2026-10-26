@@ -69,6 +69,15 @@ namespace KaamLink.Features.Auth
             }
         }
 
+        /// <summary>
+        /// Returns to role selection. Additive UI-only command: sign-in is reached by
+        /// absolute route, so the platform has no stack to pop and the screen needs an
+        /// explicit way back (the mockup's app-bar back affordance).
+        /// </summary>
+        [RelayCommand]
+        private async Task BackToRolesAsync() =>
+            await Shell.Current.GoToAsync(AppRoutes.Absolute(AppRoutes.Welcome));
+
         internal static string MapError(ApiException exception)
         {
             if (exception.IsOffline)

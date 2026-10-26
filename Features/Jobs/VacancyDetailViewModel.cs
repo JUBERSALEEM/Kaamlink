@@ -177,5 +177,10 @@ namespace KaamLink.Features.Jobs
                 : string.Format(AppStrings.AppliedBadgeFormat, EnumDisplay.ApplicationStatus(status));
             CanApply = status is null;
         }
+
+        /// <summary>Explicit back affordance: pages hide the Shell nav bar, so each
+        /// screen carries its own parent route (absolute, like all app navigation).</summary>
+        [RelayCommand]
+        private Task BackAsync() => Shell.Current.GoToAsync(AppRoutes.Absolute(AppRoutes.VacancyFeed));
     }
 }

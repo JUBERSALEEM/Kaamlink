@@ -150,13 +150,15 @@ namespace KaamLink.Features.Jobs
                 return;
             await Shell.Current.GoToAsync(
                 $"{AppRoutes.Absolute(AppRoutes.VacancyApplications)}" +
-                $"?companyId={_companyId}&vacancyId={row.Id}&title={Uri.EscapeDataString(row.Title)}");
+                $"?companyId={_companyId}&vacancyId={row.Id}&title={Uri.EscapeDataString(row.Title)}" +
+                $"&companyName={Uri.EscapeDataString(CompanyName)}");
         }
 
         [RelayCommand]
         private async Task NewVacancyAsync() =>
             await Shell.Current.GoToAsync(
-                $"{AppRoutes.Absolute(AppRoutes.VacancyEdit)}?companyId={_companyId}");
+                $"{AppRoutes.Absolute(AppRoutes.VacancyEdit)}?companyId={_companyId}" +
+                $"&companyName={Uri.EscapeDataString(CompanyName)}");
 
         private async Task LoadAfterActionAsync()
         {
@@ -174,5 +176,10 @@ namespace KaamLink.Features.Jobs
                 : AppStrings.FeedCardSalaryHidden;
             return $"{location} · {salary} · {string.Format(AppStrings.HeadcountFormat, vacancy.Headcount)}";
         }
+
+        /// <summary>Explicit back affordance: pages hide the Shell nav bar, so each
+        /// screen carries its own parent route (absolute, like all app navigation).</summary>
+        [RelayCommand]
+        private Task BackAsync() => Shell.Current.GoToAsync(AppRoutes.Absolute(AppRoutes.EmployerHome));
     }
 }

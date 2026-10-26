@@ -14,7 +14,8 @@ namespace KaamLink.Features.Jobs
         string LocationLine,
         string SalaryText,
         string HeadcountText,
-        string SkillsLine);
+        string CompanyVerificationState,
+        IReadOnlyList<string> Skills);
 
     /// <summary>
     /// Worker job feed: server-driven active vacancies with emirate/keyword filters
@@ -52,6 +53,10 @@ namespace KaamLink.Features.Jobs
 
         [ObservableProperty]
         private bool _isEmpty;
+
+        /// <summary>Localized "{0} vacancies" built from the rows actually loaded.</summary>
+        [ObservableProperty]
+        private string _resultsText = string.Empty;
 
         public IReadOnlyList<EnumOption> EmirateOptions => EmirateChoices;
 
@@ -99,6 +104,7 @@ namespace KaamLink.Features.Jobs
 
                 HasMore = result.HasMore;
                 IsEmpty = Items.Count == 0;
+                ResultsText = string.Format(AppStrings.FeedResultsFormat, Items.Count);
                 IsLoaded = true;
             }
             catch (ApiException exception) when (SessionErrors.IsExpiredSession(exception))
@@ -137,11 +143,6 @@ namespace KaamLink.Features.Jobs
                 ? string.Format(AppStrings.FeedCardSalaryFormat, vacancy.SalaryMinAed, vacancy.SalaryMaxAed)
                 : AppStrings.FeedCardSalaryHidden;
 
-            // ✓ = server-confirmed company verification state (never client-assumed).
-            var company = vacancy.CompanyVerificationState == "Verified"
-                ? vacancy.CompanyName + " ✓"
-                : vacancy.CompanyName;
-
             var location = string.IsNullOrWhiteSpace(vacancy.Area)
                 ? EnumDisplay.Emirate(vacancy.Emirate)
                 : $"{EnumDisplay.Emirate(vacancy.Emirate)} · {vacancy.Area}";
@@ -149,11 +150,16 @@ namespace KaamLink.Features.Jobs
             return new VacancyCardModel(
                 vacancy.Id,
                 vacancy.Title,
-                company,
+                vacancy.CompanyName,
                 location,
                 salary,
                 string.Format(AppStrings.HeadcountFormat, vacancy.Headcount),
-                string.Join(" · ", vacancy.Skills.Select(s => LocalizationHelpers.LocalizedSkill(s))));
+                vacancy.CompanyVerificationState,
+                vacancy.Skills.Select(skill => LocalizationHelpers.LocalizedSkill(skill)).ToList());
         }
+
+        /// <summary>Explicit back affordance to the worker home.</summary>
+        [RelayCommand]
+        private Task BackAsync() => Shell.Current.GoToAsync(AppRoutes.Absolute(AppRoutes.WorkerHome));
     }
 }

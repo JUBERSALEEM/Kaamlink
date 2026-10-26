@@ -83,6 +83,10 @@ namespace KaamLink.Features.Assessments
         [ObservableProperty]
         private string _answeredCountText = string.Empty;
 
+        /// <summary>Answered fraction (0–1) for the runner's progress bar.</summary>
+        [ObservableProperty]
+        private double _answeredProgress;
+
         [ObservableProperty]
         private bool _hasResult;
 
@@ -196,6 +200,13 @@ namespace KaamLink.Features.Assessments
             && Questions.Count > 0
             && Questions.All(q => q.IsAnswered);
 
+        /// <summary>True while the quiz body (and therefore the sticky Submit) is on screen.</summary>
+        public bool IsQuizVisible => IsLoaded && !HasResult;
+
+        partial void OnIsLoadedChanged(bool value) => OnPropertyChanged(nameof(IsQuizVisible));
+
+        partial void OnHasResultChanged(bool value) => OnPropertyChanged(nameof(IsQuizVisible));
+
         [RelayCommand(CanExecute = nameof(CanSubmitAll))]
         private async Task SubmitAsync()
         {
@@ -246,9 +257,16 @@ namespace KaamLink.Features.Assessments
         private Task DoneAsync() =>
             Shell.Current.GoToAsync(AppRoutes.Absolute(AppRoutes.MyAssessments));
 
-        private void UpdateAnsweredCount() => AnsweredCountText = string.Format(
-            AppStrings.AssessmentAnsweredFormat,
-            Questions.Count(q => q.IsAnswered),
-            Questions.Count);
+        private void UpdateAnsweredCount()
+        {
+            var answered = Questions.Count(q => q.IsAnswered);
+            AnsweredCountText = string.Format(AppStrings.AssessmentAnsweredFormat, answered, Questions.Count);
+            AnsweredProgress = Questions.Count == 0 ? 0 : (double)answered / Questions.Count;
+        }
+
+        /// <summary>Explicit back affordance: pages hide the Shell nav bar, so each
+        /// screen carries its own parent route (absolute, like all app navigation).</summary>
+        [RelayCommand]
+        private Task BackAsync() => Shell.Current.GoToAsync(AppRoutes.Absolute(AppRoutes.MyAssessments));
     }
 }
