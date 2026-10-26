@@ -71,11 +71,14 @@ IThemeService / ThemeService        applies a palette, persists the choice
 **Startup.** `App` receives `IThemeService` through DI and calls `_theme.Apply(CurrentThemeId)`
 in `CreateWindow`, before the shell is built, so a dusk-theme user never sees a light flash.
 
-**Switching.** `ThemeService.Apply` finds the merged dictionary whose `Source` is a known
-palette, removes it and inserts the replacement. Remove + insert (rather than assigning into
+**Switching.** `ThemeService.Apply` removes every merged dictionary whose `Source` is a known
+palette and inserts the replacement at the same position (removing *all* of them, not just the
+active one, so a path that stops matching cannot leave a duplicate merged). Remove + insert (rather than assigning into
 the slot) is what makes MAUI raise the resource change that repaints every `DynamicResource`
-consumer. Afterwards it walks the live visual tree and re-applies clay shadows
-(`ClayMaterial.Refresh`), because a `Shadow` object is not a `DynamicResource`.
+consumer. On the next dispatcher turn it walks the live visual tree and re-applies clay
+shadows (`ClayMaterial.Refresh`), because a `Shadow` object is not a `DynamicResource` — and a
+turn of delay guarantees the replacement dictionary has loaded before a shadow reads
+`ClayShadowBrush` from it.
 
 **Why colours are `DynamicResource` everywhere.** A theme switch can only repaint values that
 were bound dynamically. Since the redesign, every colour/brush token in every page and style
@@ -138,19 +141,21 @@ saturated enough for white text. One token cannot satisfy both, so the palette e
 
 ## 5. Contrast
 
-`tools/verify-theme-contrast.py` measures 25 text/UI pairs per palette against WCAG AA
+`tools/verify-theme-contrast.py` measures 26 text/UI pairs per palette against WCAG AA
 (4.5:1 text, 3:1 non-text) and fails the build otherwise.
 
 | Theme | Pairs | Failing | Lowest measured |
 |---|---|---|---|
-| Clay | 25 | 0 | 3.11:1 (`BorderStrong` on `PageBackground`, needs 3.0) |
-| Clay Dusk | 25 | 0 | 3.3:1 (`BorderStrong` on `CardSurface`, needs 3.0) |
+| Clay | 26 | 0 | 3.11:1 (`BorderStrong` on `PageBackground`, needs 3.0) |
+| Clay Dusk | 26 | 0 | 4.41:1 (`BorderStrong` on `CardSurface`, needs 3.0) |
 
 Tight pairs worth knowing when editing the palettes:
 
-* `TextMuted` on the shaded base of a card: **4.81:1** (light) — little headroom.
-* `TextOnPrimary` on the lit top of a primary button: **4.74:1** (light).
-* `TextMuted` on `CardSurfaceAlt`: **4.68:1** (light).
+* `BorderStrong` on `PageBackground`: **3.11:1** (light) against a 3.0 floor — the
+  tightest value in either theme; an input outline is the first thing a palette edit breaks.
+* `TextOnPrimary` on the lit top of a primary button: **4.74:1** (light) / **4.87:1** (dusk).
+* `TextMuted` on `CardSurfaceAlt`: **4.68:1** (light) — little headroom for a lighter tint.
+* `TextOnPrimary` on `AccentFillTop`: **4.55:1** — the lowest text value in the dusk theme.
 
 Darkening a soft tint or lightening a muted ink will break these first.
 
@@ -169,7 +174,7 @@ App.xaml / App.xaml.cs            merge Icons; apply the stored theme before the
 MauiProgram.cs                    register IThemeService (singleton, once)
 Features/Onboarding/*             theme toggle (pill) on the entry screen + its command
 Controls/{NoticeBanner,StatePanel}  theme-reactive colours, clay radii/elevation
-Features/**/*.xaml                49 colour refs → DynamicResource; panel radii on the clay scale
+Features/**/*.xaml                46 colour refs → DynamicResource; panel radii on the clay scale
 ```
 
 `Resources/Strings/AppStrings.*` gained 3 keys (315 EN/AR/Designer, parity checked):
@@ -181,7 +186,7 @@ Features/**/*.xaml                49 colour refs → DynamicResource; panel radi
 
 | Gate | What it proves |
 |---|---|
-| `verify-theme-contrast.py` | key parity + resource kinds across palettes, 25 contrast pairs each |
+| `verify-theme-contrast.py` | key parity + resource kinds across palettes, 26 contrast pairs each (55 checks) |
 | `verify-ui-redesign.py` §K | catalogue files exist, palette merged, icons merged, service registered once, theme applied at startup, shadows refreshed on switch, card/tile styles keep clay elevation, toggle command bound |
 | `verify-ui-redesign.py` §B | no page bakes a palette token with `StaticResource`; no raw hex; no legacy style keys |
 | `verify-ui-redesign.py` (icons) | every `Icon*` reference exists; the icon file cannot be empty |

@@ -764,9 +764,9 @@ so the whole app can switch palette at runtime.
 | Themes | `clay` (default, light) and `clay-dusk` (dark); a theme is a palette dictionary, never a layout |
 | Engine | `IThemeService`/`ThemeService` + `ThemeCatalog`; swaps the merged palette dictionary, persists to `Preferences`, applies the stored theme before the shell is built |
 | Per-element depth | `ClayMaterial.Elevation` attached property creates a fresh `Shadow` per element (a style-set `Shadow` would be shared) and re-applies after a switch |
-| Theme-awareness | 49 colour references in pages moved from `StaticResource` to `DynamicResource`, otherwise a switch cannot repaint them |
+| Theme-awareness | 46 colour references in pages moved from `StaticResource` to `DynamicResource` (verified against the commit diff: 11 `Primary`, 9 `Error`, 5 `ErrorSoft`, …), otherwise a switch cannot repaint them |
 | Icons | moved to `Resources/Styles/Icons.xaml` (43 glyphs) because they never change with a palette |
-| Contrast | 25 AA pairs × 2 palettes, 0 failures (`tools/verify-theme-contrast.py`) |
+| Contrast | 26 AA pairs × 2 palettes, 0 failures — 55 checks (`tools/verify-theme-contrast.py`) |
 | Localization | +3 keys, 315 / 315 / 315 EN-AR-Designer |
 | New gate rules | palette baked with `StaticResource`, unknown icon key, dropped clay elevation, theme parity, engine wiring; **30 injected defects, 30 detected** |
 | Still unverified | every pixel of it: no device/emulator render, and the Android shadow appearance in particular (see the theme doc §8) |
