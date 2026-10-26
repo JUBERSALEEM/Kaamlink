@@ -48,19 +48,19 @@ namespace KaamLink.Controls
                 FontFamily = "OpenSansRegular",
                 FontSize = 13,
                 LineHeight = 1.38,
-                TextColor = Resolve("TextSecondary"),
                 IsVisible = false,
             };
+            _message.SetDynamicResource(Label.TextColorProperty, "TextSecondary");
 
             _caption = new Label
             {
                 FontFamily = "OpenSansRegular",
                 FontSize = 12,
                 LineHeight = 1.34,
-                TextColor = Resolve("TextMuted"),
                 IsVisible = false,
                 Margin = new Thickness(0, 6, 0, 0),
             };
+            _caption.SetDynamicResource(Label.TextColorProperty, "TextMuted");
 
             var text = new VerticalStackLayout
             {
@@ -85,7 +85,7 @@ namespace KaamLink.Controls
             {
                 Padding = 0,
                 StrokeThickness = 0,
-                StrokeShape = new RoundRectangle { CornerRadius = 12 },
+                StrokeShape = new RoundRectangle { CornerRadius = 20 },
                 Content = row,
             };
 
@@ -161,16 +161,13 @@ namespace KaamLink.Controls
                 _ => ("Primary", "PrimarySoft", "\uE0F9"),             // info
             };
 
-            var tone = Resolve(foreground);
+            // Dynamic, not resolved once: a banner that is on screen when the
+            // user switches theme must repaint with the new palette.
             _icon.Text = glyph;
-            _icon.TextColor = tone;
-            _title.TextColor = tone;
-            _border.BackgroundColor = Resolve(background);
+            _icon.SetDynamicResource(Label.TextColorProperty, foreground);
+            _title.SetDynamicResource(Label.TextColorProperty, foreground);
+            _border.SetDynamicResource(VisualElement.BackgroundColorProperty, background);
         }
 
-        private static Color Resolve(string key) =>
-            Application.Current?.Resources.TryGetValue(key, out var value) == true && value is Color color
-                ? color
-                : Colors.Gray;
     }
 }

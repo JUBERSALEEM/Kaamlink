@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+    KaamLink theme palette — "Clay Dusk" (alternate, dark clay).
+    Spec: docs/ui-redesign/04-claymorphism-theme.md
+
+    Same key set as Resources/Styles/Colors.xaml — enforced by
+    tools/verify-ui-redesign.py (theme parity) and contrast-checked by
+    tools/verify-theme-contrast.py. A theme is a palette swap, never a second
+    layout: the styles and pages are shared.
+
+    Dark clay works differently from light clay: instead of a light top edge on
+    a white surface, depth comes from a MILDLY lighter top and a much darker
+    bottom, with a black cast shadow at higher opacity.
+-->
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!-- ================= Brand ================= -->
+    <!-- `Primary` is the accent for TEXT and icons on dark clay, so it is light. -->
+    <Color x:Key="Primary">#9CC2F0</Color>
+    <Color x:Key="PrimaryTop">#B7D4F7</Color>
+    <Color x:Key="PrimaryBottom">#7FA9DC</Color>
+    <Color x:Key="PrimaryDark">#7FA9DC</Color>
+    <Color x:Key="PrimarySoft">#2C3757</Color>
+    <Color x:Key="PrimarySoftDeep">#354267</Color>
+    <!-- Filled buttons keep a saturated clay body so white text stays legible. -->
+    <Color x:Key="PrimaryFill">#2E62A8</Color>
+    <Color x:Key="PrimaryFillTop">#3A72BC</Color>
+    <Color x:Key="PrimaryFillBottom">#234C86</Color>
+
+    <Color x:Key="Secondary">#9CC2F0</Color>
+    <Color x:Key="Tertiary">#7FD8CB</Color>
+
+    <Color x:Key="Accent">#7FD8CB</Color>
+    <Color x:Key="AccentTop">#9AE6DA</Color>
+    <Color x:Key="AccentBottom">#5FB8AC</Color>
+    <Color x:Key="AccentDark">#5FB8AC</Color>
+    <Color x:Key="AccentSoft">#264A47</Color>
+    <Color x:Key="AccentFill">#106B63</Color>
+    <Color x:Key="AccentFillTop">#17847A</Color>
+    <Color x:Key="AccentFillBottom">#0B544E</Color>
+
+    <!-- ================= Semantic status ================= -->
+    <Color x:Key="Success">#7EDCA4</Color>
+    <Color x:Key="SuccessSoft">#213B2C</Color>
+    <Color x:Key="Warning">#F2C67C</Color>
+    <Color x:Key="WarningSoft">#3D3120</Color>
+    <Color x:Key="Error">#FFA098</Color>
+    <Color x:Key="ErrorSoft">#452527</Color>
+    <Color x:Key="Info">#9CC2F0</Color>
+    <Color x:Key="InfoSoft">#26324F</Color>
+
+    <!-- ================= Neutrals ================= -->
+    <Color x:Key="White">#FFFFFF</Color>
+    <Color x:Key="Black">#000000</Color>
+    <Color x:Key="Gray50">#2A3150</Color>
+    <Color x:Key="Gray100">#262D49</Color>
+    <Color x:Key="Gray200">#232941</Color>
+    <Color x:Key="Gray300">#3A4266</Color>
+    <Color x:Key="Gray400">#6B769B</Color>
+    <Color x:Key="Gray500">#8B96B8</Color>
+    <Color x:Key="Gray600">#A7AFCB</Color>
+    <Color x:Key="Gray700">#C5CBE0</Color>
+    <Color x:Key="Gray800">#E3E7F5</Color>
+    <Color x:Key="Gray900">#F3F5FF</Color>
+
+    <!-- ================= Surfaces ================= -->
+    <Color x:Key="PageBackground">#1B2136</Color>
+    <Color x:Key="PageBackgroundTop">#252C49</Color>
+    <Color x:Key="PageBackgroundBottom">#161B2C</Color>
+    <Color x:Key="CardSurface">#2C3450</Color>
+    <Color x:Key="CardSurfaceTop">#3A4364</Color>
+    <Color x:Key="CardSurfaceBottom">#242A44</Color>
+    <Color x:Key="CardSurfaceAlt">#2F3757</Color>
+    <Color x:Key="CardSurfaceAltTop">#3C4569</Color>
+    <Color x:Key="CardSurfaceAltBottom">#262C46</Color>
+    <Color x:Key="Border">#434C70</Color>
+    <Color x:Key="BorderStrong">#8E9AC2</Color>
+    <Color x:Key="Divider">#3A4163</Color>
+    <Color x:Key="Scrim">#99000000</Color>
+
+    <!-- ================= Clay material ================= -->
+    <Color x:Key="ClayHighlight">#6E7BA6</Color>
+    <Color x:Key="ClayEdgeLow">#141930</Color>
+    <Color x:Key="ClayShadow">#000000</Color>
+    <Color x:Key="ClayShadowDeep">#000000</Color>
+    <Color x:Key="ClayInset">#20263D</Color>
+
+    <!-- ================= Text ================= -->
+    <Color x:Key="TextPrimary">#F3F5FF</Color>
+    <Color x:Key="TextSecondary">#C9D0E8</Color>
+    <Color x:Key="TextMuted">#A5AECB</Color>
+    <Color x:Key="TextOnPrimary">#FFFFFF</Color>
+    <Color x:Key="TextDisabled">#6B769B</Color>
+
+    <!-- ================= Brushes ================= -->
+    <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}" />
+    <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource Accent}" />
+    <SolidColorBrush x:Key="WhiteBrush" Color="{StaticResource White}" />
+    <SolidColorBrush x:Key="BlackBrush" Color="{StaticResource Black}" />
+    <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource Border}" />
+    <SolidColorBrush x:Key="BorderStrongBrush" Color="{StaticResource BorderStrong}" />
+    <SolidColorBrush x:Key="DividerBrush" Color="{StaticResource Divider}" />
+    <SolidColorBrush x:Key="TextMutedBrush" Color="{StaticResource TextMuted}" />
+    <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource Error}" />
+    <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource Success}" />
+    <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource Warning}" />
+    <SolidColorBrush x:Key="InfoBrush" Color="{StaticResource Info}" />
+    <SolidColorBrush x:Key="ClayShadowBrush" Color="{StaticResource ClayShadow}" />
+    <SolidColorBrush x:Key="ClayHighlightBrush" Color="{StaticResource ClayHighlight}" />
+    <SolidColorBrush x:Key="ClayEdgeLowBrush" Color="{StaticResource ClayEdgeLow}" />
+
+    <LinearGradientBrush x:Key="ClayPageBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="{StaticResource PageBackgroundTop}" Offset="0.0" />
+        <GradientStop Color="{StaticResource PageBackgroundBottom}" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="ClayCardBrush" StartPoint="0,0" EndPoint="0.35,1">
+        <GradientStop Color="{StaticResource CardSurfaceTop}" Offset="0.0" />
+        <GradientStop Color="{StaticResource CardSurface}" Offset="0.45" />
+        <GradientStop Color="{StaticResource CardSurfaceBottom}" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="ClayCardSoftBrush" StartPoint="0,0" EndPoint="0.35,1">
+        <GradientStop Color="{StaticResource CardSurfaceAltTop}" Offset="0.0" />
+        <GradientStop Color="{StaticResource CardSurfaceAlt}" Offset="0.55" />
+        <GradientStop Color="{StaticResource CardSurfaceAltBottom}" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="ClayPrimaryBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="{StaticResource PrimaryFillTop}" Offset="0.0" />
+        <GradientStop Color="{StaticResource PrimaryFill}" Offset="0.55" />
+        <GradientStop Color="{StaticResource PrimaryFillBottom}" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="ClayAccentBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="{StaticResource AccentFillTop}" Offset="0.0" />
+        <GradientStop Color="{StaticResource AccentFill}" Offset="0.55" />
+        <GradientStop Color="{StaticResource AccentFillBottom}" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="ClayPrimarySoftBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="{StaticResource CardSurfaceAltTop}" Offset="0.0" />
+        <GradientStop Color="{StaticResource PrimarySoft}" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="ClayAccentSoftBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="{StaticResource CardSurfaceAltTop}" Offset="0.0" />
+        <GradientStop Color="{StaticResource AccentSoft}" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="ClayInsetBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="{StaticResource ClayInset}" Offset="0.0" />
+        <GradientStop Color="{StaticResource CardSurface}" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="ClaySoftBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="{StaticResource PrimarySoft}" Offset="0.0" />
+        <GradientStop Color="{StaticResource PrimarySoftDeep}" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="ClayBarBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="{StaticResource PageBackgroundTop}" Offset="0.0" />
+        <GradientStop Color="{StaticResource PageBackground}" Offset="1.0" />
+    </LinearGradientBrush>
+
+</ResourceDictionary>

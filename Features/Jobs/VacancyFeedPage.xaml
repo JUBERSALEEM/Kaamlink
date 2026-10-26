@@ -183,11 +183,11 @@
                                     <DataTemplate x:DataType="x:String">
                                         <Border Margin="0,0,6,6"
                                                 Padding="10,4"
-                                                BackgroundColor="{StaticResource CardSurface}"
-                                                Stroke="{StaticResource BorderBrush}"
+                                                BackgroundColor="{DynamicResource CardSurface}"
+                                                Stroke="{DynamicResource BorderBrush}"
                                                 StrokeThickness="1">
                                             <Border.StrokeShape>
-                                                <RoundRectangle CornerRadius="11" />
+                                                <RoundRectangle CornerRadius="18" />
                                             </Border.StrokeShape>
                                             <Label Style="{StaticResource SmallText}"
                                                    Text="{Binding .}" />

@@ -25,7 +25,7 @@
                 <BoxView Grid.Column="0"
                          HeightRequest="4"
                          CornerRadius="2"
-                         Color="{StaticResource Primary}" />
+                         Color="{DynamicResource Primary}" />
                 <BoxView Grid.Column="1"
                          HeightRequest="4"
                          CornerRadius="2"
@@ -48,17 +48,17 @@
                 </VerticalStackLayout>
 
                 <Border IsVisible="{Binding HasError}"
-                        BackgroundColor="{StaticResource ErrorSoft}"
+                        BackgroundColor="{DynamicResource ErrorSoft}"
                         StrokeThickness="0"
                         Padding="14">
                     <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="12" />
+                        <RoundRectangle CornerRadius="20" />
                     </Border.StrokeShape>
                     <VerticalStackLayout Spacing="8">
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
                             <Label Grid.Column="0"
                                    Style="{StaticResource IconGlyph}"
-                                   TextColor="{StaticResource Error}"
+                                   TextColor="{DynamicResource Error}"
                                    Text="{StaticResource IconAlertCircle}"
                                    VerticalOptions="Start" />
                             <Label Grid.Column="1"

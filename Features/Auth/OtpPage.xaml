@@ -25,7 +25,7 @@
                 <Label Grid.Column="1"
                        Style="{StaticResource SectionText}"
                        FontSize="18"
-                       TextColor="{StaticResource Primary}"
+                       TextColor="{DynamicResource Primary}"
                        Text="{x:Static strings:AppStrings.AppName}"
                        VerticalOptions="Center" />
             </Grid>
@@ -65,16 +65,17 @@
                     </VerticalStackLayout>
 
                     <Border IsVisible="{Binding CanResend, Converter={StaticResource InvertedBoolConverter}}"
-                            BackgroundColor="{StaticResource CardSurfaceAlt}"
-                            StrokeThickness="0"
+                            Background="{DynamicResource ClayCardSoftBrush}"
+                            Stroke="{DynamicResource ClayHighlightBrush}"
+                            StrokeThickness="1"
                             Padding="12,8">
                         <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="10" />
+                            <RoundRectangle CornerRadius="18" />
                         </Border.StrokeShape>
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
                             <Label Grid.Column="0"
                                    Style="{StaticResource IconGlyph}"
-                                   TextColor="{StaticResource Warning}"
+                                   TextColor="{DynamicResource Warning}"
                                    Text="{StaticResource IconClock}" />
                             <Label Grid.Column="1"
                                    Style="{StaticResource SmallText}"
@@ -85,21 +86,21 @@
 
                     <!-- Validation summary -->
                     <Border IsVisible="{Binding HasError}"
-                            BackgroundColor="{StaticResource ErrorSoft}"
+                            BackgroundColor="{DynamicResource ErrorSoft}"
                             StrokeThickness="0"
                             Padding="12">
                         <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="12" />
+                            <RoundRectangle CornerRadius="20" />
                         </Border.StrokeShape>
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
                             <Label Grid.Column="0"
                                    Style="{StaticResource IconGlyph}"
-                                   TextColor="{StaticResource Error}"
+                                   TextColor="{DynamicResource Error}"
                                    Text="{StaticResource IconAlertCircle}"
                                    VerticalOptions="Start" />
                             <VerticalStackLayout Grid.Column="1" Spacing="2">
                                 <Label Style="{StaticResource SmallStrongText}"
-                                       TextColor="{StaticResource Error}"
+                                       TextColor="{DynamicResource Error}"
                                        Text="{Binding ErrorTitle}" />
                                 <Label Style="{StaticResource SmallText}"
                                        Text="{Binding ErrorMessage}" />

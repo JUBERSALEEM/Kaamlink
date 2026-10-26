@@ -24,12 +24,12 @@
                 <Label Grid.Column="1"
                        Style="{StaticResource SectionText}"
                        FontSize="18"
-                       TextColor="{StaticResource Primary}"
+                       TextColor="{DynamicResource Primary}"
                        Text="{x:Static strings:AppStrings.AppName}"
                        VerticalOptions="Center" />
                 <Border Grid.Column="2" Style="{StaticResource PillBorder}" VerticalOptions="Center">
                     <Label Style="{StaticResource PillText}"
-                           TextColor="{StaticResource Primary}"
+                           TextColor="{DynamicResource Primary}"
                            Text="{x:Static strings:AppStrings.RoleWorkerPill}" />
                 </Border>
             </Grid>
@@ -56,7 +56,7 @@
                     <VerticalStackLayout Spacing="12">
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
                             <Border Grid.Column="0"
-                                    BackgroundColor="{StaticResource PrimarySoft}"
+                                    BackgroundColor="{DynamicResource PrimarySoft}"
                                     StrokeThickness="0"
                                     HeightRequest="48"
                                     WidthRequest="48"
@@ -137,10 +137,10 @@
                         </Border.GestureRecognizers>
                         <VerticalStackLayout Spacing="8">
                             <Border Style="{StaticResource IconTile}"
-                                    BackgroundColor="{StaticResource AccentSoft}"
+                                    BackgroundColor="{DynamicResource AccentSoft}"
                                     HorizontalOptions="Start">
                                 <Label Style="{StaticResource IconGlyphPrimary}"
-                                       TextColor="{StaticResource Accent}"
+                                       TextColor="{DynamicResource Accent}"
                                        Text="{StaticResource IconBadgeCheck}"
                                        HorizontalOptions="Center" />
                             </Border>
@@ -172,7 +172,7 @@
                                                 <DataTrigger TargetType="Label"
                                                              Binding="{Binding IsPrimary}"
                                                              Value="True">
-                                                    <Setter Property="TextColor" Value="{StaticResource Accent}" />
+                                                    <Setter Property="TextColor" Value="{DynamicResource Accent}" />
                                                 </DataTrigger>
                                             </Label.Triggers>
                                         </Label>
@@ -254,7 +254,7 @@
                         HorizontalOptions="Start"
                         SemanticProperties.Description="{x:Static strings:AppStrings.LogoutCta}"
                         Text="{x:Static strings:AppStrings.LogoutCta}"
-                        TextColor="{StaticResource Error}" />
+                        TextColor="{DynamicResource Error}" />
 
             </VerticalStackLayout>
         </VerticalStackLayout>

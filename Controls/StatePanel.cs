@@ -1,5 +1,7 @@
 using Microsoft.Maui.Controls.Shapes;
 
+using KaamLink.Core.Presentation.Clay;
+
 namespace KaamLink.Controls
 {
     /// <summary>
@@ -31,51 +33,51 @@ namespace KaamLink.Controls
             {
                 IsRunning = true,
                 HorizontalOptions = LayoutOptions.Center,
-                Color = Resolve("Primary"),
                 HeightRequest = 24,
                 WidthRequest = 24,
             };
+            _spinner.SetDynamicResource(ActivityIndicator.ColorProperty, "Primary");
 
             _icon = new Label
             {
                 FontFamily = "Lucide",
                 FontSize = 22,
                 LineHeight = 1,
-                TextColor = Resolve("Primary"),
                 HorizontalOptions = LayoutOptions.Center,
                 VerticalOptions = LayoutOptions.Center,
             };
+            _icon.SetDynamicResource(Label.TextColorProperty, "Primary");
 
             _iconTile = new Border
             {
-                BackgroundColor = Resolve("PrimarySoft"),
                 StrokeThickness = 0,
-                StrokeShape = new RoundRectangle { CornerRadius = 13 },
+                StrokeShape = new RoundRectangle { CornerRadius = 18 },
                 HeightRequest = 44,
                 WidthRequest = 44,
                 HorizontalOptions = LayoutOptions.Center,
                 Content = _icon,
                 IsVisible = false,
             };
+            _iconTile.SetDynamicResource(VisualElement.BackgroundColorProperty, "PrimarySoft");
 
             _title = new Label
             {
                 FontFamily = "OpenSansSemibold",
                 FontSize = 15.5,
-                TextColor = Resolve("TextPrimary"),
                 HorizontalTextAlignment = TextAlignment.Center,
                 IsVisible = false,
             };
+            _title.SetDynamicResource(Label.TextColorProperty, "TextPrimary");
 
             _message = new Label
             {
                 FontFamily = "OpenSansRegular",
                 FontSize = 12,
                 LineHeight = 1.34,
-                TextColor = Resolve("TextMuted"),
                 HorizontalTextAlignment = TextAlignment.Center,
                 IsVisible = false,
             };
+            _message.SetDynamicResource(Label.TextColorProperty, "TextMuted");
 
             var stack = new VerticalStackLayout
             {
@@ -86,13 +88,14 @@ namespace KaamLink.Controls
 
             _border = new Border
             {
-                BackgroundColor = Resolve("CardSurface"),
-                Stroke = new SolidColorBrush(Resolve("Border")),
                 StrokeThickness = 1,
-                Padding = new Thickness(18, 22),
-                StrokeShape = new RoundRectangle { CornerRadius = 14 },
+                Padding = new Thickness(20, 24),
+                StrokeShape = new RoundRectangle { CornerRadius = 24 },
                 Content = stack,
             };
+            _border.SetDynamicResource(VisualElement.BackgroundColorProperty, "CardSurface");
+            _border.SetDynamicResource(Border.StrokeProperty, "BorderBrush");
+            ClayMaterial.SetElevation(_border, ClayElevation.Card);
 
             Content = _border;
         }
@@ -160,9 +163,5 @@ namespace KaamLink.Controls
             _message.IsVisible = !string.IsNullOrWhiteSpace(Message);
         }
 
-        private static Color Resolve(string key) =>
-            Application.Current?.Resources.TryGetValue(key, out var value) == true && value is Color color
-                ? color
-                : Colors.Gray;
     }
 }

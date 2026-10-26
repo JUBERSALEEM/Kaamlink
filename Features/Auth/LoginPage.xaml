@@ -24,7 +24,7 @@
                 <Label Grid.Column="1"
                        Style="{StaticResource SectionText}"
                        FontSize="18"
-                       TextColor="{StaticResource Primary}"
+                       TextColor="{DynamicResource Primary}"
                        Text="{x:Static strings:AppStrings.AppName}"
                        VerticalOptions="Center" />
             </Grid>
@@ -63,21 +63,21 @@
 
                     <!-- Validation summary: a banner, not a bare red line. -->
                     <Border IsVisible="{Binding HasError}"
-                            BackgroundColor="{StaticResource ErrorSoft}"
+                            BackgroundColor="{DynamicResource ErrorSoft}"
                             StrokeThickness="0"
                             Padding="12">
                         <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="12" />
+                            <RoundRectangle CornerRadius="20" />
                         </Border.StrokeShape>
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
                             <Label Grid.Column="0"
                                    Style="{StaticResource IconGlyph}"
-                                   TextColor="{StaticResource Error}"
+                                   TextColor="{DynamicResource Error}"
                                    Text="{StaticResource IconAlertCircle}"
                                    VerticalOptions="Start" />
                             <VerticalStackLayout Grid.Column="1" Spacing="2">
                                 <Label Style="{StaticResource SmallStrongText}"
-                                       TextColor="{StaticResource Error}"
+                                       TextColor="{DynamicResource Error}"
                                        Text="{Binding ErrorTitle}" />
                                 <Label Style="{StaticResource SmallText}"
                                        Text="{Binding ErrorMessage}" />

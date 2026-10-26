@@ -63,11 +63,11 @@
                                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
                                         <Border Grid.Column="0"
                                                 Style="{StaticResource IconTileLarge}"
-                                                BackgroundColor="{StaticResource PrimarySoft}"
+                                                BackgroundColor="{DynamicResource PrimarySoft}"
                                                 VerticalOptions="Start">
                                             <Label Style="{StaticResource SmallStrongText}"
                                                    FontSize="15"
-                                                   TextColor="{StaticResource Primary}"
+                                                   TextColor="{DynamicResource Primary}"
                                                    Text="{Binding Initials}"
                                                    HorizontalOptions="Center"
                                                    VerticalOptions="Center" />
@@ -103,11 +103,12 @@
                                     <VerticalStackLayout IsVisible="{Binding HasCoverNote}" Spacing="4">
                                         <Label Style="{StaticResource OverlineText}"
                                                Text="{x:Static strings:AppStrings.CoverNoteLabel}" />
-                                        <Border BackgroundColor="{StaticResource CardSurfaceAlt}"
-                                                StrokeThickness="0"
+                                        <Border Background="{DynamicResource ClayCardSoftBrush}"
+                                                Stroke="{DynamicResource ClayHighlightBrush}"
+                                                StrokeThickness="1"
                                                 Padding="12">
                                             <Border.StrokeShape>
-                                                <RoundRectangle CornerRadius="10" />
+                                                <RoundRectangle CornerRadius="18" />
                                             </Border.StrokeShape>
                                             <Label Style="{StaticResource SmallText}"
                                                    Text="{Binding CoverNote}" />

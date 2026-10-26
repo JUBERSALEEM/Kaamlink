@@ -1,31 +1,39 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!--
-    KaamLink design system — v1.0 styles.
-    Spec: docs/ui-redesign/02-design-system-specification.md
+    KaamLink design system — v2.0 "Clay".
+    Spec: docs/ui-redesign/04-claymorphism-theme.md
+
+    How the clay look is built (and why not with one big shadow):
+      * Surface: a soft vertical gradient (light from above) — `Clay*Brush`.
+      * Edge: 1.5dp light stroke on the lit side — `ClayHighlight`.
+      * Depth: a wide, low-opacity cast shadow, applied per element by the
+        `clay:ClayMaterial.Elevation` attached property so every element owns its Shadow
+        instance (a Style-set Shadow would be shared between elements).
+      * Press: buttons shrink 3 % and dim slightly through VisualStateManager,
+        which reads as soft material being pushed in.
 
     Rules for pages:
-      * Use the named styles below; do not set FontSize/FontFamily/Colors on
-        individual labels unless the value comes from this file.
-      * One filled primary action per screen region.
-      * Text containers never get fixed heights (Arabic and large font scales
-        must be able to grow them).
-      * Icon glyphs: IconGlyph style plus an Icon* string key from Colors.xaml.
-
-    The legacy names (Title1, Title2, SectionTitle, Body, BodySecondary, Caption,
-    Card) are kept as aliases so no page or converter lookup can break.
+      * Use the named styles below; never set colours inline except from a token,
+        and always through {DynamicResource} so a theme switch repaints the live
+        screen. StaticResource is for styles, icons and converters only.
+      * Text containers never get fixed heights (Arabic + large font scales).
+      * Buttons keep solid BackgroundColor: MAUI does not reliably paint a Brush
+        gradient on a Button on Android, and a transparent-looking primary action
+        is worse than a flat one.
 -->
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:clay="clr-namespace:KaamLink.Core.Presentation.Clay">
 
     <!-- ===================== Page & text defaults ===================== -->
     <Style TargetType="ContentPage" ApplyToDerivedTypes="True">
-        <Setter Property="BackgroundColor" Value="{StaticResource PageBackground}" />
+        <Setter Property="Background" Value="{DynamicResource ClayPageBrush}" />
         <Setter Property="Padding" Value="0" />
     </Style>
 
     <Style TargetType="Label">
-        <Setter Property="TextColor" Value="{StaticResource TextSecondary}" />
+        <Setter Property="TextColor" Value="{DynamicResource TextSecondary}" />
         <Setter Property="FontFamily" Value="OpenSansRegular" />
         <Setter Property="FontSize" Value="14.5" />
         <Setter Property="LineHeight" Value="1.35" />
@@ -33,77 +41,77 @@
 
     <Style TargetType="Label" x:Key="DisplayText">
         <Setter Property="FontFamily" Value="OpenSansSemibold" />
-        <Setter Property="FontSize" Value="25" />
-        <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
-        <Setter Property="LineHeight" Value="1.24" />
+        <Setter Property="FontSize" Value="26" />
+        <Setter Property="TextColor" Value="{DynamicResource TextPrimary}" />
+        <Setter Property="LineHeight" Value="1.22" />
     </Style>
 
     <Style TargetType="Label" x:Key="TitleText">
         <Setter Property="FontFamily" Value="OpenSansSemibold" />
         <Setter Property="FontSize" Value="21" />
-        <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+        <Setter Property="TextColor" Value="{DynamicResource TextPrimary}" />
         <Setter Property="LineHeight" Value="1.28" />
     </Style>
 
     <Style TargetType="Label" x:Key="SectionText">
         <Setter Property="FontFamily" Value="OpenSansSemibold" />
         <Setter Property="FontSize" Value="17" />
-        <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+        <Setter Property="TextColor" Value="{DynamicResource TextPrimary}" />
         <Setter Property="LineHeight" Value="1.32" />
     </Style>
 
     <Style TargetType="Label" x:Key="CardTitleText">
         <Setter Property="FontFamily" Value="OpenSansSemibold" />
         <Setter Property="FontSize" Value="15.5" />
-        <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+        <Setter Property="TextColor" Value="{DynamicResource TextPrimary}" />
         <Setter Property="LineHeight" Value="1.34" />
     </Style>
 
     <Style TargetType="Label" x:Key="BodyText">
         <Setter Property="FontFamily" Value="OpenSansRegular" />
         <Setter Property="FontSize" Value="14.5" />
-        <Setter Property="TextColor" Value="{StaticResource TextSecondary}" />
+        <Setter Property="TextColor" Value="{DynamicResource TextSecondary}" />
         <Setter Property="LineHeight" Value="1.38" />
     </Style>
 
     <Style TargetType="Label" x:Key="BodyStrongText">
         <Setter Property="FontFamily" Value="OpenSansSemibold" />
         <Setter Property="FontSize" Value="14.5" />
-        <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+        <Setter Property="TextColor" Value="{DynamicResource TextPrimary}" />
         <Setter Property="LineHeight" Value="1.38" />
     </Style>
 
     <Style TargetType="Label" x:Key="SmallText">
         <Setter Property="FontFamily" Value="OpenSansRegular" />
         <Setter Property="FontSize" Value="13.5" />
-        <Setter Property="TextColor" Value="{StaticResource TextSecondary}" />
+        <Setter Property="TextColor" Value="{DynamicResource TextSecondary}" />
         <Setter Property="LineHeight" Value="1.38" />
     </Style>
 
     <Style TargetType="Label" x:Key="SmallStrongText">
         <Setter Property="FontFamily" Value="OpenSansSemibold" />
         <Setter Property="FontSize" Value="13.5" />
-        <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+        <Setter Property="TextColor" Value="{DynamicResource TextPrimary}" />
         <Setter Property="LineHeight" Value="1.38" />
     </Style>
 
     <Style TargetType="Label" x:Key="CaptionText">
         <Setter Property="FontFamily" Value="OpenSansRegular" />
         <Setter Property="FontSize" Value="12.5" />
-        <Setter Property="TextColor" Value="{StaticResource TextMuted}" />
+        <Setter Property="TextColor" Value="{DynamicResource TextMuted}" />
         <Setter Property="LineHeight" Value="1.34" />
     </Style>
 
     <Style TargetType="Label" x:Key="LabelText">
         <Setter Property="FontFamily" Value="OpenSansSemibold" />
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+        <Setter Property="TextColor" Value="{DynamicResource TextPrimary}" />
     </Style>
 
     <Style TargetType="Label" x:Key="OverlineText">
         <Setter Property="FontFamily" Value="OpenSansSemibold" />
         <Setter Property="FontSize" Value="12" />
-        <Setter Property="TextColor" Value="{StaticResource TextSecondary}" />
+        <Setter Property="TextColor" Value="{DynamicResource TextSecondary}" />
         <Setter Property="LineHeight" Value="1.3" />
     </Style>
 
@@ -119,55 +127,34 @@
     <Style TargetType="Label" x:Key="IconGlyph">
         <Setter Property="FontFamily" Value="Lucide" />
         <Setter Property="FontSize" Value="16" />
-        <Setter Property="TextColor" Value="{StaticResource TextMuted}" />
+        <Setter Property="TextColor" Value="{DynamicResource TextMuted}" />
         <Setter Property="VerticalOptions" Value="Center" />
         <Setter Property="LineHeight" Value="1" />
     </Style>
 
     <Style TargetType="Label" x:Key="IconGlyphPrimary" BasedOn="{StaticResource IconGlyph}">
-        <Setter Property="TextColor" Value="{StaticResource Primary}" />
+        <Setter Property="TextColor" Value="{DynamicResource Primary}" />
         <Setter Property="FontSize" Value="18" />
     </Style>
 
     <Style TargetType="Label" x:Key="IconGlyphBrand" BasedOn="{StaticResource IconGlyph}">
-        <Setter Property="TextColor" Value="{StaticResource Primary}" />
+        <Setter Property="TextColor" Value="{DynamicResource Primary}" />
         <Setter Property="FontSize" Value="22" />
     </Style>
 
     <Style TargetType="Label" x:Key="IconGlyphOnPrimary" BasedOn="{StaticResource IconGlyph}">
-        <Setter Property="TextColor" Value="{StaticResource TextOnPrimary}" />
+        <Setter Property="TextColor" Value="{DynamicResource TextOnPrimary}" />
     </Style>
 
-    <!-- Circular icon tile: 36dp soft brand square used for identity + tiles -->
+    <!-- Squircle icon tile: soft clay well with a lit top edge -->
     <Style TargetType="Border" x:Key="IconTile">
-        <Setter Property="BackgroundColor" Value="{StaticResource PrimarySoft}" />
-        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="Background" Value="{DynamicResource ClayPrimarySoftBrush}" />
+        <Setter Property="Stroke" Value="{DynamicResource ClayHighlightBrush}" />
+        <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="Padding" Value="0" />
-        <Setter Property="HeightRequest" Value="36" />
-        <Setter Property="WidthRequest" Value="36" />
-        <Setter Property="StrokeShape">
-            <Setter.Value>
-                <RoundRectangle CornerRadius="11" />
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style TargetType="Border" x:Key="IconTileLarge" BasedOn="{StaticResource IconTile}">
-        <Setter Property="HeightRequest" Value="44" />
-        <Setter Property="WidthRequest" Value="44" />
-        <Setter Property="StrokeShape">
-            <Setter.Value>
-                <RoundRectangle CornerRadius="13" />
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <!-- ===================== Surfaces ===================== -->
-    <Style TargetType="Border" x:Key="SurfaceCard">
-        <Setter Property="BackgroundColor" Value="{StaticResource CardSurface}" />
-        <Setter Property="Stroke" Value="{StaticResource BorderBrush}" />
-        <Setter Property="StrokeThickness" Value="1" />
-        <Setter Property="Padding" Value="16" />
+        <Setter Property="HeightRequest" Value="40" />
+        <Setter Property="WidthRequest" Value="40" />
+        <Setter Property="clay:ClayMaterial.Elevation" Value="Pill" />
         <Setter Property="StrokeShape">
             <Setter.Value>
                 <RoundRectangle CornerRadius="14" />
@@ -175,18 +162,48 @@
         </Setter>
     </Style>
 
+    <Style TargetType="Border" x:Key="IconTileLarge" BasedOn="{StaticResource IconTile}">
+        <Setter Property="HeightRequest" Value="52" />
+        <Setter Property="WidthRequest" Value="52" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="18" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ===================== Surfaces ===================== -->
+    <Style TargetType="Border" x:Key="SurfaceCard">
+        <Setter Property="Background" Value="{DynamicResource ClayCardBrush}" />
+        <Setter Property="Stroke" Value="{DynamicResource ClayHighlightBrush}" />
+        <Setter Property="StrokeThickness" Value="1.5" />
+        <Setter Property="Padding" Value="18" />
+        <Setter Property="clay:ClayMaterial.Elevation" Value="Card" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="26" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="Border" x:Key="SurfaceCardDense" BasedOn="{StaticResource SurfaceCard}">
-        <Setter Property="Padding" Value="14" />
+        <Setter Property="Padding" Value="15" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="22" />
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <!-- Soft, borderless group (used inside forms and for trust notes) -->
     <Style TargetType="Border" x:Key="SurfaceSoft">
-        <Setter Property="BackgroundColor" Value="{StaticResource CardSurfaceAlt}" />
-        <Setter Property="StrokeThickness" Value="0" />
-        <Setter Property="Padding" Value="14" />
+        <Setter Property="Background" Value="{DynamicResource ClayCardSoftBrush}" />
+        <Setter Property="Stroke" Value="{DynamicResource ClayHighlightBrush}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="Padding" Value="15" />
         <Setter Property="StrokeShape">
             <Setter.Value>
-                <RoundRectangle CornerRadius="12" />
+                <RoundRectangle CornerRadius="20" />
             </Setter.Value>
         </Setter>
     </Style>
@@ -196,64 +213,109 @@
 
     <Style TargetType="BoxView" x:Key="DividerLine">
         <Setter Property="HeightRequest" Value="1" />
-        <Setter Property="Color" Value="{StaticResource Divider}" />
+        <Setter Property="Color" Value="{DynamicResource Divider}" />
         <Setter Property="HorizontalOptions" Value="Fill" />
     </Style>
 
     <!-- ===================== Buttons ===================== -->
+    <!-- Press feedback shared by every clay button style. -->
     <Style TargetType="Button" x:Key="PrimaryButton">
-        <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
-        <Setter Property="TextColor" Value="{StaticResource TextOnPrimary}" />
+        <Setter Property="BackgroundColor" Value="{DynamicResource PrimaryFill}" />
+        <Setter Property="TextColor" Value="{DynamicResource TextOnPrimary}" />
+        <Setter Property="BorderColor" Value="{DynamicResource PrimaryFillTop}" />
+        <Setter Property="BorderWidth" Value="1" />
         <Setter Property="FontFamily" Value="OpenSansSemibold" />
-        <Setter Property="FontSize" Value="14.5" />
-        <Setter Property="HeightRequest" Value="48" />
-        <Setter Property="Padding" Value="18,0" />
-        <Setter Property="CornerRadius" Value="11" />
-        <Setter Property="BorderWidth" Value="0" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="HeightRequest" Value="52" />
+        <Setter Property="Padding" Value="22,0" />
+        <Setter Property="CornerRadius" Value="26" />
+        <Setter Property="clay:ClayMaterial.Elevation" Value="Raised" />
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal" />
+                    <VisualState x:Name="Pressed">
+                        <VisualState.Setters>
+                            <Setter Property="Scale" Value="0.97" />
+                            <Setter Property="Opacity" Value="0.94" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="Disabled">
+                        <VisualState.Setters>
+                            <Setter Property="Opacity" Value="0.45" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
     </Style>
 
     <Style TargetType="Button" x:Key="SecondaryButton">
-        <Setter Property="BackgroundColor" Value="{StaticResource CardSurface}" />
-        <Setter Property="TextColor" Value="{StaticResource Primary}" />
-        <Setter Property="BorderColor" Value="{StaticResource Border}" />
-        <Setter Property="BorderWidth" Value="1" />
+        <Setter Property="BackgroundColor" Value="{DynamicResource CardSurface}" />
+        <Setter Property="TextColor" Value="{DynamicResource Primary}" />
+        <Setter Property="BorderColor" Value="{DynamicResource ClayHighlight}" />
+        <Setter Property="BorderWidth" Value="1.5" />
         <Setter Property="FontFamily" Value="OpenSansSemibold" />
-        <Setter Property="FontSize" Value="14.5" />
-        <Setter Property="HeightRequest" Value="48" />
-        <Setter Property="Padding" Value="18,0" />
-        <Setter Property="CornerRadius" Value="11" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="HeightRequest" Value="52" />
+        <Setter Property="Padding" Value="22,0" />
+        <Setter Property="CornerRadius" Value="26" />
+        <Setter Property="clay:ClayMaterial.Elevation" Value="Pill" />
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal" />
+                    <VisualState x:Name="Pressed">
+                        <VisualState.Setters>
+                            <Setter Property="Scale" Value="0.97" />
+                            <Setter Property="Opacity" Value="0.94" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="Disabled">
+                        <VisualState.Setters>
+                            <Setter Property="Opacity" Value="0.45" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
     </Style>
 
     <Style TargetType="Button" x:Key="SubtleButton">
-        <Setter Property="BackgroundColor" Value="{StaticResource PrimarySoft}" />
-        <Setter Property="TextColor" Value="{StaticResource Primary}" />
-        <Setter Property="BorderWidth" Value="0" />
+        <Setter Property="BackgroundColor" Value="{DynamicResource PrimarySoft}" />
+        <Setter Property="TextColor" Value="{DynamicResource Primary}" />
+        <Setter Property="BorderColor" Value="{DynamicResource ClayHighlight}" />
+        <Setter Property="BorderWidth" Value="1" />
         <Setter Property="FontFamily" Value="OpenSansSemibold" />
         <Setter Property="FontSize" Value="14.5" />
-        <Setter Property="HeightRequest" Value="48" />
-        <Setter Property="Padding" Value="16,0" />
-        <Setter Property="CornerRadius" Value="11" />
+        <Setter Property="HeightRequest" Value="50" />
+        <Setter Property="Padding" Value="20,0" />
+        <Setter Property="CornerRadius" Value="25" />
+        <Setter Property="clay:ClayMaterial.Elevation" Value="Pill" />
     </Style>
 
     <Style TargetType="Button" x:Key="DangerButton">
-        <Setter Property="BackgroundColor" Value="{StaticResource ErrorSoft}" />
-        <Setter Property="TextColor" Value="{StaticResource Error}" />
-        <Setter Property="BorderWidth" Value="0" />
+        <Setter Property="BackgroundColor" Value="{DynamicResource ErrorSoft}" />
+        <Setter Property="TextColor" Value="{DynamicResource Error}" />
+        <Setter Property="BorderColor" Value="{DynamicResource ClayHighlight}" />
+        <Setter Property="BorderWidth" Value="1" />
         <Setter Property="FontFamily" Value="OpenSansSemibold" />
         <Setter Property="FontSize" Value="14.5" />
-        <Setter Property="HeightRequest" Value="48" />
-        <Setter Property="Padding" Value="16,0" />
-        <Setter Property="CornerRadius" Value="11" />
+        <Setter Property="HeightRequest" Value="50" />
+        <Setter Property="Padding" Value="20,0" />
+        <Setter Property="CornerRadius" Value="25" />
+        <Setter Property="clay:ClayMaterial.Elevation" Value="Pill" />
     </Style>
 
     <Style TargetType="Button" x:Key="DangerSolidButton" BasedOn="{StaticResource PrimaryButton}">
-        <Setter Property="BackgroundColor" Value="{StaticResource Error}" />
-        <Setter Property="TextColor" Value="{StaticResource TextOnPrimary}" />
+        <Setter Property="BackgroundColor" Value="{DynamicResource Error}" />
+        <Setter Property="BorderColor" Value="{DynamicResource ErrorSoft}" />
+        <Setter Property="TextColor" Value="{DynamicResource TextOnPrimary}" />
     </Style>
 
     <Style TargetType="Button" x:Key="TextButton">
         <Setter Property="BackgroundColor" Value="Transparent" />
-        <Setter Property="TextColor" Value="{StaticResource Primary}" />
+        <Setter Property="TextColor" Value="{DynamicResource Primary}" />
         <Setter Property="BorderWidth" Value="0" />
         <Setter Property="FontFamily" Value="OpenSansSemibold" />
         <Setter Property="FontSize" Value="14" />
@@ -263,7 +325,7 @@
     </Style>
 
     <Style TargetType="Button" x:Key="TextButtonMuted" BasedOn="{StaticResource TextButton}">
-        <Setter Property="TextColor" Value="{StaticResource TextSecondary}" />
+        <Setter Property="TextColor" Value="{DynamicResource TextSecondary}" />
         <Setter Property="FontSize" Value="13.5" />
     </Style>
 
@@ -272,63 +334,64 @@
 
     <!-- ===================== Inputs ===================== -->
     <Style TargetType="Entry">
-        <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
-        <Setter Property="PlaceholderColor" Value="{StaticResource TextMuted}" />
-        <Setter Property="BackgroundColor" Value="{StaticResource CardSurface}" />
+        <Setter Property="TextColor" Value="{DynamicResource TextPrimary}" />
+        <Setter Property="PlaceholderColor" Value="{DynamicResource TextMuted}" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="FontFamily" Value="OpenSansRegular" />
-        <Setter Property="FontSize" Value="14.5" />
-        <Setter Property="HeightRequest" Value="48" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="HeightRequest" Value="50" />
     </Style>
 
     <Style TargetType="Editor">
-        <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
-        <Setter Property="PlaceholderColor" Value="{StaticResource TextMuted}" />
-        <Setter Property="BackgroundColor" Value="{StaticResource CardSurface}" />
+        <Setter Property="TextColor" Value="{DynamicResource TextPrimary}" />
+        <Setter Property="PlaceholderColor" Value="{DynamicResource TextMuted}" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="FontFamily" Value="OpenSansRegular" />
-        <Setter Property="FontSize" Value="14.5" />
-        <Setter Property="MinimumHeightRequest" Value="84" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="MinimumHeightRequest" Value="88" />
     </Style>
 
     <Style TargetType="Picker">
-        <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
-        <Setter Property="TitleColor" Value="{StaticResource TextMuted}" />
-        <Setter Property="BackgroundColor" Value="{StaticResource CardSurface}" />
+        <Setter Property="TextColor" Value="{DynamicResource TextPrimary}" />
+        <Setter Property="TitleColor" Value="{DynamicResource TextMuted}" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="FontFamily" Value="OpenSansRegular" />
-        <Setter Property="FontSize" Value="14.5" />
-        <Setter Property="HeightRequest" Value="48" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="HeightRequest" Value="50" />
     </Style>
 
     <Style TargetType="SearchBar">
-        <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
-        <Setter Property="PlaceholderColor" Value="{StaticResource TextMuted}" />
-        <Setter Property="BackgroundColor" Value="{StaticResource CardSurface}" />
-        <Setter Property="FontSize" Value="14.5" />
-        <Setter Property="CancelButtonColor" Value="{StaticResource Primary}" />
+        <Setter Property="TextColor" Value="{DynamicResource TextPrimary}" />
+        <Setter Property="PlaceholderColor" Value="{DynamicResource TextMuted}" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="CancelButtonColor" Value="{DynamicResource Primary}" />
     </Style>
 
     <Style TargetType="ActivityIndicator">
-        <Setter Property="Color" Value="{StaticResource Primary}" />
+        <Setter Property="Color" Value="{DynamicResource Primary}" />
     </Style>
 
     <Style TargetType="ProgressBar">
-        <Setter Property="ProgressColor" Value="{StaticResource Primary}" />
-        <Setter Property="BackgroundColor" Value="{StaticResource Divider}" />
-        <Setter Property="HeightRequest" Value="6" />
+        <Setter Property="ProgressColor" Value="{DynamicResource Primary}" />
+        <Setter Property="BackgroundColor" Value="{DynamicResource Divider}" />
+        <Setter Property="HeightRequest" Value="8" />
     </Style>
 
     <Style TargetType="Switch">
-        <Setter Property="OnColor" Value="{StaticResource Primary}" />
+        <Setter Property="OnColor" Value="{DynamicResource Primary}" />
     </Style>
 
     <!-- ===================== Field chrome ===================== -->
+    <!-- An inset clay well: darker at the top edge, lighter at the base. -->
     <Style TargetType="Border" x:Key="FieldBox">
-        <Setter Property="BackgroundColor" Value="{StaticResource CardSurface}" />
-        <Setter Property="Stroke" Value="{StaticResource BorderStrongBrush}" />
-        <Setter Property="StrokeThickness" Value="1" />
-        <Setter Property="Padding" Value="12,0" />
+        <Setter Property="Background" Value="{DynamicResource ClayInsetBrush}" />
+        <Setter Property="Stroke" Value="{DynamicResource BorderStrongBrush}" />
+        <Setter Property="StrokeThickness" Value="1.5" />
+        <Setter Property="Padding" Value="16,0" />
         <Setter Property="StrokeShape">
             <Setter.Value>
-                <RoundRectangle CornerRadius="11" />
+                <RoundRectangle CornerRadius="18" />
             </Setter.Value>
         </Setter>
     </Style>
@@ -336,23 +399,23 @@
     <Style TargetType="Label" x:Key="FieldHint">
         <Setter Property="FontFamily" Value="OpenSansRegular" />
         <Setter Property="FontSize" Value="12.5" />
-        <Setter Property="TextColor" Value="{StaticResource TextMuted}" />
+        <Setter Property="TextColor" Value="{DynamicResource TextMuted}" />
         <Setter Property="LineHeight" Value="1.34" />
     </Style>
 
     <Style TargetType="Label" x:Key="FieldErrorText">
         <Setter Property="FontFamily" Value="OpenSansSemibold" />
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="TextColor" Value="{StaticResource Error}" />
+        <Setter Property="TextColor" Value="{DynamicResource Error}" />
         <Setter Property="LineHeight" Value="1.34" />
     </Style>
 
     <!-- ===================== Pills ===================== -->
     <Style TargetType="Border" x:Key="PillBorder">
-        <Setter Property="Padding" Value="9,2" />
+        <Setter Property="Padding" Value="11,4" />
         <Setter Property="StrokeThickness" Value="1" />
-        <Setter Property="Stroke" Value="{StaticResource BorderBrush}" />
-        <Setter Property="BackgroundColor" Value="{StaticResource CardSurfaceAlt}" />
+        <Setter Property="Stroke" Value="{DynamicResource ClayHighlightBrush}" />
+        <Setter Property="Background" Value="{DynamicResource ClayCardSoftBrush}" />
         <Setter Property="VerticalOptions" Value="Start" />
         <Setter Property="HorizontalOptions" Value="Start" />
         <Setter Property="StrokeShape">
@@ -365,7 +428,7 @@
     <Style TargetType="Label" x:Key="PillText">
         <Setter Property="FontFamily" Value="OpenSansSemibold" />
         <Setter Property="FontSize" Value="11.5" />
-        <Setter Property="TextColor" Value="{StaticResource TextSecondary}" />
+        <Setter Property="TextColor" Value="{DynamicResource TextSecondary}" />
         <Setter Property="LineHeight" Value="1.2" />
     </Style>
 
@@ -377,54 +440,55 @@
     <Style TargetType="Label" x:Key="PillIcon">
         <Setter Property="FontFamily" Value="Lucide" />
         <Setter Property="FontSize" Value="12" />
-        <Setter Property="TextColor" Value="{StaticResource TextSecondary}" />
+        <Setter Property="TextColor" Value="{DynamicResource TextSecondary}" />
         <Setter Property="VerticalOptions" Value="Center" />
         <Setter Property="LineHeight" Value="1" />
     </Style>
 
     <!-- ===================== Layout helpers ===================== -->
     <Style TargetType="VerticalStackLayout" x:Key="PageStack">
-        <Setter Property="Padding" Value="16,12,16,20" />
-        <Setter Property="Spacing" Value="12" />
-    </Style>
-
-    <Style TargetType="VerticalStackLayout" x:Key="SectionStack">
-        <Setter Property="Spacing" Value="8" />
-    </Style>
-
-    <Style TargetType="VerticalStackLayout" x:Key="FormStack">
+        <Setter Property="Padding" Value="18,14,18,24" />
         <Setter Property="Spacing" Value="14" />
     </Style>
 
+    <Style TargetType="VerticalStackLayout" x:Key="SectionStack">
+        <Setter Property="Spacing" Value="9" />
+    </Style>
+
+    <Style TargetType="VerticalStackLayout" x:Key="FormStack">
+        <Setter Property="Spacing" Value="16" />
+    </Style>
+
     <Style TargetType="VerticalStackLayout" x:Key="FieldStack">
-        <Setter Property="Spacing" Value="6" />
+        <Setter Property="Spacing" Value="7" />
     </Style>
 
     <Style TargetType="Grid" x:Key="BottomDock">
-        <Setter Property="Padding" Value="16,10,16,14" />
-        <Setter Property="BackgroundColor" Value="{StaticResource CardSurface}" />
+        <Setter Property="Padding" Value="18,12,18,18" />
+        <Setter Property="Background" Value="{DynamicResource ClayBarBrush}" />
+        <Setter Property="clay:ClayMaterial.Elevation" Value="Raised" />
     </Style>
 
-    <!-- App bar: 52dp, flat, with optional back/action -->
+    <!-- App bar: 56dp, transparent over the page gradient, no hard divider -->
     <Style TargetType="Grid" x:Key="AppBar">
         <Setter Property="Padding" Value="8,0" />
-        <Setter Property="HeightRequest" Value="52" />
-        <Setter Property="BackgroundColor" Value="{StaticResource PageBackground}" />
+        <Setter Property="HeightRequest" Value="56" />
+        <Setter Property="Background" Value="{DynamicResource ClayBarBrush}" />
     </Style>
 
     <!-- ===================== Shell chrome ===================== -->
     <Style TargetType="Shell" ApplyToDerivedTypes="True">
-        <Setter Property="Shell.BackgroundColor" Value="{StaticResource PageBackground}" />
-        <Setter Property="Shell.ForegroundColor" Value="{StaticResource TextPrimary}" />
-        <Setter Property="Shell.TitleColor" Value="{StaticResource TextPrimary}" />
-        <Setter Property="Shell.DisabledColor" Value="{StaticResource TextDisabled}" />
-        <Setter Property="Shell.UnselectedColor" Value="{StaticResource TextMuted}" />
+        <Setter Property="Shell.BackgroundColor" Value="{DynamicResource PageBackground}" />
+        <Setter Property="Shell.ForegroundColor" Value="{DynamicResource TextPrimary}" />
+        <Setter Property="Shell.TitleColor" Value="{DynamicResource TextPrimary}" />
+        <Setter Property="Shell.DisabledColor" Value="{DynamicResource TextDisabled}" />
+        <Setter Property="Shell.UnselectedColor" Value="{DynamicResource TextMuted}" />
         <Setter Property="Shell.NavBarHasShadow" Value="False" />
     </Style>
 
     <Style TargetType="NavigationPage">
-        <Setter Property="BarBackgroundColor" Value="{StaticResource PageBackground}" />
-        <Setter Property="BarTextColor" Value="{StaticResource TextPrimary}" />
+        <Setter Property="BarBackgroundColor" Value="{DynamicResource PageBackground}" />
+        <Setter Property="BarTextColor" Value="{DynamicResource TextPrimary}" />
     </Style>
 
 </ResourceDictionary>

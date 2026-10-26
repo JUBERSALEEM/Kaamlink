@@ -40,16 +40,16 @@
                                        Message="{x:Static strings:AppStrings.EmployerReviewBody}" />
 
                 <Border IsVisible="{Binding HasError}"
-                        BackgroundColor="{StaticResource ErrorSoft}"
+                        BackgroundColor="{DynamicResource ErrorSoft}"
                         StrokeThickness="0"
                         Padding="14">
                     <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="12" />
+                        <RoundRectangle CornerRadius="20" />
                     </Border.StrokeShape>
                     <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
                         <Label Grid.Column="0"
                                Style="{StaticResource IconGlyph}"
-                               TextColor="{StaticResource Error}"
+                               TextColor="{DynamicResource Error}"
                                Text="{StaticResource IconAlertCircle}"
                                VerticalOptions="Start" />
                         <Label Grid.Column="1"

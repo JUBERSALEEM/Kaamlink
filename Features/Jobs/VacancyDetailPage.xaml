@@ -129,11 +129,12 @@
 
                     <!-- Own application (server truth) -->
                     <Border IsVisible="{Binding HasOwnApplication}"
-                            BackgroundColor="{StaticResource CardSurfaceAlt}"
-                            StrokeThickness="0"
+                            Background="{DynamicResource ClayCardSoftBrush}"
+                            Stroke="{DynamicResource ClayHighlightBrush}"
+                            StrokeThickness="1"
                             Padding="14">
                         <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="12" />
+                            <RoundRectangle CornerRadius="20" />
                         </Border.StrokeShape>
                         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
                             <Label Grid.Column="0"

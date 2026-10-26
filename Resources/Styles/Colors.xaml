@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!--
-    KaamLink design tokens — v1.0 "Marine Blue + Trust Teal" (see
-    docs/ui-redesign/02-design-system-specification.md).
+    KaamLink theme palette — "Clay" (default, light).
+    Spec: docs/ui-redesign/04-claymorphism-theme.md
+
+    This file is a THEME DICTIONARY, not the whole design system:
+      * palette + clay tokens live here (swapped by ThemeService when the user
+        picks another theme);
+      * icon glyphs live in Icons.xaml because they never change with a theme;
+      * typography, spacing and control recipes live in Styles.xaml.
 
     Rules:
-      * Screens reference these tokens (directly or through the styles in
-        Styles.xaml); a page must never contain a raw hex value.
-      * Keys are semantic, not literal: name the ROLE (TextMuted, SuccessSoft),
-        not the hue.
-      * Legacy keys (Secondary, Tertiary, AccentDark, Gray50..900) are kept so
-        existing converter/style lookups keep resolving; values below are the
-        current palette.
-      * Every text/background pair in here was contrast-checked; the measured
-        ratios live in the design spec §1.4.
-      * Dark mode is intentionally out of scope for V1 (tokens are grouped so a
-        parallel dark dictionary can be added later).
+      * Every key here must also exist in every other theme dictionary
+        (Resources/Themes/*.xaml) — tools/verify-ui-redesign.py fails otherwise,
+        because a missing token shows up as a half-themed screen.
+      * Pages/setters reference these keys through {DynamicResource ...} so a
+        theme switch repaints the live app. Never hard-code a hex in a page.
+      * Clay depth is not a shadow colour alone: each surface is a soft vertical
+        gradient (light falls from above) with a 1.5dp light edge, and the shadow
+        is a wide, low-opacity cast of a desaturated blue. Contrast for every
+        text pair is measured in the theme spec §3.
 -->
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
@@ -22,55 +26,87 @@
 
     <!-- ================= Brand ================= -->
     <Color x:Key="Primary">#0B57A4</Color>
+    <Color x:Key="PrimaryTop">#2E74C6</Color>
+    <Color x:Key="PrimaryBottom">#084A8C</Color>
     <Color x:Key="PrimaryDark">#084A8C</Color>
-    <Color x:Key="PrimarySoft">#E9F1F9</Color>
-    <!-- Legacy aliases: the old indigo set is gone, the keys are kept for lookups. -->
+    <Color x:Key="PrimarySoft">#DCE7F6</Color>
+    <Color x:Key="PrimarySoftDeep">#C9DAF0</Color>
+    <!-- Fill tokens are separate from `Primary`: on a dusk theme the accent used
+         for text must be LIGHT (to sit on dark clay), while a filled button must
+         stay saturated enough for white text. One key cannot be both. -->
+    <Color x:Key="PrimaryFill">#0B57A4</Color>
+    <Color x:Key="PrimaryFillTop">#2E74C6</Color>
+    <Color x:Key="PrimaryFillBottom">#084A8C</Color>
+
+    <!-- Legacy aliases: kept so converter/style lookups keep resolving. -->
     <Color x:Key="Secondary">#0B57A4</Color>
     <Color x:Key="Tertiary">#0B6660</Color>
+
     <Color x:Key="Accent">#0B6660</Color>
+    <Color x:Key="AccentTop">#1B8078</Color>
+    <Color x:Key="AccentBottom">#095651</Color>
     <Color x:Key="AccentDark">#095651</Color>
-    <Color x:Key="AccentSoft">#E4F2F0</Color>
+    <Color x:Key="AccentSoft">#D8EDEA</Color>
+    <Color x:Key="AccentFill">#0B6660</Color>
+    <Color x:Key="AccentFillTop">#1B8078</Color>
+    <Color x:Key="AccentFillBottom">#095651</Color>
 
     <!-- ================= Semantic status ================= -->
-    <Color x:Key="Success">#11652F</Color>
-    <Color x:Key="SuccessSoft">#E7F4EC</Color>
-    <Color x:Key="Warning">#9A5B00</Color>
-    <Color x:Key="WarningSoft">#FCF3E3</Color>
+    <Color x:Key="Success">#14663C</Color>
+    <Color x:Key="SuccessSoft">#DBF0E3</Color>
+    <Color x:Key="Warning">#8A5300</Color>
+    <Color x:Key="WarningSoft">#FBEBD2</Color>
     <Color x:Key="Error">#B3261E</Color>
-    <Color x:Key="ErrorSoft">#FBECEB</Color>
+    <Color x:Key="ErrorSoft">#FADFDC</Color>
     <Color x:Key="Info">#0B57A4</Color>
-    <Color x:Key="InfoSoft">#E9F1F9</Color>
+    <Color x:Key="InfoSoft">#DCE7F6</Color>
 
     <!-- ================= Neutrals ================= -->
     <Color x:Key="White">#FFFFFF</Color>
     <Color x:Key="Black">#000000</Color>
-    <Color x:Key="Gray50">#FAFBFC</Color>
-    <Color x:Key="Gray100">#F5F7F9</Color>
-    <Color x:Key="Gray200">#EDF0F4</Color>
-    <Color x:Key="Gray300">#DEE3E9</Color>
-    <Color x:Key="Gray400">#9AA5B1</Color>
-    <Color x:Key="Gray500">#66717F</Color>
-    <Color x:Key="Gray600">#4C5865</Color>
-    <Color x:Key="Gray700">#3C4753</Color>
-    <Color x:Key="Gray800">#1D2833</Color>
-    <Color x:Key="Gray900">#111A24</Color>
+    <Color x:Key="Gray50">#FAFBFF</Color>
+    <Color x:Key="Gray100">#F4F6FD</Color>
+    <Color x:Key="Gray200">#ECEEFA</Color>
+    <Color x:Key="Gray300">#DDE1F1</Color>
+    <Color x:Key="Gray400">#A9B2CC</Color>
+    <Color x:Key="Gray500">#7883A3</Color>
+    <Color x:Key="Gray600">#525C7A</Color>
+    <Color x:Key="Gray700">#3A4460</Color>
+    <Color x:Key="Gray800">#232B45</Color>
+    <Color x:Key="Gray900">#171F36</Color>
 
     <!-- ================= Surfaces ================= -->
-    <Color x:Key="PageBackground">#F5F7F9</Color>
-    <Color x:Key="CardSurface">#FFFFFF</Color>
-    <Color x:Key="CardSurfaceAlt">#FAFBFC</Color>
-    <Color x:Key="Border">#DEE3E9</Color>
+    <Color x:Key="PageBackground">#EEF0FA</Color>
+    <Color x:Key="PageBackgroundTop">#F5F3FD</Color>
+    <Color x:Key="PageBackgroundBottom">#E3E8F8</Color>
+    <Color x:Key="CardSurface">#F9FAFE</Color>
+    <Color x:Key="CardSurfaceTop">#FFFFFF</Color>
+    <Color x:Key="CardSurfaceBottom">#E9EDF9</Color>
+    <Color x:Key="CardSurfaceAlt">#E5EAF7</Color>
+    <Color x:Key="CardSurfaceAltTop">#EFF2FB</Color>
+    <Color x:Key="CardSurfaceAltBottom">#DCE2F2</Color>
+    <Color x:Key="Border">#D7DDEF</Color>
     <!-- Input outlines need 3:1 non-text contrast (WCAG 1.4.11). -->
-    <Color x:Key="BorderStrong">#7E8B99</Color>
-    <Color x:Key="Divider">#EDF0F4</Color>
-    <Color x:Key="Scrim">#66000000</Color>
+    <Color x:Key="BorderStrong">#7C88A8</Color>
+    <Color x:Key="Divider">#DFE4F2</Color>
+    <Color x:Key="Scrim">#66171F36</Color>
+
+    <!-- ================= Clay material ================= -->
+    <!-- Light edge along the top of every clay surface. -->
+    <Color x:Key="ClayHighlight">#FFFFFF</Color>
+    <!-- Slightly darker edge along the bottom, so the surface reads as pressed clay. -->
+    <Color x:Key="ClayEdgeLow">#C9D1E8</Color>
+    <!-- Cast shadow: desaturated blue, applied at low opacity over the page. -->
+    <Color x:Key="ClayShadow">#6E7BA8</Color>
+    <Color x:Key="ClayShadowDeep">#4F5C86</Color>
+    <Color x:Key="ClayInset">#DFE4F3</Color>
 
     <!-- ================= Text ================= -->
-    <Color x:Key="TextPrimary">#111A24</Color>
-    <Color x:Key="TextSecondary">#3C4753</Color>
-    <Color x:Key="TextMuted">#66717F</Color>
+    <Color x:Key="TextPrimary">#171F36</Color>
+    <Color x:Key="TextSecondary">#3A4460</Color>
+    <Color x:Key="TextMuted">#5C6784</Color>
     <Color x:Key="TextOnPrimary">#FFFFFF</Color>
-    <Color x:Key="TextDisabled">#9AA5B1</Color>
+    <Color x:Key="TextDisabled">#98A1BC</Color>
 
     <!-- ================= Brushes ================= -->
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}" />
@@ -85,52 +121,66 @@
     <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource Success}" />
     <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource Warning}" />
     <SolidColorBrush x:Key="InfoBrush" Color="{StaticResource Info}" />
+    <SolidColorBrush x:Key="ClayShadowBrush" Color="{StaticResource ClayShadow}" />
+    <SolidColorBrush x:Key="ClayHighlightBrush" Color="{StaticResource ClayHighlight}" />
+    <SolidColorBrush x:Key="ClayEdgeLowBrush" Color="{StaticResource ClayEdgeLow}" />
 
-    <!-- ================= Icon glyphs (Lucide, ISC) =================
-         Single codepoints from Resources/Fonts/lucide.ttf, verified against the
-         font cmap by tools/verify-ui-redesign.py. Usage:
-             <Label Style="{StaticResource IconGlyph}" Text="{StaticResource IconPin}" />
-    -->
-    <x:String x:Key="IconHardHat">&#xE0EE;</x:String>
-    <x:String x:Key="IconBuilding">&#xE290;</x:String>
-    <x:String x:Key="IconBriefcase">&#xE5D9;</x:String>
-    <x:String x:Key="IconPin">&#xE111;</x:String>
-    <x:String x:Key="IconBanknote">&#xE052;</x:String>
-    <x:String x:Key="IconUsers">&#xE1A4;</x:String>
-    <x:String x:Key="IconClipboard">&#xE086;</x:String>
-    <x:String x:Key="IconBadgeCheck">&#xE241;</x:String>
-    <x:String x:Key="IconCheck">&#xE04C;</x:String>
-    <x:String x:Key="IconX">&#xE1B2;</x:String>
-    <x:String x:Key="IconShieldCheck">&#xE1FF;</x:String>
-    <x:String x:Key="IconStar">&#xE176;</x:String>
-    <x:String x:Key="IconClock">&#xE087;</x:String>
-    <x:String x:Key="IconArrowLeft">&#xE048;</x:String>
-    <x:String x:Key="IconChevronRight">&#xE06F;</x:String>
-    <x:String x:Key="IconPlus">&#xE13D;</x:String>
-    <x:String x:Key="IconClose">&#xE1B2;</x:String>
-    <x:String x:Key="IconPause">&#xE12E;</x:String>
-    <x:String x:Key="IconPlay">&#xE13C;</x:String>
-    <x:String x:Key="IconCheckCircle">&#xE226;</x:String>
-    <x:String x:Key="IconAlertCircle">&#xE077;</x:String>
-    <x:String x:Key="IconAlertTriangle">&#xE193;</x:String>
-    <x:String x:Key="IconInfo">&#xE0F9;</x:String>
-    <x:String x:Key="IconLock">&#xE10B;</x:String>
-    <x:String x:Key="IconPhone">&#xE133;</x:String>
-    <x:String x:Key="IconLogout">&#xE10E;</x:String>
-    <x:String x:Key="IconUser">&#xE46C;</x:String>
-    <x:String x:Key="IconGlobe">&#xE0E8;</x:String>
-    <x:String x:Key="IconPencil">&#xE1F9;</x:String>
-    <x:String x:Key="IconEye">&#xE0BA;</x:String>
-    <x:String x:Key="IconWarningBadge">&#xE479;</x:String>
-    <x:String x:Key="IconBadgeId">&#xE61B;</x:String>
-    <x:String x:Key="IconSearch">&#xE151;</x:String>
-    <x:String x:Key="IconSliders">&#xE29A;</x:String>
-    <x:String x:Key="IconHandshake">&#xE5C4;</x:String>
-    <x:String x:Key="IconCalendar">&#xE063;</x:String>
-    <x:String x:Key="IconPercent">&#xE132;</x:String>
-    <x:String x:Key="IconTimer">&#xE1E0;</x:String>
-    <x:String x:Key="IconUserCheck">&#xE1A0;</x:String>
-    <x:String x:Key="IconPauseCircle">&#xE07F;</x:String>
-    <x:String x:Key="IconPlayCircle">&#xE080;</x:String>
+    <!-- Clay gradients: light from above, so the top of every surface is lighter. -->
+    <LinearGradientBrush x:Key="ClayPageBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="{StaticResource PageBackgroundTop}" Offset="0.0" />
+        <GradientStop Color="{StaticResource PageBackgroundBottom}" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="ClayCardBrush" StartPoint="0,0" EndPoint="0.35,1">
+        <GradientStop Color="{StaticResource CardSurfaceTop}" Offset="0.0" />
+        <GradientStop Color="{StaticResource CardSurface}" Offset="0.45" />
+        <GradientStop Color="{StaticResource CardSurfaceBottom}" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="ClayCardSoftBrush" StartPoint="0,0" EndPoint="0.35,1">
+        <GradientStop Color="{StaticResource CardSurfaceAltTop}" Offset="0.0" />
+        <GradientStop Color="{StaticResource CardSurfaceAlt}" Offset="0.55" />
+        <GradientStop Color="{StaticResource CardSurfaceAltBottom}" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <!-- Primary clay: saturated, still with a lighter top so it looks moulded. -->
+    <LinearGradientBrush x:Key="ClayPrimaryBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="{StaticResource PrimaryFillTop}" Offset="0.0" />
+        <GradientStop Color="{StaticResource PrimaryFill}" Offset="0.55" />
+        <GradientStop Color="{StaticResource PrimaryFillBottom}" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="ClayAccentBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="{StaticResource AccentFillTop}" Offset="0.0" />
+        <GradientStop Color="{StaticResource AccentFill}" Offset="0.55" />
+        <GradientStop Color="{StaticResource AccentFillBottom}" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <!-- Soft tinted wells for icon tiles and quiet buttons. -->
+    <LinearGradientBrush x:Key="ClayPrimarySoftBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="{StaticResource CardSurfaceTop}" Offset="0.0" />
+        <GradientStop Color="{StaticResource PrimarySoft}" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="ClayAccentSoftBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="{StaticResource CardSurfaceTop}" Offset="0.0" />
+        <GradientStop Color="{StaticResource AccentSoft}" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <!-- Inset well (fields, progress tracks): shadow at the top, light at the base. -->
+    <LinearGradientBrush x:Key="ClayInsetBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="{StaticResource ClayInset}" Offset="0.0" />
+        <GradientStop Color="{StaticResource CardSurface}" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="ClaySoftBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="{StaticResource PrimarySoft}" Offset="0.0" />
+        <GradientStop Color="{StaticResource PrimarySoftDeep}" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="ClayBarBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="{StaticResource PageBackgroundTop}" Offset="0.0" />
+        <GradientStop Color="{StaticResource PageBackground}" Offset="1.0" />
+    </LinearGradientBrush>
 
 </ResourceDictionary>

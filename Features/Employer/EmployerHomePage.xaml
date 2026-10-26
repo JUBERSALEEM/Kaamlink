@@ -25,12 +25,12 @@
                 <Label Grid.Column="1"
                        Style="{StaticResource SectionText}"
                        FontSize="18"
-                       TextColor="{StaticResource Primary}"
+                       TextColor="{DynamicResource Primary}"
                        Text="{x:Static strings:AppStrings.AppName}"
                        VerticalOptions="Center" />
                 <Border Grid.Column="2" Style="{StaticResource PillBorder}" VerticalOptions="Center">
                     <Label Style="{StaticResource PillText}"
-                           TextColor="{StaticResource Primary}"
+                           TextColor="{DynamicResource Primary}"
                            Text="{x:Static strings:AppStrings.RoleEmployerPill}" />
                 </Border>
             </Grid>
@@ -108,14 +108,14 @@
                                                            Title="{x:Static strings:AppStrings.EmployerRejectedTitle}" />
 
                                     <Border IsVisible="{Binding HasReason}"
-                                            BackgroundColor="{StaticResource ErrorSoft}"
+                                            BackgroundColor="{DynamicResource ErrorSoft}"
                                             StrokeThickness="0"
                                             Padding="10">
                                         <Border.StrokeShape>
-                                            <RoundRectangle CornerRadius="10" />
+                                            <RoundRectangle CornerRadius="18" />
                                         </Border.StrokeShape>
                                         <Label Style="{StaticResource SmallText}"
-                                               TextColor="{StaticResource Error}"
+                                               TextColor="{DynamicResource Error}"
                                                Text="{Binding VerificationReason}" />
                                     </Border>
 
@@ -144,7 +144,7 @@
                         HorizontalOptions="Start"
                         SemanticProperties.Description="{x:Static strings:AppStrings.LogoutCta}"
                         Text="{x:Static strings:AppStrings.LogoutCta}"
-                        TextColor="{StaticResource Error}" />
+                        TextColor="{DynamicResource Error}" />
             </VerticalStackLayout>
         </VerticalStackLayout>
     </ScrollView>

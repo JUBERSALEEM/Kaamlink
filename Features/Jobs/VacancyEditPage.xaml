@@ -150,7 +150,7 @@
                                Text="{x:Static strings:AppStrings.VacancyEditSkillsSection}" />
                         <Label Grid.Column="1"
                                Style="{StaticResource CaptionText}"
-                               TextColor="{StaticResource Primary}"
+                               TextColor="{DynamicResource Primary}"
                                Text="{Binding SelectedSkillsText}" />
                     </Grid>
                     <Label Style="{StaticResource FieldHint}"
@@ -166,10 +166,10 @@
                                     <Border Padding="12,10"
                                             Margin="0,0,0,6"
                                             StrokeThickness="1"
-                                            BackgroundColor="{StaticResource CardSurface}"
-                                            Stroke="{StaticResource BorderBrush}">
+                                            BackgroundColor="{DynamicResource CardSurface}"
+                                            Stroke="{DynamicResource BorderBrush}">
                                         <Border.StrokeShape>
-                                            <RoundRectangle CornerRadius="10" />
+                                            <RoundRectangle CornerRadius="18" />
                                         </Border.StrokeShape>
                                         <VisualStateManager.VisualStateGroups>
                                             <VisualStateGroupList>
@@ -181,8 +181,8 @@
                                                     </VisualState>
                                                     <VisualState x:Name="Selected">
                                                         <VisualState.Setters>
-                                                            <Setter Property="BackgroundColor" Value="{StaticResource PrimarySoft}" />
-                                                            <Setter Property="Stroke" Value="{StaticResource Primary}" />
+                                                            <Setter Property="BackgroundColor" Value="{DynamicResource PrimarySoft}" />
+                                                            <Setter Property="Stroke" Value="{DynamicResource Primary}" />
                                                             <Setter TargetName="SkillCheck" Property="Label.IsVisible" Value="True" />
                                                         </VisualState.Setters>
                                                     </VisualState>

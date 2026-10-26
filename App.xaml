@@ -22,6 +22,10 @@
             <presentation:SelectedOptionTextColorConverter x:Key="SelectedOptionText" />
 
             <ResourceDictionary.MergedDictionaries>
+                <!-- Icons never change with a theme, so they sit outside the palette. -->
+                <ResourceDictionary Source="Resources/Styles/Icons.xaml" />
+                <!-- The palette below is the ONLY themeable dictionary: IThemeService
+                     replaces it in place when the user switches theme. -->
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>

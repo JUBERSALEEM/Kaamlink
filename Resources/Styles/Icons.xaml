@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+    KaamLink icon glyphs — Lucide (ISC, see Resources/Fonts/lucide-LICENSE.txt).
+
+    Theme-independent on purpose: a theme swaps colours, never iconography, so
+    these live outside the palette dictionaries (Resources/Styles/Colors.xaml and
+    Resources/Themes/*.xaml).
+
+    Every value is a single codepoint, verified against lucide.ttf by
+    tools/verify-ui-redesign.py. That check also fails when this file yields no
+    glyphs at all, so an empty or moved file can never pass vacuously.
+
+    Usage:
+        <Label Style="{StaticResource IconGlyph}" Text="{StaticResource IconPin}" />
+-->
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <x:String x:Key="IconHardHat">&#xE0EE;</x:String>
+    <x:String x:Key="IconBuilding">&#xE290;</x:String>
+    <x:String x:Key="IconBriefcase">&#xE5D9;</x:String>
+    <x:String x:Key="IconPin">&#xE111;</x:String>
+    <x:String x:Key="IconBanknote">&#xE052;</x:String>
+    <x:String x:Key="IconUsers">&#xE1A4;</x:String>
+    <x:String x:Key="IconClipboard">&#xE086;</x:String>
+    <x:String x:Key="IconBadgeCheck">&#xE241;</x:String>
+    <x:String x:Key="IconCheck">&#xE04C;</x:String>
+    <x:String x:Key="IconX">&#xE1B2;</x:String>
+    <x:String x:Key="IconShieldCheck">&#xE1FF;</x:String>
+    <x:String x:Key="IconStar">&#xE176;</x:String>
+    <x:String x:Key="IconClock">&#xE087;</x:String>
+    <x:String x:Key="IconArrowLeft">&#xE048;</x:String>
+    <x:String x:Key="IconChevronRight">&#xE06F;</x:String>
+    <x:String x:Key="IconPlus">&#xE13D;</x:String>
+    <x:String x:Key="IconClose">&#xE1B2;</x:String>
+    <x:String x:Key="IconPause">&#xE12E;</x:String>
+    <x:String x:Key="IconPlay">&#xE13C;</x:String>
+    <x:String x:Key="IconCheckCircle">&#xE226;</x:String>
+    <x:String x:Key="IconAlertCircle">&#xE077;</x:String>
+    <x:String x:Key="IconAlertTriangle">&#xE193;</x:String>
+    <x:String x:Key="IconInfo">&#xE0F9;</x:String>
+    <x:String x:Key="IconLock">&#xE10B;</x:String>
+    <x:String x:Key="IconPhone">&#xE133;</x:String>
+    <x:String x:Key="IconLogout">&#xE10E;</x:String>
+    <x:String x:Key="IconUser">&#xE46C;</x:String>
+    <x:String x:Key="IconGlobe">&#xE0E8;</x:String>
+    <x:String x:Key="IconPencil">&#xE1F9;</x:String>
+    <x:String x:Key="IconEye">&#xE0BA;</x:String>
+    <x:String x:Key="IconWarningBadge">&#xE479;</x:String>
+    <x:String x:Key="IconBadgeId">&#xE61B;</x:String>
+    <x:String x:Key="IconSearch">&#xE151;</x:String>
+    <x:String x:Key="IconSliders">&#xE29A;</x:String>
+    <x:String x:Key="IconHandshake">&#xE5C4;</x:String>
+    <x:String x:Key="IconCalendar">&#xE063;</x:String>
+    <x:String x:Key="IconPercent">&#xE132;</x:String>
+    <x:String x:Key="IconTimer">&#xE1E0;</x:String>
+    <x:String x:Key="IconUserCheck">&#xE1A0;</x:String>
+    <x:String x:Key="IconPauseCircle">&#xE07F;</x:String>
+    <x:String x:Key="IconPlayCircle">&#xE080;</x:String>
+    <x:String x:Key="IconMoon">&#xE11E;</x:String>
+    <x:String x:Key="IconSun">&#xE178;</x:String>
+
+</ResourceDictionary>
