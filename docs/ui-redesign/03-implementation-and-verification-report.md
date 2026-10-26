@@ -380,7 +380,8 @@ $ git rev-parse HEAD                       067d06a25ecac88d135842f393b52d0d746fc
                                               (the code commit the gates below were run against;
                                                the documentation commits follow it)
 $ git merge-base --is-ancestor de54334 HEAD   -> true (base is an ancestor)
-$ git rev-list --count de54334..HEAD       13   (5 redesign + 5 verification + 3 documentation)
+$ git rev-list --count de54334..HEAD       13   before this doc commit (5 redesign + 5 verification
+                                              + 3 documentation); the branch tip is this commit
 $ git status --porcelain                   clean before each commit
 $ git rev-list --left-right --count HEAD...origin/arena/44c99984-kaamlink   0  0 after the final push
 $ git diff --shortstat de54334..HEAD       87 files changed, 9510 insertions(+), 1152 deletions(-)
