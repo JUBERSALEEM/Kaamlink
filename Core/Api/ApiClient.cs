@@ -59,6 +59,18 @@ namespace KaamLink.Core.Api
 
         Task<ApplicationStatusChangeDto> ChangeApplicationStatusAsync(
             Guid companyId, Guid vacancyId, Guid applicationId, string status, CancellationToken ct = default);
+
+        // ---- Skill assessments (Phase 05) ----
+        // These were implemented on ApiClient but missing from the interface, so
+        // every call made through IApiClient failed with CS1061 (net10.0-android).
+
+        Task<IReadOnlyList<MyAssessmentItemDto>> GetMyAssessmentsAsync(CancellationToken ct = default);
+
+        Task<StartAssessmentResponseDto> StartAssessmentAsync(Guid skillId, CancellationToken ct = default);
+
+        Task<AssessmentResultDto> SubmitAssessmentAsync(
+            Guid skillId, Guid attemptId, List<SubmitAssessmentAnswerItemDto> answers,
+            CancellationToken ct = default);
     }
 
     public sealed class ApiClient : IApiClient
