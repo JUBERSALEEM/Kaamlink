@@ -59,14 +59,52 @@ COLORS = open("Resources/Styles/Colors.xaml", encoding="utf-8").read()
 
 LEGACY_KEYS = {"Title1", "Title2", "SectionTitle", "Body", "BodySecondary", "Caption", "Card"}
 EMOJI = re.compile("[\U0001F300-\U0001FAFF\u2600-\u27BF\uFE0F]")
+# Glyphs that stand in for icons: literal (✓ ✔ ★ ● ▪), C# escapes (\u2605) and
+# XAML numeric entities (&#x2605;). Escapes render identically at runtime, so
+# scanning only the literal characters would let them through.
+_GLYPHS = "2713 2714 2605 25CF 25AA".split()
+_BS = chr(92)  # regex-escaped backslash, built without a literal escape in source
+GLYPH_PATTERN = re.compile(
+    "[" + "".join(chr(int(code, 16)) for code in _GLYPHS) + "]"          # literal glyph
+    + "|" + _BS + _BS + "u(?:" + "|".join(_GLYPHS) + ")"                 # C# \u2605
+    + "|&#[xX](?:" + "|".join(_GLYPHS) + ");")                           # XAML &#x2605;
 LATIN_TEXT = re.compile(r"[A-Za-z]{2,}")
 TEXT_ATTRS = ("Text", "Placeholder", "Message", "Title", "Description")
 ARABIC = re.compile("[\u0600-\u06FF]")
 
+# ------------------------------------------------------------ A0 typed credentials
+# Login/OTP are the only places a user types a number that locks them out if it is
+# rejected. Arabic-locale numeric keyboards emit Arabic-Indic digits (٠١٢٣...),
+# which int.TryParse / ASCII digit checks refuse - so both entry points must pass
+# typed input through DigitText.Normalize before validating or sending it.
+def read(path: str) -> str:
+    return open(path, encoding="utf-8").read()
+
+
+PHONE_INPUT = read("Core/Text/PhoneInput.cs")
+OTP_VM = read("Features/Auth/OtpViewModel.cs")
+
+ok(os.path.exists("Core/Text/DigitText.cs"),
+   "DigitText helper is missing (Arabic-Indic numerals cannot be normalized)")
+ok("DigitText.Normalize" in PHONE_INPUT,
+   "PhoneInput does not normalize Arabic-Indic digits (Arabic users are told their "
+   "valid phone number is invalid)")
+ok("DigitText.Normalize" in OTP_VM,
+   "OtpViewModel does not normalize Arabic-Indic digits (a valid code is submitted "
+   "as non-ASCII and rejected)")
+ok("char.IsAsciiDigit" in OTP_VM or "char.IsDigit" not in OTP_VM,
+   "OtpViewModel validates digits with char.IsDigit, which accepts Arabic-Indic "
+   "digits the API rejects")
+
 # ---------------------------------------------------------------- A page contract
 for page in PAGES:
     root = ET.parse(page).getroot()
-    ok(bool(attr(root, "DataType")), f"{page}: missing x:DataType (uncompiled bindings)")
+    page_data_type = (attr(root, "DataType") or "").strip()
+    # "{x:Null}" is a non-empty string but explicitly opts OUT of compiled bindings
+    # for the whole page, so a truthiness check alone would silently pass.
+    ok(bool(page_data_type) and page_data_type != "{x:Null}" and ":" in page_data_type,
+       f"{page}: page x:DataType must name a type (got '{page_data_type}') - "
+       f"compiled bindings are disabled otherwise")
     ok(bool(root.get("Title")), f"{page}: missing Title")
     nav = (root.get("Shell.NavBarIsVisible")
            or root.get(f"{{{NS_MAUI}}}Shell.NavBarIsVisible")
@@ -88,12 +126,14 @@ for page, text in PAGE_TEXT.items():
         if value and LATIN_TEXT.search(value):
             ok(False, f"{page}: hardcoded UI text '{value}'")
     ok(not EMOJI.search(text), f"{page}: emoji found (icons must use the Lucide font)")
-    ok(not re.search(r"[\u2713\u2714\u2605\u25CF\u25AA]", text),
+    ok(not GLYPH_PATTERN.search(text),
        f"{page}: text glyph used as an icon (draw a Lucide glyph instead)")
 
-for source in glob.glob("Features/**/*ViewModel.cs", recursive=True):
+for source in glob.glob("Features/**/*.cs", recursive=True):
+    if source.startswith(("obj/", "bin/")) or "Designer" in source:
+        continue
     body = open(source, encoding="utf-8").read()
-    ok(not re.search(r"[\u2713\u2714\u2605\u25CF\u25AA]", body),
+    ok(not GLYPH_PATTERN.search(body),
        f"{source}: text glyph baked into a display string (not localizable, not an icon)")
 
 
@@ -297,6 +337,36 @@ for page, text in PAGE_TEXT.items():
             walk_converters(child, attr(child, "DataType") or scope)
 
     walk_converters(root, page_type)
+
+# Anything a user can tap must announce itself: a Border with a TapGestureRecognizer
+# and a Command is an actionable control, so it needs a semantic description (a
+# screen reader announces nothing otherwise - it is not a Button).
+for page in PAGES:
+    root = ET.parse(page).getroot()
+
+    def walk_tappable(el):
+        # MAUI writes the property element as "<Border.GestureRecognizers>", so the
+        # local name ends with "GestureRecognizers" rather than equalling it.
+        direct_gestures = [
+            child for child in el
+            if child.tag.split("}")[-1].endswith("GestureRecognizers")
+        ]
+        for holder in direct_gestures:
+            for gesture in holder:
+                if gesture.tag.split("}")[-1] != "TapGestureRecognizer":
+                    continue
+                if not gesture.get(f"{{{NS_MAUI}}}Command") and not gesture.get("Command"):
+                    continue
+                described = (el.get(f"{{{NS_MAUI}}}SemanticProperties.Description")
+                             or el.get("SemanticProperties.Description")
+                             or el.get("AutomationProperties.Name"))
+                ok(bool(described),
+                   f"{page}: tappable {el.tag.split('}')[-1]} with a Command has no "
+                   f"SemanticProperties.Description (invisible to screen readers)")
+        for child in el:
+            walk_tappable(child)
+
+    walk_tappable(root)
 
 # ---------------------------------------------------------------- I feature parity
 # A command nobody binds is a feature the redesign dropped. Every [RelayCommand]

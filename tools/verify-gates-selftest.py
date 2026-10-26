@@ -1,0 +1,200 @@
+#!/usr/bin/env python3
+"""
+Negative tests for the KaamLink verification gates ("who verifies the verifier").
+
+A gate that passes because it silently stopped looking is worse than no gate at
+all - that is exactly how 14 dead command bindings once reported ALL GREEN. This
+harness injects one realistic defect at a time, runs the gate that is supposed to
+catch it, and requires a non-zero exit. Every mutation is applied to a temporary
+copy and always restored, so the working tree is left clean.
+
+Usage:  python3 tools/verify-gates-selftest.py [-v]
+Exit:   0 = every gate detected its defect; 1 = a gate missed one (or crashed).
+"""
+
+from __future__ import annotations
+
+import os
+import subprocess
+import sys
+import tempfile
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# (case name, file, literal old -> new, gate command)
+CASES = [
+    (
+        "misspelled binding path",
+        "Features/Worker/WorkerHomePage.xaml",
+        ("{Binding CompletenessText}", "{Binding CompletenessTextTYPO}"),
+        ["tools/verify-bindings.py"],
+    ),
+    (
+        "misspelled command",
+        "Features/Jobs/VacancyApplicationsPage.xaml",
+        ("BindingContext.HireCommand", "BindingContext.HireTYPO"),
+        ["tools/verify-bindings.py"],
+    ),
+    (
+        "command never bound (dropped feature)",
+        "Features/Jobs/VacancyDetailPage.xaml",
+        ('Command="{Binding ApplyCommand}"', 'Command="{Binding BackCommand}"'),
+        ["tools/verify-ui-redesign.py"],
+    ),
+    (
+        "hardcoded UI text",
+        "Features/Jobs/VacancyFeedPage.xaml",
+        ("Title=\"{x:Static strings:AppStrings.FeedNoResultsTitle}\"", 'Title="No results"'),
+        ["tools/verify-ui-redesign.py"],
+    ),
+    (
+        "emoji used as an icon",
+        "Features/Worker/WorkerHomePage.xaml",
+        ("</ContentPage>", "    <Label Text=\"\U0001F600\" />\n</ContentPage>"),
+        ["tools/verify-ui-redesign.py"],
+    ),
+    (
+        "text glyph baked into a display string",
+        "Features/Worker/WorkerHomeViewModel.cs",
+        ("var label = LocalizationHelpers.LocalizedSkill(skill);",
+         'var label = "\\u2605 " + LocalizationHelpers.LocalizedSkill(skill);'),
+        ["tools/verify-ui-redesign.py"],
+    ),
+    (
+        "x:Reference inside a DataTemplate",
+        "Features/Jobs/MyApplicationsPage.xaml",
+        ("{Binding BindingContext.WithdrawCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}",
+         "{Binding BindingContext.WithdrawCommand, Source={x:Reference Page}}"),
+        ["tools/verify-ui-redesign.py"],
+    ),
+    (
+        "Color token assigned to Brush-typed Stroke",
+        "Features/Jobs/VacancyFeedPage.xaml",
+        ('Stroke="{StaticResource BorderBrush}"', 'Stroke="{StaticResource Border}"'),
+        ["tools/verify-ui-redesign.py"],
+    ),
+    (
+        "converter fed the wrong type",
+        "Features/Jobs/CompanyVacanciesPage.xaml",
+        ("IsVisible=\"{Binding HasCompanyName, Converter={StaticResource InvertedBoolConverter}}\"",
+         "IsVisible=\"{Binding CompanyName, Converter={StaticResource InvertedBoolConverter}}\""),
+        ["tools/verify-ui-redesign.py"],
+    ),
+    (
+        "undeclared StaticResource key",
+        "Features/Jobs/MyApplicationsPage.xaml",
+        ("{StaticResource SurfaceCardDense}", "{StaticResource SurfaceCardDenseTYPO}"),
+        ["tools/verify-phase03.py"],
+    ),
+    (
+        "missing Arabic translation",
+        "Resources/Strings/AppStrings.ar.resx",
+        ('<data name="ResendCta" xml:space="preserve">', '<data name="ResendCtaXXX" xml:space="preserve">'),
+        ["tools/verify-ui-redesign.py"],
+    ),
+    (
+        "icon glyph written as a XAML entity",
+        "Features/Worker/WorkerHomePage.xaml",
+        ("</ContentPage>", "    <Label Text=\"&#x2605;\" />\n</ContentPage>"),
+        ["tools/verify-ui-redesign.py"],
+    ),
+    (
+        "icon key holding more than one glyph",
+        "Resources/Styles/Colors.xaml",
+        ('<x:String x:Key="IconStar">', '<x:String x:Key="IconStar">AB'),
+        ["tools/verify-ui-redesign.py"],
+    ),
+    (
+        "phone input stops normalizing Arabic-Indic digits",
+        "Core/Text/PhoneInput.cs",
+        ("var cleaned = CleanupRegex().Replace(DigitText.Normalize(raw).Trim(), string.Empty);",
+         "var cleaned = CleanupRegex().Replace(raw.Trim(), string.Empty);"),
+        ["tools/verify-ui-redesign.py"],
+    ),
+    (
+        "OTP accepts Arabic-Indic digits the API rejects",
+        "Features/Auth/OtpViewModel.cs",
+        ("var code = DigitText.Normalize(Code).Trim();\n            if (code.Length != 6 || !code.All(char.IsAsciiDigit))",
+         "var code = Code.Trim();\n            if (code.Length != 6 || !code.All(char.IsDigit))"),
+        ["tools/verify-ui-redesign.py"],
+    ),
+    (
+        "tappable element without accessibility semantics",
+        "Features/Jobs/VacancyFeedPage.xaml",
+        ('SemanticProperties.Description="{Binding Title}">', ">"),
+        ["tools/verify-ui-redesign.py"],
+    ),
+    (
+        "skeleton screen with no x:DataType",
+        "Features/Jobs/MyApplicationsPage.xaml",
+        ('x:DataType="vm:MyApplicationsViewModel"', "x:DataType=\"{x:Null}\""),
+        ["tools/verify-ui-redesign.py"],
+    ),
+]
+
+
+def run(command: list[str]) -> tuple[int, str]:
+    result = subprocess.run(
+        [sys.executable] + command, cwd=ROOT, capture_output=True, text=True)
+    return result.returncode, (result.stdout + result.stderr).strip()
+
+
+def main() -> int:
+    verbose = "-v" in sys.argv
+    failures: list[str] = []
+    print(f"negative tests: {len(CASES)}\n")
+
+    for name, rel_path, (old, new), gate in CASES:
+        path = os.path.join(ROOT, rel_path)
+        with open(path, encoding="utf-8") as handle:
+            original = handle.read()
+
+        if old not in original:
+            failures.append(f"{name}: mutation anchor not found in {rel_path} "
+                            f"(the gate may be testing dead text)")
+            print(f"  SKIP/FAIL  {name:<44} anchor missing")
+            continue
+
+        backup = tempfile.NamedTemporaryFile(
+            "w", suffix=".bak", delete=False, encoding="utf-8")
+        try:
+            backup.write(original)
+            backup.close()
+
+            with open(path, "w", encoding="utf-8") as handle:
+                handle.write(original.replace(old, new, 1))
+
+            code, output = run(gate)
+            detected = code != 0
+            print(f"  {'DETECTED ' if detected else 'MISSED   '} {name:<44} "
+                  f"[{os.path.basename(gate[0])} exit={code}]")
+            if verbose or not detected:
+                for line in output.splitlines()[-4:]:
+                    print(f"              {line}")
+            if not detected:
+                failures.append(f"{name}: {gate[0]} passed a broken file")
+
+            # the gate must also be green again once the file is restored
+            with open(path, "w", encoding="utf-8") as handle:
+                handle.write(original)
+            restore_code, _ = run(gate)
+            if restore_code != 0:
+                failures.append(f"{name}: gate still red after restoring {rel_path}")
+                print(f"  REGRESSION {rel_path} did not return to green after restore")
+        finally:
+            os.unlink(backup.name)
+            with open(path, "w", encoding="utf-8") as handle:
+                handle.write(original)
+
+    print()
+    if failures:
+        print(f"{len(failures)} gate self-test failure(s):")
+        for failure in failures:
+            print("  -", failure)
+        return 1
+    print(f"all {len(CASES)} injected defects were detected; tree restored clean")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
