@@ -820,9 +820,6 @@
   <data name="FeedScreenTitle" xml:space="preserve">
     <value>Find work</value>
   </data>
-  <data name="FeedResultsFormat" xml:space="preserve">
-    <value>{0} vacancies</value>
-  </data>
   <data name="FeedNoResultsTitle" xml:space="preserve">
     <value>No vacancies match</value>
   </data>

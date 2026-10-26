@@ -54,9 +54,10 @@ namespace KaamLink.Features.Jobs
         [ObservableProperty]
         private bool _isEmpty;
 
-        /// <summary>Localized "{0} vacancies" built from the rows actually loaded.</summary>
+        /// <summary>Rows actually loaded; paired with a localized label on the page so
+        /// no pluralised format string is needed in either language.</summary>
         [ObservableProperty]
-        private string _resultsText = string.Empty;
+        private int _resultsCount;
 
         public IReadOnlyList<EnumOption> EmirateOptions => EmirateChoices;
 
@@ -104,7 +105,7 @@ namespace KaamLink.Features.Jobs
 
                 HasMore = result.HasMore;
                 IsEmpty = Items.Count == 0;
-                ResultsText = string.Format(AppStrings.FeedResultsFormat, Items.Count);
+                ResultsCount = Items.Count;
                 IsLoaded = true;
             }
             catch (ApiException exception) when (SessionErrors.IsExpiredSession(exception))

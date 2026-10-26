@@ -457,7 +457,6 @@ namespace KaamLink.Resources.Strings
         public static string HomeAccountSection => ResourceManager.GetString(nameof(HomeAccountSection), Culture)!;
         public static string HomeBrowseJobsCta => ResourceManager.GetString(nameof(HomeBrowseJobsCta), Culture)!;
         public static string FeedScreenTitle => ResourceManager.GetString(nameof(FeedScreenTitle), Culture)!;
-        public static string FeedResultsFormat => ResourceManager.GetString(nameof(FeedResultsFormat), Culture)!;
         public static string FeedNoResultsTitle => ResourceManager.GetString(nameof(FeedNoResultsTitle), Culture)!;
         public static string FeedNoResultsBody => ResourceManager.GetString(nameof(FeedNoResultsBody), Culture)!;
         public static string FeedSearchHint => ResourceManager.GetString(nameof(FeedSearchHint), Culture)!;

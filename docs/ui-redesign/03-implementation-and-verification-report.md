@@ -105,7 +105,7 @@ All commands were run in this workspace, in this order, at the end of the work.
 | Compiled bindings (new) | `python3 tools/verify-bindings.py` | **345 bindings across 15 pages, 0 unresolved** |
 | Redesign gate (new) | `python3 tools/verify-ui-redesign.py` | **323 checks, 0 failures** |
 | XAML well-formedness | `xml.etree.ElementTree` parse of all 15 pages | all parse |
-| Localization parity | resx/Designer inventory | **313 / 313 / 313** (EN / AR / Designer) |
+| Localization parity | resx/Designer inventory | **312 / 312 / 312** (EN / AR / Designer) |
 
 ### What the new gates actually check
 
@@ -207,8 +207,8 @@ down; the device in Arabic (`ar-AE`) mirrors layouts.
 * **No hardcoded English** in any page: every user-visible string is an `x:Static`
   `AppStrings.*` reference (the redesign gate fails on Latin text in `Text`/`Title`/
   `Placeholder`/`Message`/`Description`).
-* **Parity**: 313 keys in `AppStrings.resx`, `AppStrings.ar.resx` and
-  `AppStrings.Designer.cs`. The redesign added **123 keys** (190 → 313), each with English
+* **Parity**: 312 keys in `AppStrings.resx`, `AppStrings.ar.resx` and
+  `AppStrings.Designer.cs`. The redesign added **122 keys** (190 → 312), each with English
   and Arabic copy written for the new layouts; **no existing key, format string or
   placeholder was changed** (verified by diffing the resx against the base commit:
   123 added, 0 removed, 0 modified).
@@ -256,7 +256,7 @@ down; the device in Arabic (`ar-AE`) mirrors layouts.
 | No working feature removed | **PASS** (static) | command-reachability check (every `[RelayCommand]` bound); diff of bindings/commands vs base commit shows only the two `DataContext.→BindingContext.` idiom fixes and one obsolete retry gate replaced by an error banner |
 | No hardcoded fake data or fake success | **PASS** | every displayed state comes from the API response via the existing view models; new derived properties are pure formatting/presentation |
 | No API/DTO/auth/domain change for visual reasons | **PASS** | no changes under `Core/Api`; `verify-phase03` asserts the DTO surface against the backend contract |
-| EN/AR parity, all new text localized | **PASS** | 313/313/313, `verify-phase05` parity check + redesign gate's hardcoded-text check |
+| EN/AR parity, all new text localized | **PASS** | 312/312/312, `verify-phase05` parity check + redesign gate's hardcoded-text check |
 | Real RTL | **PASS** (static) | §5; hardware/emulator confirmation is BLOCKED |
 | Accessibility: 48 dp targets, headings, semantic labels, ≥14sp body | **PASS** (static) | redesign gate: button/nav heights, heading per screen, label/description presence; body 14.5sp |
 | Small screens, font scaling, keyboard-open forms | **PARTIAL** | markup designed for it (single column, no fixed text heights, `AdjustResize`, `MinimumHeightRequest` on editors) and reviewed, but **not measured on a device** — no SDK/emulator |
@@ -279,7 +279,7 @@ Features/**/*.xaml                         15 screens redesigned (2 584 lines)
 Features/**/*ViewModel.cs                  9 files: derived display state, back commands,
                                            companyName routing, answered progress
 Resources/Styles/{Colors,Styles}.xaml      design system v1.0 (rewritten)
-Resources/Strings/*                        123 new EN/AR keys (190 -> 313), 0 changed
+Resources/Strings/*                        122 new EN/AR keys (190 -> 312), 0 changed
 Resources/Fonts/lucide.ttf + licence       vendored icon font
 MauiProgram.cs                             Lucide font registration
 Platforms/Android/MainActivity.cs          AdjustResize

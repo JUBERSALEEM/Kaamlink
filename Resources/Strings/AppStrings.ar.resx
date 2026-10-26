@@ -808,9 +808,6 @@
   <data name="FeedScreenTitle" xml:space="preserve">
     <value>ابحث عن عمل</value>
   </data>
-  <data name="FeedResultsFormat" xml:space="preserve">
-    <value>{0} وظيفة</value>
-  </data>
   <data name="FeedNoResultsTitle" xml:space="preserve">
     <value>لا توجد وظائف مطابقة</value>
   </data>

@@ -80,9 +80,12 @@
 
             <CollectionView.Header>
                 <VerticalStackLayout Spacing="10" Padding="0,0,0,10">
-                    <Label Style="{StaticResource CaptionText}"
-                           IsVisible="{Binding IsLoaded}"
-                           Text="{Binding ResultsText}" />
+                    <HorizontalStackLayout Spacing="6" IsVisible="{Binding IsLoaded}">
+                        <Label Style="{StaticResource CaptionText}"
+                               Text="{x:Static strings:AppStrings.FeedResultsLabel}" />
+                        <Label Style="{StaticResource SmallStrongText}"
+                               Text="{Binding ResultsCount}" />
+                    </HorizontalStackLayout>
                 </VerticalStackLayout>
             </CollectionView.Header>
 
