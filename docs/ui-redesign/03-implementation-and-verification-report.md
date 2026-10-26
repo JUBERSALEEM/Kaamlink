@@ -625,6 +625,8 @@ path to converting the BLOCKED/PARTIAL rows below into PASS:
 | R5 | 66 backend error codes, 13 mapped | unusual failures surface as the localized generic message | intentional (`Detail` is never shown); extend `ApiClient.Codes` + `MapError` as needed |
 | R6 | Assessment abandonment leaves a server-side attempt open | the backend decides its lifetime; the client shows the next state from the API | verified the UI reports `assessment.not_available` / `already_completed` correctly |
 | R7 | `ApplyQueryAttributes` starts the assessment with `_ = StartAsync()` | any exception type not derived from `ApiException` inside the task would be unobserved | `StartAsync` wraps its whole body in `try/finally` and all API failures now surface as `ApiException` (D6) |
+| R8 | A **Release** build has no real endpoint: `ApiConfig.BaseUrl` is `https://replace-me-when-environments-exist.kaamlink.invalid/` (DEBUG uses `http://10.0.2.2:8080/`, and `network_security_config.xml` allows cleartext to the emulator loopback only) | a Release APK cannot reach any API, so it is not shippable regardless of the UI work | hosting/staging is explicitly a later phase; a release candidate needs the real base URL first |
+| R9 | A 401 whose silent refresh fails for a *transient* reason (offline, 5xx) still surfaces as 401, so the view model routes to the welcome screen | the user appears signed out on a network blip (tokens are kept, so a restart recovers) | pre-existing session contract (`RefreshAsync` returns a bool); distinguishing "session over" from "could not refresh" needs an `ISessionService` change and was deliberately out of scope for a UI pass |
 
 ### 9.11 Release readiness — verdict
 
@@ -639,13 +641,14 @@ path to converting the BLOCKED/PARTIAL rows below into PASS:
 | Defects found in this pass fixed, with the tree green afterwards | **PASS** (9 defects: D1–D9, including the D9 login blocker) |
 | Android build | **BLOCKED** — no SDK/JDK/Android SDK and no egress to obtain them (§9.6) |
 | Runtime, navigation, forms, TalkBack, RTL rendering, screenshots | **BLOCKED** — no emulator or device (§9.7) |
+| Release configuration can reach a real backend | **BLOCKED** — `ApiConfig.BaseUrl` (Release) is an intentional `.invalid` placeholder; a release APK would have no API to talk to (R8) |
 | Small-screen and large-font behaviour | **PARTIAL** — designed for it, never measured |
 | Performance on a low-end device | **PARTIAL** — virtualised feed, no raster assets, never profiled |
 
 What that means in plain terms: the code is in the best statically verifiable state this
 environment allows — the branch is clean and forward-only, the gates are green *and* proven to
 fail when a defect is injected, and every bug the previous passes reported has been traced
-through its real code path. It is **not** evidence that the app builds or runs. The single
-next step that would change this verdict is executing §9.6 and §9.7 on a machine with the
-.NET 10 SDK and an Android device; until then this report must not be read as a release
-approval.
+through its real code path. It is **not** evidence that the app builds or runs. The
+single next step that would change this verdict is executing §9.6 and §9.7 on a machine with
+the .NET 10 SDK and an Android device; a Release candidate additionally needs the real API base
+URL (R8). Until then this report must not be read as a release approval.
