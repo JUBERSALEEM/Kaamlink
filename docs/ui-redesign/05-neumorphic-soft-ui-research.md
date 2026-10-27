@@ -10,6 +10,7 @@
 - Primary actions stay saturated blue/teal with high-contrast labels. Secondary actions and the country/theme controls use explicit outline strokes and native `Button` hit-testing; the theme switch is no longer a `Border` gesture target.
 - Pressed controls visibly depress/scale; controls remain text-labelled and have semantic descriptions. The phone field has a visible outline independent of shadow.
 - The role chooser now carries the same opening brand row, “Welcome to KaamLink” headline, “Find work. Hire with confidence.” subtitle, and shared hero frame as the approved sign-in design. Its worker/employer actions follow the hero while preserving the existing role-selection journey.
+- The app identity uses an adaptive rich-blue gradient background and a raised pale medallion with a practical-work helmet and linked skill nodes. The same emblem is used by the splash and in-app brand mark; artwork remains vector SVG.
 - The hero uses the same contained illustration, restrained frame and EN/AR semantic description on both entry pages. Pressing primary/secondary actions removes elevation and compresses the button; focused actions get a thicker border and slight lift. Text and labels—not shadow direction—still identify actions and states.
 - The landing/role chooser remains a focused mobile flow. The branded SVG illustration and mark remain separate image assets, not inline image data.
 - Runtime palette replacement continues through `DynamicResource`; this is the MAUI-supported mechanism for repainting current views when dictionary values are replaced.

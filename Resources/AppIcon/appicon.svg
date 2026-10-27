@@ -1,4 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="108" height="108" viewBox="0 0 108 108" xmlns="http://www.w3.org/2000/svg">
-  <rect width="108" height="108" fill="#0B57A4"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="108" height="108" viewBox="0 0 108 108">
+  <defs>
+    <linearGradient id="brand" x1="8" y1="4" x2="96" y2="104" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#092F58"/>
+      <stop offset="0.52" stop-color="#0B57A4"/>
+      <stop offset="1" stop-color="#087F98"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientTransform="matrix(61 53 -48 55 27 18)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#68DFD0" stop-opacity=".34"/>
+      <stop offset="1" stop-color="#68DFD0" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="sheen" x1="54" y1="0" x2="54" y2="108" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF" stop-opacity=".12"/>
+      <stop offset=".48" stop-color="#FFFFFF" stop-opacity="0"/>
+      <stop offset="1" stop-color="#001F3E" stop-opacity=".12"/>
+    </linearGradient>
+  </defs>
+  <rect width="108" height="108" fill="url(#brand)"/>
+  <rect width="108" height="108" fill="url(#glow)"/>
+  <rect width="108" height="108" fill="url(#sheen)"/>
+  <circle cx="89" cy="20" r="2" fill="#B8FFF0" fill-opacity=".42"/>
+  <circle cx="96" cy="29" r="1.2" fill="#B8FFF0" fill-opacity=".3"/>
+  <circle cx="17" cy="88" r="1.6" fill="#B8FFF0" fill-opacity=".32"/>
+  <path d="M8 74c14-6 22-5 31 2" fill="none" stroke="#B8FFF0" stroke-opacity=".12" stroke-width="1.2" stroke-linecap="round"/>
+  <path d="M76 93c7-8 14-11 24-12" fill="none" stroke="#B8FFF0" stroke-opacity=".1" stroke-width="1.2" stroke-linecap="round"/>
 </svg>

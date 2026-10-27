@@ -393,6 +393,33 @@ ok('Command="{Binding NavigateToWorkerCommand}"' in welcome
    and 'Command="{Binding NavigateToEmployerCommand}"' in welcome,
    "RoleSelectionPage: both role choices need real, visible action buttons")
 
+# The adaptive app icon is a real layered vector asset, and its emblem stays in
+# sync with the splash and in-app brand mark.
+icon_bg = read("Resources/AppIcon/appicon.svg")
+icon_fg = read("Resources/AppIcon/appiconfg.svg")
+splash_logo = read("Resources/Splash/splash.svg")
+brand_mark = read("Resources/Images/kaamlink_mark.svg")
+project = read("KaamLink.csproj")
+icon_bg_root = icon_fg_root = None
+try:
+    icon_bg_root = ET.fromstring(icon_bg)
+    icon_fg_root = ET.fromstring(icon_fg)
+    ET.fromstring(splash_logo)
+    ET.fromstring(brand_mark)
+    icon_vectors_valid = True
+except ET.ParseError:
+    icon_vectors_valid = False
+ok(icon_vectors_valid, "App icon/brand SVG assets must be well-formed XML")
+ok('MauiIcon Include="Resources\\AppIcon\\appicon.svg" ForegroundFile="Resources\\AppIcon\\appiconfg.svg"' in project,
+   "App icon: MAUI adaptive background/foreground wiring is missing")
+ok(icon_bg_root is not None and icon_fg_root is not None
+   and icon_bg_root.get("viewBox") == "0 0 108 108"
+   and icon_fg_root.get("viewBox") == "0 0 108 108"
+   and "linearGradient" in icon_bg and "radialGradient" in icon_bg
+   and "M35 51v-2a19 19 0 0 1 38 0v2H35Z" in icon_fg
+   and "M42 72h24" in icon_fg,
+   "App icon: rich gradient background and helmet/link emblem are missing")
+
 # shared controls are used, not re-invented per page
 ok(sum('controls:StatusPill' in t for t in PAGE_TEXT.values()) >= 4,
    "Redesign: StatusPill not reused across pages")
