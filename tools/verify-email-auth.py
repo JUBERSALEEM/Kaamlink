@@ -78,6 +78,9 @@ fakes = read("backend/tests/KaamLink.UnitTests/Fakes.cs")
 exchange_tests = read("backend/tests/KaamLink.UnitTests/Application/AuthServiceSupabaseExchangeTests.cs")
 setup_doc = read("docs/email-magic-link-setup.md")
 otp_script = read("tools/configure-supabase-otp-templates.py")
+requests_http = read("backend/requests.http")
+confirmed_fn = read("backend/supabase/functions/auth-confirmed/index.ts")
+helper_fn = read("backend/supabase/functions/configure-otp-templates/index.ts")
 all_sh = read("tools/verify-all.sh")
 
 # ------------------------------------------------------------------ client config
@@ -85,16 +88,31 @@ ok("KaamLinkSupabaseUrl" in csproj and "KaamLink.SupabaseUrl" in csproj,
    "Supabase URL build metadata present", "csproj: missing KaamLinkSupabaseUrl / KaamLink.SupabaseUrl metadata")
 ok("KaamLinkSupabaseAnonKey" in csproj and "KaamLink.SupabaseAnonKey" in csproj,
    "Supabase anon-key build metadata present", "csproj: missing KaamLinkSupabaseAnonKey / KaamLink.SupabaseAnonKey metadata")
-ok("sdxywcosqidyopbfevoe.supabase.co" in csproj,
+ok("zyklrndmmcmsktagkzek.supabase.co" in csproj,
    "default Supabase project URL present", "csproj: default Supabase project URL missing")
 for config_path, text in (("appsettings.json", appsettings), (".env.example", env_example),
                           ("docker-compose.yml", compose)):
-    ok("sdxywcosqidyopbfevoe.supabase.co" in text,
+    ok("zyklrndmmcmsktagkzek.supabase.co" in text,
        f"{config_path} points at the Supabase project", f"{config_path}: Supabase project URL drift")
     ok("service_role" not in text and "sb_secret_" not in text,
        f"{config_path} contains no service-role secret", f"{config_path}: a privileged Supabase key is committed")
 ok("service_role" not in csproj and "sb_secret_" not in csproj,
    "client ships only public keys", "csproj: a service-role key is baked into the mobile app")
+
+NEW_KEY = "sb_publishable_FV1pX1Xo3QCxCabFetDhIg_RszBDMab"
+OLD_REF = "sdxywcosqidyopbfevoe"
+OLD_KEY = "sb_publishable_LdzdUbTuA5Ao7OWVHUv_EQ_jk7Xczzh"
+for config_path, text in (("csproj", csproj), ("appsettings.json", appsettings),
+                          (".env.example", env_example),
+                          ("docker-compose.yml", compose),
+                          ("requests.http", requests_http)):
+    ok(NEW_KEY in text, f"{config_path} uses the dedicated KaamLink key",
+       f"{config_path}: dedicated publishable key missing")
+    ok(OLD_REF not in text and OLD_KEY not in text,
+       f"{config_path} has no legacy project/key", f"{config_path}: old project drift")
+ok(OLD_REF not in setup_doc and OLD_KEY not in setup_doc
+   and "kaamlink-mobile-auth" in setup_doc and "zyklrndmmcmsktagkzek" in setup_doc,
+   "setup doc records the fresh dedicated project", "docs/email-magic-link-setup.md: project drift")
 
 ok('RedirectUri = "kaamlink://auth-callback"' in supabase_config,
    "legacy deep-link redirect URI remains allowlisted", "SupabaseConfig: redirect URI drift")
@@ -264,6 +282,31 @@ ok("mailer_otp_length" in otp_script and "password_min_length" in otp_script,
 ok("SUPABASE_ACCESS_TOKEN" in setup_doc and "configure-supabase-otp-templates.py" in setup_doc
    and "custom SMTP" in setup_doc and "service-role" in setup_doc,
    "setup doc records PAT, script, SMTP and key safety", "docs/email-magic-link-setup.md incomplete")
+ok("OTP_TEMPLATE_ADMIN_TOKEN" in setup_doc and "x-admin-token" in setup_doc
+   and "kaamlink_mobile" in setup_doc and "Proglass Automation" in setup_doc,
+   "setup doc records helper protection and project isolation",
+   "docs/email-magic-link-setup.md: fresh-project/helper details missing")
+ok('PROJECT_REF = "zyklrndmmcmsktagkzek"' in helper_fn
+   and "{{ .Token }}" in helper_fn and "password_min_length: 8" in helper_fn
+   and "mailer_otp_length: 8" in helper_fn,
+   "helper Edge Function targets the fresh project with 8-digit OTP",
+   "configure-otp-templates/index.ts: project/template drift")
+ok('Deno.env.get("OTP_TEMPLATE_ADMIN_TOKEN")' in helper_fn
+   and 'Deno.env.get("SUPABASE_ACCESS_TOKEN")' in helper_fn
+   and 'req.headers.get("x-admin-token")' in helper_fn,
+   "helper Edge Function requires admin token + Management PAT",
+   "configure-otp-templates/index.ts: helper is not protected")
+ok("KaamLink - Email confirmed" in confirmed_fn
+   and 'APP_SCHEME = "kaamlink"' in confirmed_fn
+   and '"://auth-confirmed"' in confirmed_fn
+   and "text/html; charset=utf-8" in confirmed_fn,
+   "auth-confirmed Edge Function returns a real branded page",
+   "auth-confirmed/index.ts: branded confirmation page drift")
+ok('"mailer_otp_length": 8' in otp_script and '"password_min_length": 8' in otp_script
+   and "kaamlink://auth-confirmed" in otp_script
+   and "OTP_TEMPLATE_ADMIN_TOKEN" in otp_script,
+   "local OTP script matches the protected helper",
+   "tools/configure-supabase-otp-templates.py: helper parity drift")
 
 # ------------------------------------------------------------------ aurora theme
 ok("#4B3FD6" in colors and "#5DE3D4" in colors and "#EBE9FF" in colors,

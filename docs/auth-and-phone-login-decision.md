@@ -16,14 +16,21 @@ Google” would be fake authentication.
 
 ## Implemented now: free/easy email OTP + password sign-in
 
-- Supabase project `kaamlink-magic-link` (`sdxywcosqidyopbfevoe`) with email auth
-  enabled, signup enabled, and both `kaamlink://auth-callback` and the
-  `auth-confirmed` Edge Function URL allowlisted.
-- Android deep link `kaamlink://auth-callback` remains as a legacy fallback.
+- Fresh dedicated Supabase project `kaamlink-mobile-auth`
+  (`zyklrndmmcmsktagkzek`) with email auth enabled, signup enabled, and both
+  `kaamlink://` deep links plus the `auth-confirmed` Edge Function URL
+  allowlisted. The unrelated `Proglass Automation` project is not used; the old
+  `kaamlink-magic-link` project was deleted.
+- Dedicated publishable key `kaamlink_mobile`
+  (`sb_publishable_FV1pX1Xo3QCxCabFetDhIg_RszBDMab`) is the only Supabase key in
+  the client; no service-role key or Management API PAT is shipped.
+- Android deep link `kaamlink://auth-callback` remains as a legacy fallback;
+  `kaamlink://auth-confirmed` is also allowlisted.
 - App calls `POST /auth/v1/otp` with `create_user: true`; only the public
   publishable/anon key ships in the APK.
-- Supabase emails a 6–8 digit one-time code (no click link). The user types it in
-  the app; `POST /auth/v1/verify` returns a Supabase session.
+- Supabase emails an 8-digit one-time code (no click link) once the OTP
+  templates are applied. The user types it in the app; `POST /auth/v1/verify`
+  returns a Supabase session.
 - The session access token is exchanged at `POST /api/v1/auth/email/exchange`.
 - Backend `SupabaseUserVerifier` calls GoTrue `/auth/v1/user`, requires
   `email_confirmed_at`, and reads `user_metadata.password_set`.

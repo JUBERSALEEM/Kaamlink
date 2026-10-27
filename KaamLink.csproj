@@ -47,13 +47,13 @@
 		-->
 		<KaamLinkApiBaseUrl Condition="'$(KaamLinkApiBaseUrl)' == ''"></KaamLinkApiBaseUrl>
 		<!--
-			Supabase email magic-link project. Both values are PUBLIC: the URL and
+			Supabase email OTP project. Both values are PUBLIC: the URL and
 			publishable/anon key are designed to ship in a mobile client. Override
 			with -p:KaamLinkSupabaseUrl=... -p:KaamLinkSupabaseAnonKey=... when
 			moving to another Supabase project. Never put a service-role key here.
 		-->
-		<KaamLinkSupabaseUrl Condition="'$(KaamLinkSupabaseUrl)' == ''">https://sdxywcosqidyopbfevoe.supabase.co</KaamLinkSupabaseUrl>
-		<KaamLinkSupabaseAnonKey Condition="'$(KaamLinkSupabaseAnonKey)' == ''">sb_publishable_LdzdUbTuA5Ao7OWVHUv_EQ_jk7Xczzh</KaamLinkSupabaseAnonKey>
+		<KaamLinkSupabaseUrl Condition="'$(KaamLinkSupabaseUrl)' == ''">https://zyklrndmmcmsktagkzek.supabase.co</KaamLinkSupabaseUrl>
+		<KaamLinkSupabaseAnonKey Condition="'$(KaamLinkSupabaseAnonKey)' == ''">sb_publishable_FV1pX1Xo3QCxCabFetDhIg_RszBDMab</KaamLinkSupabaseAnonKey>
 		<AndroidManifest Condition="'$(Configuration)' == 'Debug'">Platforms\Android\AndroidManifest.Debug.xml</AndroidManifest>
 
 		<!-- Minimum Android 5.0 (API 21): required to reach the affordable devices this product targets. -->

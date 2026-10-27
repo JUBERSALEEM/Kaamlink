@@ -39,8 +39,8 @@ services:
       Auth__Jwt__RefreshTokenDays: "30"
       Otp__Provider: log
       Otp__HashingKey: ${OTP_HASHING_KEY:-dev-only-hashing-key-0123}
-      Supabase__Url: ${SUPABASE_URL:-https://sdxywcosqidyopbfevoe.supabase.co}
-      Supabase__AnonKey: ${SUPABASE_ANON_KEY:-sb_publishable_LdzdUbTuA5Ao7OWVHUv_EQ_jk7Xczzh}
+      Supabase__Url: ${SUPABASE_URL:-https://zyklrndmmcmsktagkzek.supabase.co}
+      Supabase__AnonKey: ${SUPABASE_ANON_KEY:-sb_publishable_FV1pX1Xo3QCxCabFetDhIg_RszBDMab}
     ports:
       - "8080:8080"
 

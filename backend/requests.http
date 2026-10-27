@@ -1,7 +1,7 @@
 @host = http://localhost:8080
 @phone = +971501234567
-@supabaseUrl = https://sdxywcosqidyopbfevoe.supabase.co
-@supabaseAnonKey = PASTE_PUBLISHABLE_ANON_KEY
+@supabaseUrl = https://zyklrndmmcmsktagkzek.supabase.co
+@supabaseAnonKey = sb_publishable_FV1pX1Xo3QCxCabFetDhIg_RszBDMab
 @supabaseEmail = user@example.com
 @supabaseOtp = 12345678
 @supabasePassword = YourPass123

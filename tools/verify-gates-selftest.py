@@ -372,7 +372,7 @@ CASES = [
     (
         "service-role key committed to the client",
         "KaamLink.csproj",
-        ("sb_publishable_LdzdUbTuA5Ao7OWVHUv_EQ_jk7Xczzh", "sb_secret_SHOULD_NOT_SHIP"),
+        ("sb_publishable_FV1pX1Xo3QCxCabFetDhIg_RszBDMab", "sb_secret_SHOULD_NOT_SHIP"),
         ["tools/verify-email-auth.py"],
     ),
     (
@@ -409,6 +409,18 @@ CASES = [
         "Management API token missing from OTP script",
         "tools/configure-supabase-otp-templates.py",
         ('os.environ.get("SUPABASE_ACCESS_TOKEN"', 'os.environ.get("SUPABASE_MANAGEMENT_TOKEN_TYPO"'),
+        ["tools/verify-email-auth.py"],
+    ),
+    (
+        "helper Edge Function loses admin-token protection",
+        "backend/supabase/functions/configure-otp-templates/index.ts",
+        ('Deno.env.get("OTP_TEMPLATE_ADMIN_TOKEN")', 'Deno.env.get("NO_ADMIN_TOKEN")'),
+        ["tools/verify-email-auth.py"],
+    ),
+    (
+        "helper Edge Function targets the wrong project",
+        "backend/supabase/functions/configure-otp-templates/index.ts",
+        ('PROJECT_REF = "zyklrndmmcmsktagkzek"', 'PROJECT_REF = "wrong-project-ref"'),
         ["tools/verify-email-auth.py"],
     ),
 ]

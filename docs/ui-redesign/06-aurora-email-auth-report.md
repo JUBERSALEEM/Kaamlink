@@ -43,22 +43,33 @@ backend verifies them with GoTrue before issuing its own session tokens.
 
 ## Supabase changes performed
 
-Connector-supported config applied to project `kaamlink-magic-link`
-(`sdxywcosqidyopbfevoe`):
+A fresh dedicated project `kaamlink-mobile-auth` (`zyklrndmmcmsktagkzek`) was
+created; the old `kaamlink-magic-link` project was deleted and the unrelated
+`Proglass Automation` project is not used. A dedicated
+publishable key `kaamlink_mobile`
+(`sb_publishable_FV1pX1Xo3QCxCabFetDhIg_RszBDMab`) is the only Supabase key in
+the client.
+
+Connector-supported config applied to the new project:
 
 - `external_email_enabled: true`
 - `disable_signup: false`
 - `mailer_autoconfirm: false`
 - `external_phone_enabled: false`, `sms_autoconfirm: false`
 - `jwt_exp: 3600`
-- `site_url`: `https://sdxywcosqidyopbfevoe.supabase.co/functions/v1/auth-confirmed`
-- `uri_allow_list`: `kaamlink://auth-callback` + the `auth-confirmed` URL
+- effective `refresh_token_rotation_enabled: true`,
+  `security_refresh_token_reuse_interval: 10`
+- `site_url`: `https://zyklrndmmcmsktagkzek.supabase.co/functions/v1/auth-confirmed`
+- `uri_allow_list`: `kaamlink://auth-callback`, `kaamlink://auth-confirmed` +
+  the `auth-confirmed` URL
 
 Edge Functions deployed:
 
 - `auth-confirmed` — a real HTML page so any leftover confirmation link is not blank.
-- `configure-otp-templates` — helper that applies the OTP templates from inside
-  Supabase once `SUPABASE_ACCESS_TOKEN` is stored as a project secret.
+- `configure-otp-templates` v2 — protected helper that applies the OTP templates
+  from inside Supabase. It requires the `x-admin-token` header matching the
+  `OTP_TEMPLATE_ADMIN_TOKEN` secret and reads the scoped Management API PAT from
+  the `SUPABASE_ACCESS_TOKEN` secret.
 
 Hosted email templates and `mailer_otp_length` cannot be changed by the connected
 Supabase tool. The repo includes `tools/configure-supabase-otp-templates.py`
@@ -70,9 +81,10 @@ python3 tools/configure-supabase-otp-templates.py
 ```
 
 Do not paste the token into chat or commit it. The script changes **both** the
-Magic Link/OTP and Confirm signup templates to `{{ .Token }}`, sets OTP length to
-6, and password minimum to 8. Until it runs, the default OTP length is 8; the app
-accepts 6–8 digits. Full steps:
+Magic Link/OTP and Confirm signup templates to `{{ .Token }}`, keeps the hosted
+8-digit OTP length, and raises the password minimum to 8. Until it runs, the
+default `password_min_length` is 6 and the default emails still contain a click
+link; the app accepts 8-digit codes. Full steps:
 [`docs/email-magic-link-setup.md`](../email-magic-link-setup.md).
 
 ## Static verification
@@ -90,11 +102,12 @@ accepts 6–8 digits. Full steps:
 | `verify-global-phone-directory.py` | 37 checks, 0 failures |
 | `verify-compile-surface.py` | 416 checks, 0 failures |
 | `verify-connectivity.py` | 49 checks, 0 failures |
-| `verify-email-auth.py` | 119 checks, 0 failures |
-| `verify-gates-selftest.py` | 62 injected defects detected; tree restored clean |
+| `verify-email-auth.py` | 135 checks, 0 failures |
+| `verify-gates-selftest.py` | 64 injected defects detected; tree restored clean |
 
 New negative tests cover OTP command binding, password-setup backend flag,
-confirm-signup template, Management API token and Android intent forwarding.
+confirm-signup template, Management API token, Android intent forwarding,
+helper Edge Function admin-token protection and fresh-project targeting.
 
 ## Remaining verification (explicitly not done here)
 
