@@ -11,21 +11,23 @@
     <!-- Mobile-first role chooser. Soft depth supports hierarchy; text, strokes,
          and native buttons remain the actual affordances. -->
     <ScrollView>
-        <VerticalStackLayout Padding="20,14,20,24" Spacing="14">
+        <VerticalStackLayout Padding="20,20,20,28" Spacing="15">
 
-            <Grid ColumnDefinitions="46,*,Auto" ColumnSpacing="10">
+            <Grid ColumnDefinitions="48,*,Auto" ColumnSpacing="10">
                 <Image Grid.Column="0"
                        Source="kaamlink_mark.svg"
-                       HeightRequest="42"
-                       WidthRequest="42"
+                       HeightRequest="44"
+                       WidthRequest="44"
                        Aspect="AspectFit"
                        SemanticProperties.Description="{x:Static strings:AppStrings.AppName}" />
-                <Label Grid.Column="1"
-                       Style="{StaticResource SectionText}"
-                       FontSize="18"
-                       TextColor="{DynamicResource Primary}"
-                       Text="{x:Static strings:AppStrings.AppName}"
-                       VerticalOptions="Center" />
+                <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
+                    <Label Style="{StaticResource SectionText}"
+                           FontSize="18"
+                           TextColor="{DynamicResource Primary}"
+                           Text="{x:Static strings:AppStrings.AppName}" />
+                    <Label Style="{StaticResource CaptionText}"
+                           Text="{x:Static strings:AppStrings.AppTagline}" />
+                </VerticalStackLayout>
                 <Button Grid.Column="2"
                         Style="{StaticResource ThemeToggleButton}"
                         Command="{Binding ToggleThemeCommand}"
@@ -33,44 +35,19 @@
                         Text="{Binding ThemeToggleLabel}" />
             </Grid>
 
-            <Border Style="{StaticResource WelcomeHeroSurface}">
-                <Grid>
-                    <Image Source="login_hero.svg"
-                           HeightRequest="154"
-                           Aspect="AspectFill"
-                           SemanticProperties.Description="{x:Static strings:AppStrings.WelcomeIllustrationDescription}" />
-                    <Border HorizontalOptions="End"
-                            VerticalOptions="End"
-                            Margin="10"
-                            Padding="10,6"
-                            BackgroundColor="{DynamicResource AccentSoft}"
-                            Stroke="{DynamicResource BorderStrongBrush}"
-                            StrokeThickness="1">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="16" />
-                        </Border.StrokeShape>
-                        <HorizontalStackLayout Spacing="6">
-                            <Label Style="{StaticResource IconGlyphPrimary}"
-                                   FontSize="14"
-                                   TextColor="{DynamicResource Accent}"
-                                   Text="{StaticResource IconBadgeCheck}"
-                                   VerticalOptions="Center" />
-                            <Label Style="{StaticResource CaptionText}"
-                                   TextColor="{DynamicResource Accent}"
-                                   Text="{x:Static strings:AppStrings.WelcomeSkillFirstBadge}"
-                                   VerticalOptions="Center" />
-                        </HorizontalStackLayout>
-                    </Border>
-                </Grid>
-            </Border>
-
-            <VerticalStackLayout Spacing="6" Padding="0,2,0,2">
+            <VerticalStackLayout Spacing="6" Padding="0,2,0,0">
                 <Label SemanticProperties.HeadingLevel="Level1"
                        Style="{StaticResource DisplayText}"
-                       Text="{x:Static strings:AppStrings.WelcomeHeadline}" />
+                       Text="{x:Static strings:AppStrings.LoginWelcomeHeadline}" />
                 <Label Style="{StaticResource BodyText}"
-                       Text="{x:Static strings:AppStrings.WelcomeBody}" />
+                       Text="{x:Static strings:AppStrings.LoginWelcomeSubtitle}" />
             </VerticalStackLayout>
+
+            <Border Style="{StaticResource LoginHeroSurface}">
+                <Image Source="login_hero.svg"
+                       Aspect="AspectFit"
+                       SemanticProperties.Description="{x:Static strings:AppStrings.LoginHeroDescription}" />
+            </Border>
 
             <ActivityIndicator IsRunning="{Binding IsBusy}"
                                IsVisible="{Binding IsBusy}"

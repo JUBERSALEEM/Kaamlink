@@ -379,12 +379,16 @@ for style_key in ("SurfaceCard", "PrimaryButton", "IconTile"):
 hardcoded_colors = re.findall(r'Value="#[0-9A-Fa-f]{3,8}"', STYLES)
 ok(not hardcoded_colors, f"Styles.xaml: raw hex values {hardcoded_colors}")
 
-# The post-auth welcome/role screen should retain a clear mobile hero, localized
-# proposition, and visible native role actions; decorative depth is not the CTA.
+# The role chooser carries the same approved welcome identity and illustration
+# treatment as sign-in, then adds the role choices without replacing the journey.
 welcome = PAGE_TEXT.get("Features/Onboarding/RoleSelectionPage.xaml", "")
-ok("login_hero.svg" in welcome and "WelcomeHeroSurface" in welcome
-   and "WelcomeSkillFirstBadge" in welcome,
-   "RoleSelectionPage: rich welcome hero/skill-first badge is missing")
+login = PAGE_TEXT.get("Features/Auth/LoginPage.xaml", "")
+ok("login_hero.svg" in welcome and 'Style="{StaticResource LoginHeroSurface}"' in welcome
+   and 'Text="{x:Static strings:AppStrings.LoginWelcomeHeadline}"' in welcome
+   and 'Text="{x:Static strings:AppStrings.LoginWelcomeSubtitle}"' in welcome
+   and 'Text="{x:Static strings:AppStrings.AppTagline}"' in welcome
+   and 'Style="{StaticResource LoginHeroSurface}"' in login,
+   "RoleSelectionPage: approved login welcome identity/hero is not shared")
 ok('Command="{Binding NavigateToWorkerCommand}"' in welcome
    and 'Command="{Binding NavigateToEmployerCommand}"' in welcome,
    "RoleSelectionPage: both role choices need real, visible action buttons")

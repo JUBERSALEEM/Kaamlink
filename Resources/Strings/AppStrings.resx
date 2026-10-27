@@ -652,12 +652,6 @@
   <data name="ErrorAssessmentAlreadyCompleted" xml:space="preserve">
     <value>This attempt was already submitted. Start a new one to retry.</value>
   </data>
-  <data name="WelcomeHeadline" xml:space="preserve">
-    <value>Find work you're good at.</value>
-  </data>
-  <data name="WelcomeBody" xml:space="preserve">
-    <value>KaamLink matches workers and employers across the UAE on practical skill — not CV filters.</value>
-  </data>
   <data name="RoleWorkerCardBody" xml:space="preserve">
     <value>Build a Skill Passport, prove your skills, apply to real vacancies.</value>
   </data>
@@ -1068,8 +1062,5 @@
   </data>
   <data name="WelcomeIllustrationDescription" xml:space="preserve">
     <value>Workers and an employer planning work together.</value>
-  </data>
-  <data name="WelcomeSkillFirstBadge" xml:space="preserve">
-    <value>Practical skills first</value>
   </data>
 </root>

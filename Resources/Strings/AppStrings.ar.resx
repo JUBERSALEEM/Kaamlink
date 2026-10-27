@@ -640,12 +640,6 @@
   <data name="ErrorAssessmentAlreadyCompleted" xml:space="preserve">
     <value>تم إرسال هذه المحاولة مسبقًا. ابدأ محاولة جديدة لإعادة المحاولة.</value>
   </data>
-  <data name="WelcomeHeadline" xml:space="preserve">
-    <value>اعثر على عمل تُتقنه.</value>
-  </data>
-  <data name="WelcomeBody" xml:space="preserve">
-    <value>يربط كاملنك العمال بأصحاب العمل في الإمارات بناءً على المهارة العملية، لا على فلاتر السيرة الذاتية.</value>
-  </data>
   <data name="RoleWorkerCardBody" xml:space="preserve">
     <value>أنشئ جواز مهاراتك، وأثبت مهاراتك، وتقدّم إلى وظائف حقيقية.</value>
   </data>
@@ -1056,8 +1050,5 @@
   </data>
   <data name="WelcomeIllustrationDescription" xml:space="preserve">
     <value>عمال وصاحب عمل يخططون للعمل معًا.</value>
-  </data>
-  <data name="WelcomeSkillFirstBadge" xml:space="preserve">
-    <value>المهارات العملية أولاً</value>
   </data>
 </root>

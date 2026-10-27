@@ -194,16 +194,16 @@
         </Setter>
     </Style>
 
-    <!-- Welcome hero: one raised tactile frame, with the illustration as decoration. -->
-    <Style TargetType="Border" x:Key="WelcomeHeroSurface" BasedOn="{StaticResource SurfaceCard}">
-        <Setter Property="Background" Value="{DynamicResource ClayCardSoftBrush}" />
-        <Setter Property="Stroke" Value="{DynamicResource BorderStrongBrush}" />
+    <!-- Shared welcome illustration frame keeps role selection and sign-in visually aligned. -->
+    <Style TargetType="Border" x:Key="LoginHeroSurface">
+        <Setter Property="Background" Value="{DynamicResource ClayCardBrush}" />
+        <Setter Property="Stroke" Value="{DynamicResource BorderBrush}" />
         <Setter Property="StrokeThickness" Value="1" />
         <Setter Property="Padding" Value="6" />
-        <Setter Property="clay:ClayMaterial.Elevation" Value="Raised" />
+        <Setter Property="HeightRequest" Value="124" />
         <Setter Property="StrokeShape">
             <Setter.Value>
-                <RoundRectangle CornerRadius="24" />
+                <RoundRectangle CornerRadius="20" />
             </Setter.Value>
         </Setter>
     </Style>

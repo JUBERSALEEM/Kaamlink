@@ -401,8 +401,6 @@ namespace KaamLink.Resources.Strings
         public static string ErrorAssessmentNotAvailable => ResourceManager.GetString(nameof(ErrorAssessmentNotAvailable), Culture)!;
         public static string ErrorAssessmentSkillNotOnProfile => ResourceManager.GetString(nameof(ErrorAssessmentSkillNotOnProfile), Culture)!;
         public static string ErrorAssessmentAlreadyCompleted => ResourceManager.GetString(nameof(ErrorAssessmentAlreadyCompleted), Culture)!;
-        public static string WelcomeHeadline => ResourceManager.GetString(nameof(WelcomeHeadline), Culture)!;
-        public static string WelcomeBody => ResourceManager.GetString(nameof(WelcomeBody), Culture)!;
         public static string RoleWorkerCardBody => ResourceManager.GetString(nameof(RoleWorkerCardBody), Culture)!;
         public static string RoleEmployerCardBody => ResourceManager.GetString(nameof(RoleEmployerCardBody), Culture)!;
         public static string WorkerOnboardingCta => ResourceManager.GetString(nameof(WorkerOnboardingCta), Culture)!;
@@ -540,6 +538,5 @@ namespace KaamLink.Resources.Strings
         public static string CountrySearchLabel => ResourceManager.GetString(nameof(CountrySearchLabel), Culture)!;
         public static string CountryNoResults => ResourceManager.GetString(nameof(CountryNoResults), Culture)!;
         public static string WelcomeIllustrationDescription => ResourceManager.GetString(nameof(WelcomeIllustrationDescription), Culture)!;
-        public static string WelcomeSkillFirstBadge => ResourceManager.GetString(nameof(WelcomeSkillFirstBadge), Culture)!;
     }
 }

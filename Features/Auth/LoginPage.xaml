@@ -44,14 +44,7 @@
                            Text="{x:Static strings:AppStrings.LoginWelcomeSubtitle}" />
                 </VerticalStackLayout>
 
-                <Border Background="{DynamicResource ClayCardBrush}"
-                        Stroke="{DynamicResource BorderBrush}"
-                        StrokeThickness="1"
-                        Padding="6"
-                        HeightRequest="124">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="20" />
-                    </Border.StrokeShape>
+                <Border Style="{StaticResource LoginHeroSurface}">
                     <Image Source="login_hero.svg"
                            Aspect="AspectFit"
                            SemanticProperties.Description="{x:Static strings:AppStrings.LoginHeroDescription}" />
