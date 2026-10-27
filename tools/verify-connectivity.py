@@ -200,9 +200,10 @@ ok("ItemSizingStrategy=\"MeasureFirstItem\"" in login_page,
 ok("linearGradient" in appicon and "linearGradient" in mark and "linearGradient" in hero,
    "app icon, login mark and hero share the rich gradient language",
    "one brand asset regressed to flat colour")
-ok("62E6CF" in appicon and "62E6CF" in appiconfg and "62E6CF" in mark
-   and "5B91FF" in appicon and "5B91FF" in mark,
-   "adaptive icon foreground and login mark share the mint/electric-blue accents",
+ok("6FE7D2" in appicon and "6FE7D2" in appiconfg and "6FE7D2" in mark
+   and "8B7BFF" in appicon and "8B7BFF" in mark
+   and "4B3FD6" in appicon and "4B3FD6" in mark,
+   "adaptive icon foreground and login mark share the aurora mint/indigo/violet accents",
    "brand mark and app icon use different accent colours")
 
 section("Android resource filenames (Resizetizer)")

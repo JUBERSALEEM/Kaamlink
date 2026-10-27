@@ -31,6 +31,22 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IAuditService, AuditService>();
 
+        // GoTrue token verification. One shared HttpClient with an explicit
+        // timeout; base address comes from the validated Supabase options.
+        services.AddSingleton(sp =>
+        {
+            var options = sp.GetRequiredService<SupabaseOptions>();
+            var baseUrl = options.IsConfigured
+                ? options.Url.TrimEnd('/') + "/"
+                : "https://127.0.0.1:9/";
+            return new HttpClient
+            {
+                BaseAddress = new Uri(baseUrl, UriKind.Absolute),
+                Timeout = TimeSpan.FromSeconds(10)
+            };
+        });
+        services.AddScoped<ISupabaseUserVerifier, SupabaseUserVerifier>();
+
         services.AddScoped<IWorkerProfileRepository, WorkerProfileRepository>();
         services.AddScoped<ICompanyRepository, CompanyRepository>();
         services.AddScoped<ISkillCatalogRepository, SkillCatalogRepository>();

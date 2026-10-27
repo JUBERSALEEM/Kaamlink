@@ -41,15 +41,18 @@ python3 -m venv /tmp/login-preview-venv
 /tmp/login-preview-venv/bin/pip install Pillow
 for theme in light dusk; do
   /tmp/login-preview-venv/bin/python tools/render-login-preview.py --theme "$theme" \
-    --out "docs/ui-redesign/mockups/login-upgraded-$theme.png"
+    --out "docs/ui-redesign/mockups/login-aurora-$theme.png"
 done
+/tmp/login-preview-venv/bin/python tools/render-app-icon-preview.py \
+  --out docs/ui-redesign/app-icon-upgraded-preview.png
 ```
 
 `login-current-*.png` are the pre-upgrade clay snapshots;
-`login-upgraded-*.png` are the **final rich light / midnight-navy dark** palettes.
-Together with `docs/ui-redesign/app-icon-upgraded-preview.png` they are the visual
-references for the shipped design. The older `*.png` files remain for design
-history only.
+`login-upgraded-*.png` document the previous rich light / midnight-navy dark pass.
+`login-aurora-*.png` are the **current Aurora Clay / Aurora Dusk** login screens with
+email magic link, the sent-link state and the tickable terms checkbox. Together with
+`docs/ui-redesign/app-icon-upgraded-preview.png` they are the visual references for
+the shipped design. The older `*.png` files remain for design history only.
 
 The colour values in `mockup_kit.py` belong to the historical palette; the live
 palette is verified by `tools/verify-theme-contrast.py` and

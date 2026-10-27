@@ -25,7 +25,7 @@
 | Styles | `Resources/Styles/Colors.xaml` (tokens) + `Resources/Styles/Styles.xaml` (base + typography + `Card`) |
 | Converters | `InverseBoolConverter`, `VerificationStateColorConverter`, `StatusColorConverter`, `SelectedOptionBackgroundConverter`, `SelectedOptionTextColorConverter` (registered in `App.xaml`) |
 | Backend | ASP.NET Core 10 modular monolith + PostgreSQL; auth/worker/company/vacancy/application/assessment controllers present |
-| Static verifiers | `tools/verify-phase03.py` (103 checks), `tools/verify-phase04.py` (105), `tools/verify-phase05.py` (88), plus the redesign gates `tools/verify-bindings.py` (347 compiled bindings) and `tools/verify-ui-redesign.py` (350 checks) added in Phase 4/6 |
+| Static verifiers | `tools/verify-phase03.py` (105 checks), `tools/verify-phase04.py` (105), `tools/verify-phase05.py` (88), plus the redesign gates `tools/verify-bindings.py` (377 compiled bindings), `tools/verify-ui-redesign.py` (480 checks), `tools/verify-compile-surface.py` (387), `tools/verify-connectivity.py` (49) and `tools/verify-email-auth.py` (76) |
 | Tests | xUnit unit + integration tests under `backend/tests/` |
 | Sample-code leftovers | none found — every XAML page is live |
 
@@ -429,8 +429,8 @@ The repo's identity is a **generic indigo/violet SaaS palette** (`#4F46E5` prima
 
 **Direction: "Marine Blue + Trust Teal"** — a disciplined, low-chrome identity:
 
-* A deep, confident **electric marine blue** for primary action and brand (`#075FC2`), with a brighter `#5B91FF` gradient top and a darker pressed state — see the current palette in `04-claymorphism-theme.md`.
-* A restrained **mint teal** (`#0B6E68` / `#62E6CF`) as the single accent, reserved for *verification/trust* moments (verified marks, assessment accents).
+* A rich, modern **aurora indigo/violet** for primary action and brand (`#4B3FD6`), with a luminous `#8B7BFF` gradient top and a darker pressed state — see the current palette in `04-claymorphism-theme.md`.
+* A restrained **cyan/mint** accent (`#0B6E7A` / `#5DE3D4` light, `#6FE7D2` dusk) reserved for *verification/trust* moments (verified marks, assessment accents).
 * Warm amber for pending states, calm green for success, explicit red for destructive/rejected — always paired with text, never colour alone.
 * Neutral, slightly cool greys for canvas/borders/text; **flat cards with 1px borders and no drop shadows** (faster on low-end devices, calmer visually).
 * Compact spacing rhythm (4/8/12/16/20/24; 16dp screen margin), 12–14dp radii, 48dp controls, 15sp body.

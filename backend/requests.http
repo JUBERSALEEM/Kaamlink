@@ -1,5 +1,6 @@
 @host = http://localhost:8080
 @phone = +971501234567
+@supabaseAccessToken = paste-access-token-from-magic-link-fragment
 
 ### Liveness / readiness
 GET {{host}}/health/live
@@ -19,6 +20,14 @@ POST {{host}}/api/v1/auth/otp/verify
 Content-Type: application/json
 
 { "phone": "{{phone}}", "code": "000000" }
+
+### 2b) Exchange a verified Supabase magic-link access token → KaamLink token pair
+# The API calls GoTrue /auth/v1/user with this token; it is not accepted directly.
+# @name emailExchange
+POST {{host}}/api/v1/auth/email/exchange
+Content-Type: application/json
+
+{ "accessToken": "{{supabaseAccessToken}}" }
 
 ### 3) Authorized probe
 GET {{host}}/api/v1/auth/me

@@ -14,6 +14,8 @@ namespace KaamLink.Core.Api
 
         Task<AuthTokensResponseDto> VerifyOtpAsync(string phone, string code, CancellationToken ct = default);
 
+        Task<AuthTokensResponseDto> ExchangeSupabaseAsync(string accessToken, CancellationToken ct = default);
+
         Task<SkillCatalogResponseDto> GetSkillsCatalogAsync(CancellationToken ct = default);
 
         /// <summary>Returns null when the caller has no worker profile yet (worker.profile_not_found).</summary>
@@ -85,6 +87,15 @@ namespace KaamLink.Core.Api
             public const string OtpLocked = "auth.otp_locked";
             public const string OtpResendCooldown = "auth.otp_resend_cooldown";
             public const string PhoneInvalid = "auth.phone_invalid";
+            public const string EmailInvalid = "client.email_invalid";
+            public const string TermsRequired = "client.terms_required";
+            public const string SupabaseNotConfigured = "client.supabase_not_configured";
+            public const string SupabaseRateLimited = "auth.supabase_rate_limited";
+            public const string SupabaseSendFailed = "client.supabase_send_failed";
+            public const string SupabaseInvalidLink = "auth.supabase_invalid";
+            public const string SupabaseUnavailable = "auth.supabase_unavailable";
+            public const string SupabaseTokenRequired = "auth.supabase_token_required";
+            public const string SupabaseServerNotConfigured = "auth.supabase_not_configured";
             public const string AlreadyApplied = "jobs.already_applied";
             public const string ProfileRequired = "worker.profile_required";
             public const string OnboardingIncomplete = "worker.onboarding_incomplete";
@@ -112,6 +123,11 @@ namespace KaamLink.Core.Api
         public Task<AuthTokensResponseDto> VerifyOtpAsync(string phone, string code, CancellationToken ct = default) =>
             SendAsync<AuthTokensResponseDto>(HttpMethod.Post, "auth/otp/verify",
                 new VerifyOtpRequestDto(phone, code), AppJsonContext.Default.VerifyOtpRequestDto, AppJsonContext.Default.AuthTokensResponseDto, ct);
+
+        public Task<AuthTokensResponseDto> ExchangeSupabaseAsync(string accessToken, CancellationToken ct = default) =>
+            SendAsync<AuthTokensResponseDto>(HttpMethod.Post, "auth/email/exchange",
+                new SupabaseExchangeRequestDto(accessToken), AppJsonContext.Default.SupabaseExchangeRequestDto,
+                AppJsonContext.Default.AuthTokensResponseDto, ct);
 
         public Task<SkillCatalogResponseDto> GetSkillsCatalogAsync(CancellationToken ct = default) =>
             SendAsync<SkillCatalogResponseDto>(HttpMethod.Get, "skills/catalog",

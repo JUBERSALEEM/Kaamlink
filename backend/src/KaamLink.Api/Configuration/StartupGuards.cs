@@ -8,7 +8,7 @@ namespace KaamLink.Api.Configuration;
 /// </summary>
 public static class StartupGuards
 {
-    public static void ValidateOptions(JwtOptions jwt, OtpOptions otp)
+    public static void ValidateOptions(JwtOptions jwt, OtpOptions otp, SupabaseOptions? supabase = null)
     {
         var problems = new List<string>();
 
@@ -24,6 +24,15 @@ public static class StartupGuards
             problems.Add("Otp:ChallengeLifetimeSeconds must be between 60 and 3600.");
         if (otp.ResendCooldownSeconds is < 0 or > 3600)
             problems.Add("Otp:ResendCooldownSeconds must be between 0 and 3600.");
+
+        // A half-configured Supabase integration would let the app render a
+        // working-looking email CTA that always fails at the exchange endpoint.
+        if (supabase is not null
+            && (!string.IsNullOrWhiteSpace(supabase.Url) || !string.IsNullOrWhiteSpace(supabase.AnonKey))
+            && !supabase.IsConfigured)
+        {
+            problems.Add("Supabase:Url and Supabase:AnonKey must both be set to valid public values.");
+        }
 
         if (problems.Count > 0)
         {
@@ -44,6 +53,16 @@ public static class StartupGuards
         {
             throw new InvalidOperationException(
                 "Otp:Provider='log' is forbidden in Production. Wire a real SMS provider before deploying.");
+        }
+
+        var supabaseUrl = configuration[$"{SupabaseOptions.SectionName}:Url"] ?? string.Empty;
+        var supabaseAnonKey = configuration[$"{SupabaseOptions.SectionName}:AnonKey"] ?? string.Empty;
+        if (!Uri.TryCreate(supabaseUrl, UriKind.Absolute, out var supabaseUri)
+            || supabaseUri.Scheme != Uri.UriSchemeHttps
+            || string.IsNullOrWhiteSpace(supabaseAnonKey))
+        {
+            throw new InvalidOperationException(
+                "Supabase:Url (HTTPS) and Supabase:AnonKey are required in Production for email magic-link sign-in.");
         }
 
         var connectionString = configuration.GetConnectionString("Postgres") ?? string.Empty;

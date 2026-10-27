@@ -60,9 +60,9 @@ namespace KaamLink.Core.Presentation.Clay
             // would read as a drop-shadowed card, which is the opposite of clay.
             var (offsetX, offsetY, radius, opacity) = elevation switch
             {
-                ClayElevation.Pill => (3f, 4f, 12f, 0.18f),
-                ClayElevation.Card => (5f, 7f, 20f, 0.22f),
-                _ => (7f, 10f, 26f, 0.26f)
+                ClayElevation.Pill => (3f, 5f, 14f, 0.20f),
+                ClayElevation.Card => (5f, 8f, 24f, 0.24f),
+                _ => (7f, 11f, 30f, 0.28f)
             };
 
             element.Shadow = new Shadow
@@ -140,7 +140,7 @@ namespace KaamLink.Core.Presentation.Clay
                 return brush;
             }
 
-            return new SolidColorBrush(Color.FromArgb("#4F5C86"));
+            return new SolidColorBrush(Color.FromArgb("#6E62A8"));
         }
     }
 }

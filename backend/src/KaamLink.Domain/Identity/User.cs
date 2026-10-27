@@ -9,8 +9,15 @@ public sealed class User
 {
     public Guid Id { get; private set; }
 
-    /// <summary>Normalized E.164 phone number. Unique — the primary login identifier.</summary>
+    /// <summary>
+    /// Normalized E.164 phone number. Unique. Email-magic-link accounts receive a
+    /// synthetic, non-dialable +999 identity so phone-OTP and email identities can
+    /// coexist in the same user table without weakening phone verification.
+    /// </summary>
     public string PhoneNumber { get; private set; } = string.Empty;
+
+    /// <summary>Confirmed email for magic-link identities; null for phone-only accounts.</summary>
+    public string? Email { get; private set; }
 
     /// <summary>Optional; set during profile onboarding (Phase 03), not at registration.</summary>
     public string? DisplayName { get; private set; }
@@ -42,6 +49,22 @@ public sealed class User
         UpdatedAt = now
     };
 
+    /// <summary>
+    /// First successful Supabase magic-link exchange registers the account. The
+    /// synthetic phone is derived from the verified Supabase subject, not from a
+    /// user-supplied number, so it cannot collide with a real phone identity.
+    /// </summary>
+    public static User RegisterFromEmail(string email, string syntheticPhoneNumber, DateTimeOffset now) => new()
+    {
+        Id = Guid.NewGuid(),
+        PhoneNumber = syntheticPhoneNumber,
+        Email = email,
+        Status = UserStatus.Active,
+        IsPlatformAdmin = false,
+        CreatedAt = now,
+        UpdatedAt = now
+    };
+
     public void Block(DateTimeOffset now)
     {
         Status = UserStatus.Blocked;
@@ -53,6 +76,7 @@ public sealed class User
     {
         Status = UserStatus.Deleted;
         PhoneNumber = $"deleted:{Id}";
+        Email = null;
         DisplayName = null;
         UpdatedAt = now;
     }

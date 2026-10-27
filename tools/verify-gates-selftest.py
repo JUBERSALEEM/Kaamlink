@@ -175,7 +175,7 @@ CASES = [
     (
         "theme palette missing a token",
         "Resources/Themes/ClayDusk.xaml",
-        ('    <Color x:Key="AccentSoft">#124039</Color>\n', ""),
+        ('    <Color x:Key="AccentSoft">#123E3B</Color>\n', ""),
         ["tools/verify-theme-contrast.py"],
     ),
     (
@@ -349,6 +349,43 @@ CASES = [
         "Features/Auth/LoginPage.xaml",
         ('IsEnabled="False"', 'IsEnabled="True"'),
         ["tools/verify-connectivity.py"],
+    ),
+    (
+        "magic-link redirect URI drift",
+        "Core/Api/SupabaseConfig.cs",
+        ('RedirectUri = "kaamlink://auth-callback"', 'RedirectUri = "kaamlink://wrong"'),
+        ["tools/verify-email-auth.py"],
+    ),
+    (
+        "terms checkbox no longer gates sign-in",
+        "Features/Auth/LoginViewModel.cs",
+        ("if (!TermsAccepted)", "if (false)"),
+        ["tools/verify-email-auth.py"],
+    ),
+    (
+        "backend exchange skips Supabase verification",
+        "backend/src/KaamLink.Application/Auth/AuthService.cs",
+        ("var identity = await supabaseVerifier.VerifyAsync(request.AccessToken, ct);",
+         'var identity = new SupabaseIdentity("spoofed", "attacker@example.com");'),
+        ["tools/verify-email-auth.py"],
+    ),
+    (
+        "service-role key committed to the client",
+        "KaamLink.csproj",
+        ("sb_publishable_LdzdUbTuA5Ao7OWVHUv_EQ_jk7Xczzh", "sb_secret_SHOULD_NOT_SHIP"),
+        ["tools/verify-email-auth.py"],
+    ),
+    (
+        "magic-link deep link is no longer handled",
+        "App.xaml.cs",
+        ("OnAppLinkRequestReceived", "OnAppLinkRequestReceivedTYPO"),
+        ["tools/verify-email-auth.py"],
+    ),
+    (
+        "Android deep-link intent is not forwarded",
+        "MauiProgram.cs",
+        ("ConfigureLifecycleEvents", "ConfigureLifecycleEventsTYPO"),
+        ["tools/verify-email-auth.py"],
     ),
 ]
 

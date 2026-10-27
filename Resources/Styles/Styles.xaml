@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!--
-    KaamLink design system — v2.0 "Clay".
+    KaamLink design system — v3.0 "Aurora Clay".
     Spec: docs/ui-redesign/04-claymorphism-theme.md
 
     How the accessible soft-clay look is built:
-      * Surface: calm, near-tone solid fills (`Clay*Brush`); brand action fills may gradient.
+      * Surface: aurora lavender/violet clay fills (`Clay*Brush`); brand action fills gradient.
       * Edge: explicit 1dp outline on controls/cards, independent of soft shadow.
       * Depth: a restrained cast shadow, applied per element by `clay:ClayMaterial.Elevation`
         so every element owns its Shadow instance (a Style-set Shadow would be shared).
@@ -156,7 +156,7 @@
         <Setter Property="clay:ClayMaterial.Elevation" Value="Pill" />
         <Setter Property="StrokeShape">
             <Setter.Value>
-                <RoundRectangle CornerRadius="14" />
+                <RoundRectangle CornerRadius="18" />
             </Setter.Value>
         </Setter>
     </Style>
@@ -166,7 +166,7 @@
         <Setter Property="WidthRequest" Value="52" />
         <Setter Property="StrokeShape">
             <Setter.Value>
-                <RoundRectangle CornerRadius="18" />
+                <RoundRectangle CornerRadius="22" />
             </Setter.Value>
         </Setter>
     </Style>
@@ -180,7 +180,7 @@
         <Setter Property="clay:ClayMaterial.Elevation" Value="Card" />
         <Setter Property="StrokeShape">
             <Setter.Value>
-                <RoundRectangle CornerRadius="22" />
+                <RoundRectangle CornerRadius="28" />
             </Setter.Value>
         </Setter>
     </Style>
@@ -189,7 +189,7 @@
         <Setter Property="Padding" Value="15" />
         <Setter Property="StrokeShape">
             <Setter.Value>
-                <RoundRectangle CornerRadius="22" />
+                <RoundRectangle CornerRadius="28" />
             </Setter.Value>
         </Setter>
     </Style>
@@ -202,7 +202,7 @@
         <Setter Property="Padding" Value="15" />
         <Setter Property="StrokeShape">
             <Setter.Value>
-                <RoundRectangle CornerRadius="20" />
+                <RoundRectangle CornerRadius="26" />
             </Setter.Value>
         </Setter>
     </Style>
@@ -227,7 +227,7 @@
         <Setter Property="FontSize" Value="15" />
         <Setter Property="HeightRequest" Value="52" />
         <Setter Property="Padding" Value="22,0" />
-        <Setter Property="CornerRadius" Value="18" />
+        <Setter Property="CornerRadius" Value="24" />
         <Setter Property="clay:ClayMaterial.Elevation" Value="Raised" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
@@ -258,7 +258,7 @@
         <Setter Property="FontSize" Value="15" />
         <Setter Property="HeightRequest" Value="52" />
         <Setter Property="Padding" Value="22,0" />
-        <Setter Property="CornerRadius" Value="18" />
+        <Setter Property="CornerRadius" Value="24" />
         <Setter Property="clay:ClayMaterial.Elevation" Value="Pill" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
@@ -287,7 +287,7 @@
         <Setter Property="HeightRequest" Value="44" />
         <Setter Property="MinimumWidthRequest" Value="92" />
         <Setter Property="Padding" Value="11,0" />
-        <Setter Property="CornerRadius" Value="16" />
+        <Setter Property="CornerRadius" Value="22" />
         <Setter Property="clay:ClayMaterial.Elevation" Value="None" />
     </Style>
 
@@ -296,7 +296,7 @@
         <Setter Property="HeightRequest" Value="44" />
         <Setter Property="MinimumWidthRequest" Value="88" />
         <Setter Property="Padding" Value="8,0" />
-        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="CornerRadius" Value="18" />
         <Setter Property="clay:ClayMaterial.Elevation" Value="None" />
     </Style>
 
@@ -317,7 +317,7 @@
         <Setter Property="clay:ClayMaterial.Elevation" Value="None" />
         <Setter Property="StrokeShape">
             <Setter.Value>
-                <RoundRectangle CornerRadius="12" />
+                <RoundRectangle CornerRadius="18" />
             </Setter.Value>
         </Setter>
         <!-- A Border is not a native Button: give the tappable row visible press feedback. -->
@@ -448,7 +448,7 @@
         <Setter Property="Padding" Value="16,0" />
         <Setter Property="StrokeShape">
             <Setter.Value>
-                <RoundRectangle CornerRadius="18" />
+                <RoundRectangle CornerRadius="22" />
             </Setter.Value>
         </Setter>
     </Style>

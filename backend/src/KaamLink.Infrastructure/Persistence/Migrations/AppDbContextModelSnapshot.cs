@@ -279,6 +279,11 @@ namespace KaamLink.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(120)")
                         .HasColumnName("display_name");
 
+                    b.Property<string>("Email")
+                        .HasMaxLength(320)
+                        .HasColumnType("character varying(320)")
+                        .HasColumnName("email");
+
                     b.Property<bool>("IsPlatformAdmin")
                         .HasColumnType("boolean")
                         .HasColumnName("is_platform_admin");
@@ -305,6 +310,10 @@ namespace KaamLink.Infrastructure.Persistence.Migrations
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasDatabaseName("ux_users_email");
 
                     b.HasIndex("PhoneNumber")
                         .IsUnique()

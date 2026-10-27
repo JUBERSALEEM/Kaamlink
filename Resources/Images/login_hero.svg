@@ -1,52 +1,52 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="800" height="420" viewBox="0 0 800 420">
   <defs>
     <linearGradient id="hero-bg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#F7FAFF"/>
-      <stop offset="1" stop-color="#DCE8F8"/>
+      <stop offset="0" stop-color="#F7F5FF"/>
+      <stop offset="1" stop-color="#DFE3FF"/>
     </linearGradient>
     <linearGradient id="hero-wave" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#DCE7F6"/>
-      <stop offset="1" stop-color="#BFD8F2"/>
+      <stop offset="0" stop-color="#EAE6FF"/>
+      <stop offset="1" stop-color="#DCD5FF"/>
     </linearGradient>
     <linearGradient id="coat-blue" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#1F67C8"/>
-      <stop offset="1" stop-color="#1748A8"/>
+      <stop offset="0" stop-color="#6D5BEE"/>
+      <stop offset="1" stop-color="#3323A6"/>
     </linearGradient>
     <linearGradient id="coat-teal" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#1B9C8E"/>
-      <stop offset="1" stop-color="#0A514B"/>
+      <stop offset="0" stop-color="#0E7A73"/>
+      <stop offset="1" stop-color="#084E59"/>
     </linearGradient>
     <linearGradient id="card-rim" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#FFFFFF"/>
-      <stop offset="1" stop-color="#D7DFE9"/>
+      <stop offset="1" stop-color="#DCD9F2"/>
     </linearGradient>
   </defs>
   <rect width="800" height="420" rx="36" fill="url(#hero-bg)"/>
   <!-- Ambient brand orbs. -->
-  <circle cx="632" cy="84" r="126" fill="#D6F2ED" opacity="0.95"/>
-  <circle cx="90" cy="350" r="118" fill="#DCE7F6" opacity="0.7"/>
+  <circle cx="632" cy="84" r="126" fill="#D7F5F1" opacity="0.95"/>
+  <circle cx="90" cy="350" r="118" fill="#EAE6FF" opacity="0.7"/>
   <path d="M0 344c133-74 232-45 349-20 161 35 293 30 451-46v142H0z" fill="url(#hero-wave)"/>
   <!-- Profile card with soft clay rim. -->
-  <rect x="57" y="55" width="261" height="178" rx="24" fill="#9AA9BA" opacity="0.18"/>
+  <rect x="57" y="55" width="261" height="178" rx="24" fill="#8C84C4" opacity="0.18"/>
   <rect x="62" y="60" width="251" height="168" rx="22" fill="#FFFFFF" stroke="url(#card-rim)" stroke-width="2"/>
-  <rect x="84" y="83" width="93" height="13" rx="6.5" fill="#075FC2"/>
-  <rect x="84" y="111" width="182" height="9" rx="4.5" fill="#A9B2CC"/>
-  <rect x="84" y="132" width="152" height="9" rx="4.5" fill="#D7DDEF"/>
-  <rect x="84" y="164" width="104" height="36" rx="18" fill="#0B6E68"/>
+  <rect x="84" y="83" width="93" height="13" rx="6.5" fill="#4B3FD6"/>
+  <rect x="84" y="111" width="182" height="9" rx="4.5" fill="#A6A1C8"/>
+  <rect x="84" y="132" width="152" height="9" rx="4.5" fill="#DAD6F3"/>
+  <rect x="84" y="164" width="104" height="36" rx="18" fill="#0B6E7A"/>
   <path d="m108 182 8 8 17-18" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
   <!-- Two people, connected by the KaamLink link stroke. -->
   <circle cx="516" cy="150" r="48" fill="#C78761"/>
-  <path d="M467 151c-2-43 20-69 51-69 34 0 51 28 47 70l-17-23-47-3-34 25z" fill="#182D48"/>
+  <path d="M467 151c-2-43 20-69 51-69 34 0 51 28 47 70l-17-23-47-3-34 25z" fill="#201B45"/>
   <path d="M423 368c8-99 29-153 95-153 67 0 91 55 99 153" fill="url(#coat-blue)"/>
   <path d="M463 248c19 19 37 27 55 27 20 0 39-9 57-28l22 121H440z" fill="#FFFFFF" opacity="0.94"/>
-  <path d="M519 276v81" stroke="#0B6E68" stroke-width="9" stroke-linecap="round"/>
+  <path d="M519 276v81" stroke="#0B6E7A" stroke-width="9" stroke-linecap="round"/>
   <circle cx="691" cy="199" r="40" fill="#D99A73"/>
-  <path d="M650 199c-1-36 17-58 43-58 29 0 44 24 41 58l-16-19-38-2-28 21z" fill="#182D48"/>
+  <path d="M650 199c-1-36 17-58 43-58 29 0 44 24 41 58l-16-19-38-2-28 21z" fill="#201B45"/>
   <path d="M620 365c8-78 24-120 72-120s67 42 75 120" fill="url(#coat-teal)"/>
-  <path d="M577 214c37 15 70 19 103 12" fill="none" stroke="#62E6CF" stroke-width="12" stroke-linecap="round"/>
-  <circle cx="680" cy="226" r="9" fill="#62E6CF"/>
+  <path d="M577 214c37 15 70 19 103 12" fill="none" stroke="#6FE7D2" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="680" cy="226" r="9" fill="#6FE7D2"/>
   <!-- Verified connection node. -->
-  <circle cx="335" cy="293" r="22" fill="#62E6CF" opacity="0.22"/>
-  <circle cx="335" cy="293" r="17" fill="#62E6CF"/>
-  <path d="m327 293 6 6 11-13" fill="none" stroke="#075FC2" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="335" cy="293" r="22" fill="#6FE7D2" opacity="0.22"/>
+  <circle cx="335" cy="293" r="17" fill="#6FE7D2"/>
+  <path d="m327 293 6 6 11-13" fill="none" stroke="#4B3FD6" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

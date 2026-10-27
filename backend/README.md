@@ -3,7 +3,8 @@
 ASP.NET Core 10 modular monolith behind versioned REST (`/api/v1/**`) — see
 `docs/phase-01-report.md` §E and ADR 0002. Phases so far: **02** identity + phone-OTP
 auth + authorization framework + audit log + rate limiting + CI; **03** worker profiles
-(Skill Passport), company onboarding + admin verification-lite, seeded occupation catalog.
+(Skill Passport), company onboarding + admin verification-lite, seeded occupation catalog;
+**06** Supabase email magic-link verification/exchange and nullable `users.email` identity.
 
 ## Layout
 
@@ -27,6 +28,7 @@ leaks into Application.
 ```
 POST /api/v1/auth/otp/request   { phone }                    → 6-digit code (rate-limited per phone)
 POST /api/v1/auth/otp/verify    { phone, code }              → token pair (registers on first login)
+POST /api/v1/auth/email/exchange { accessToken }             → verifies Supabase token with GoTrue, then issues KaamLink token pair
 POST /api/v1/auth/token/refresh { refreshToken }             → rotated pair; reuse revokes the family
 POST /api/v1/auth/logout        { refreshToken }  (Bearer)   → revokes that refresh token
 GET  /api/v1/auth/me                              (Bearer)   → identity + worker progress + memberships
@@ -78,6 +80,8 @@ POST /api/v1/admin/companies/{id}/review { approve, reason? }(Bearer+) → Verif
 | `Auth__Jwt__SigningKey` | env | Required, min 32 chars. Production rejects `dev-only` placeholders. |
 | `Otp__HashingKey` | env | Required, min 16 chars. |
 | `Otp__Provider` | env | `log` (dev sandbox) — **forbidden in Production** by startup guards. |
+| `Supabase__Url` | env/appsettings | HTTPS project URL, e.g. `https://<ref>.supabase.co`. Required in Production. |
+| `Supabase__AnonKey` | env/appsettings | Public publishable/anon key used only for GoTrue verification. Never a service-role key. |
 | `Database__ApplyMigrationsOnStartup` | env/appsettings | Default: true in Development/Staging, false in Production. |
 | `Admin__BootstrapPhones__0` | env/appsettings | Dev-only platform-admin registration phone(s). Never rely on this in Production. |
 | `ASPNETCORE_ENVIRONMENT` | env | `Development` / `Staging` / `Production`. |
@@ -90,7 +94,7 @@ or `dotnet user-secrets` (Development only).
 **Option A — everything in Docker (recommended):**
 ```bash
 cd backend
-cp .env.example .env            # dev placeholders are fine locally
+cp .env.example .env            # includes public Supabase URL/anon key for magic-link verification
 docker compose up --build       # API on http://localhost:8080 (OTP codes appear in API logs)
 ```
 

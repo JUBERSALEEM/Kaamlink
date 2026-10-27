@@ -22,6 +22,15 @@ namespace KaamLink.Core.Api
 
     public sealed record LogoutRequestDto(string RefreshToken);
 
+    /// <summary>POST /auth/v1/otp — Supabase's email magic-link request body.</summary>
+    public sealed record SupabaseOtpRequestDto(
+        [property: JsonPropertyName("email")] string Email,
+        [property: JsonPropertyName("create_user")] bool CreateUser,
+        [property: JsonPropertyName("email_redirect_to")] string EmailRedirectTo);
+
+    /// <summary>POST /api/v1/auth/email/exchange — verified Supabase access token.</summary>
+    public sealed record SupabaseExchangeRequestDto(string AccessToken);
+
     public sealed record AuthTokensResponseDto(
         string TokenType,
         string AccessToken,
@@ -304,6 +313,8 @@ namespace KaamLink.Core.Api
     [JsonSerializable(typeof(VerifyOtpRequestDto))]
     [JsonSerializable(typeof(RefreshTokenRequestDto))]
     [JsonSerializable(typeof(LogoutRequestDto))]
+    [JsonSerializable(typeof(SupabaseOtpRequestDto))]
+    [JsonSerializable(typeof(SupabaseExchangeRequestDto))]
     [JsonSerializable(typeof(AuthTokensResponseDto))]
     [JsonSerializable(typeof(UserSummaryDto))]
     [JsonSerializable(typeof(ProblemDetailsDto))]

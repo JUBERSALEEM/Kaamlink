@@ -14,6 +14,24 @@ namespace KaamLink.Core.Api
         public static void Configure(HttpClient client)
         {
             client.BaseAddress = ApiConfig.BaseUri;
+            ConfigureCommon(client);
+        }
+
+        /// <summary>
+        /// Supabase GoTrue uses a different HTTPS host but the same bounded
+        /// timeout and JSON accept header as the KaamLink API client.
+        /// </summary>
+        public static void ConfigureSupabase(HttpClient client)
+        {
+            var baseUrl = SupabaseConfig.IsConfigured
+                ? SupabaseConfig.Url.TrimEnd('/') + "/"
+                : "https://127.0.0.1:9/";
+            client.BaseAddress = new Uri(baseUrl, UriKind.Absolute);
+            ConfigureCommon(client);
+        }
+
+        private static void ConfigureCommon(HttpClient client)
+        {
             client.Timeout = TimeSpan.FromSeconds(ApiConfig.TimeoutSeconds);
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(

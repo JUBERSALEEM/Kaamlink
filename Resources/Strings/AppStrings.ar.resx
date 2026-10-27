@@ -1037,7 +1037,7 @@
     <value>المتابعة باستخدام Google</value>
   </data>
   <data name="LoginGoogleSetupNote" xml:space="preserve">
-    <value>تسجيل الدخول عبر Google غير متاح بعد. يجب التحقق من رقم الهاتف؛ استخدم رقمك للمتابعة.</value>
+    <value>يتطلب تسجيل الدخول عبر Google عميل OAuth والتحقق من الرمز على الخادم. استخدم رابط البريد الإلكتروني المجاني أو التحقق بالهاتف.</value>
   </data>
   <data name="LoginOrPhone" xml:space="preserve">
     <value>أو تابع باستخدام الهاتف</value>
@@ -1065,5 +1065,50 @@
   </data>
   <data name="CountryNoResults" xml:space="preserve">
     <value>لم يتم العثور على بلد مطابق.</value>
+  </data>
+  <data name="LoginOrEmail" xml:space="preserve">
+    <value>أو تابع باستخدام البريد الإلكتروني</value>
+  </data>
+  <data name="LoginEmailPlaceholder" xml:space="preserve">
+    <value>بريدك@example.com</value>
+  </data>
+  <data name="LoginEmailHint" xml:space="preserve">
+    <value>لا حاجة لكلمة مرور. سنرسل إليك رابط دخول آمنًا عبر البريد الإلكتروني.</value>
+  </data>
+  <data name="LoginEmailSendLink" xml:space="preserve">
+    <value>أرسل لي رابط تسجيل الدخول</value>
+  </data>
+  <data name="LoginEmailSentTitle" xml:space="preserve">
+    <value>تحقق من بريدك الوارد</value>
+  </data>
+  <data name="LoginEmailSent" xml:space="preserve">
+    <value>أرسلنا رابط دخول آمنًا إلى {0}. افتحه على هذا الجهاز لإكمال تسجيل الدخول.</value>
+  </data>
+  <data name="LoginTermsCheckbox" xml:space="preserve">
+    <value>أوافق على شروط الاستخدام وسياسة الخصوصية في كاملينك.</value>
+  </data>
+  <data name="LoginTermsRequired" xml:space="preserve">
+    <value>يرجى الموافقة على الشروط والأحكام للمتابعة.</value>
+  </data>
+  <data name="LoginEmailErrorTitle" xml:space="preserve">
+    <value>خطأ في تسجيل الدخول بالبريد الإلكتروني</value>
+  </data>
+  <data name="LoginEmailInvalid" xml:space="preserve">
+    <value>أدخل عنوان بريد إلكتروني صالحًا.</value>
+  </data>
+  <data name="LoginEmailNotConfigured" xml:space="preserve">
+    <value>تسجيل الدخول بالبريد الإلكتروني غير مُهيأ. أعد بناء التطبيق بإعدادات Supabase.</value>
+  </data>
+  <data name="LoginEmailRateLimited" xml:space="preserve">
+    <value>تم إرسال عدد كبير جدًا من رسائل تسجيل الدخول. يرجى الانتظار دقيقة ثم المحاولة مرة أخرى.</value>
+  </data>
+  <data name="LoginEmailLinkInvalid" xml:space="preserve">
+    <value>رابط تسجيل الدخول هذا غير صالح أو منتهي الصلاحية. اطلب رابطًا جديدًا.</value>
+  </data>
+  <data name="LoginEmailGeneric" xml:space="preserve">
+    <value>لم نتمكن من إكمال تسجيل الدخول بالبريد الإلكتروني. يرجى المحاولة مرة أخرى.</value>
+  </data>
+  <data name="LoginEmailLabel" xml:space="preserve">
+    <value>عنوان البريد الإلكتروني</value>
   </data>
 </root>

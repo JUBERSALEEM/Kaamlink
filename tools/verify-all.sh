@@ -16,6 +16,7 @@ gates=(
   tools/verify-global-phone-directory.py
   tools/verify-compile-surface.py
   tools/verify-connectivity.py
+  tools/verify-email-auth.py
   tools/verify-gates-selftest.py
 )
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!--
-    KaamLink theme palette — "Clay" (default, light).
-    Rich electric-blue / mint accents over cool blue-white clay surfaces.
+    KaamLink theme palette — "Aurora Clay" (default, light).
+    Indigo/violet brand gradients, cyan/mint accents, lavender clay surfaces.
     Spec: docs/ui-redesign/04-claymorphism-theme.md
 
     This file is a THEME DICTIONARY, not the whole design system:
@@ -29,31 +29,31 @@
     <x:String x:Key="KaamLinkThemeId">clay</x:String>
 
     <!-- ================= Brand ================= -->
-    <Color x:Key="Primary">#075FC2</Color>
-    <Color x:Key="PrimaryTop">#5B91FF</Color>
-    <Color x:Key="PrimaryBottom">#0A4FA8</Color>
-    <Color x:Key="PrimaryDark">#084A8C</Color>
-    <Color x:Key="PrimarySoft">#DCE7F6</Color>
-    <Color x:Key="PrimarySoftDeep">#C9DAF0</Color>
+    <Color x:Key="Primary">#4B3FD6</Color>
+    <Color x:Key="PrimaryTop">#8B7BFF</Color>
+    <Color x:Key="PrimaryBottom">#3A2CBF</Color>
+    <Color x:Key="PrimaryDark">#3122A6</Color>
+    <Color x:Key="PrimarySoft">#EAE6FF</Color>
+    <Color x:Key="PrimarySoftDeep">#DCD5FF</Color>
     <!-- Fill tokens are separate from `Primary`: on a dusk theme the accent used
          for text must be LIGHT (to sit on dark clay), while a filled button must
          stay saturated enough for white text. One key cannot be both. -->
-    <Color x:Key="PrimaryFill">#075FC2</Color>
-    <Color x:Key="PrimaryFillTop">#1F67C8</Color>
-    <Color x:Key="PrimaryFillBottom">#084A8C</Color>
+    <Color x:Key="PrimaryFill">#4B3FD6</Color>
+    <Color x:Key="PrimaryFillTop">#6D5BEE</Color>
+    <Color x:Key="PrimaryFillBottom">#3323A6</Color>
 
     <!-- Legacy aliases: kept so converter/style lookups keep resolving. -->
-    <Color x:Key="Secondary">#075FC2</Color>
-    <Color x:Key="Tertiary">#0B6E68</Color>
+    <Color x:Key="Secondary">#4B3FD6</Color>
+    <Color x:Key="Tertiary">#0B6E7A</Color>
 
-    <Color x:Key="Accent">#0B6E68</Color>
-    <Color x:Key="AccentTop">#4ED9BE</Color>
-    <Color x:Key="AccentBottom">#095651</Color>
-    <Color x:Key="AccentDark">#095651</Color>
-    <Color x:Key="AccentSoft">#D8EDEA</Color>
-    <Color x:Key="AccentFill">#0B6E68</Color>
-    <Color x:Key="AccentFillTop">#1B8078</Color>
-    <Color x:Key="AccentFillBottom">#095651</Color>
+    <Color x:Key="Accent">#0B6E7A</Color>
+    <Color x:Key="AccentTop">#5DE3D4</Color>
+    <Color x:Key="AccentBottom">#0A5A66</Color>
+    <Color x:Key="AccentDark">#0A5A66</Color>
+    <Color x:Key="AccentSoft">#D7F5F1</Color>
+    <Color x:Key="AccentFill">#0B6E7A</Color>
+    <Color x:Key="AccentFillTop">#0B6E7A</Color>
+    <Color x:Key="AccentFillBottom">#084E59</Color>
 
     <!-- ================= Semantic status ================= -->
     <Color x:Key="Success">#14663C</Color>
@@ -62,55 +62,55 @@
     <Color x:Key="WarningSoft">#FBEBD2</Color>
     <Color x:Key="Error">#B3261E</Color>
     <Color x:Key="ErrorSoft">#FADFDC</Color>
-    <Color x:Key="Info">#075FC2</Color>
-    <Color x:Key="InfoSoft">#DCE7F6</Color>
+    <Color x:Key="Info">#4B3FD6</Color>
+    <Color x:Key="InfoSoft">#EAE6FF</Color>
 
     <!-- ================= Neutrals ================= -->
     <Color x:Key="White">#FFFFFF</Color>
-    <Color x:Key="Black">#000000</Color>
-    <Color x:Key="Gray50">#FAFBFF</Color>
-    <Color x:Key="Gray100">#F4F6FD</Color>
-    <Color x:Key="Gray200">#ECEEFA</Color>
-    <Color x:Key="Gray300">#DDE1F1</Color>
-    <Color x:Key="Gray400">#A9B2CC</Color>
-    <Color x:Key="Gray500">#7883A3</Color>
-    <Color x:Key="Gray600">#525C7A</Color>
-    <Color x:Key="Gray700">#34475C</Color>
-    <Color x:Key="Gray800">#232B45</Color>
-    <Color x:Key="Gray900">#172638</Color>
+    <Color x:Key="Black">#0B0718</Color>
+    <Color x:Key="Gray50">#FAF9FF</Color>
+    <Color x:Key="Gray100">#F4F2FF</Color>
+    <Color x:Key="Gray200">#ECE9FB</Color>
+    <Color x:Key="Gray300">#DAD6F3</Color>
+    <Color x:Key="Gray400">#A6A1C8</Color>
+    <Color x:Key="Gray500">#756EA0</Color>
+    <Color x:Key="Gray600">#544D80</Color>
+    <Color x:Key="Gray700">#3A3568</Color>
+    <Color x:Key="Gray800">#2A2550</Color>
+    <Color x:Key="Gray900">#1A1740</Color>
 
     <!-- ================= Surfaces ================= -->
-    <Color x:Key="PageBackground">#E8EFF9</Color>
-    <Color x:Key="PageBackgroundTop">#F4F8FE</Color>
-    <Color x:Key="PageBackgroundBottom">#DCE7F5</Color>
-    <Color x:Key="CardSurface">#EAF0F9</Color>
-    <Color x:Key="CardSurfaceTop">#FBFDFF</Color>
-    <Color x:Key="CardSurfaceBottom">#D9E5F3</Color>
-    <Color x:Key="CardSurfaceAlt">#DCE6F2</Color>
-    <Color x:Key="CardSurfaceAltTop">#EFF5FD</Color>
-    <Color x:Key="CardSurfaceAltBottom">#CFDDEE</Color>
-    <Color x:Key="Border">#C2CCD9</Color>
+    <Color x:Key="PageBackground">#EBE9FF</Color>
+    <Color x:Key="PageBackgroundTop">#F7F5FF</Color>
+    <Color x:Key="PageBackgroundBottom">#DFE3FF</Color>
+    <Color x:Key="CardSurface">#EEEAFF</Color>
+    <Color x:Key="CardSurfaceTop">#FBF9FF</Color>
+    <Color x:Key="CardSurfaceBottom">#DED9F7</Color>
+    <Color x:Key="CardSurfaceAlt">#E2E7FF</Color>
+    <Color x:Key="CardSurfaceAltTop">#F1F3FF</Color>
+    <Color x:Key="CardSurfaceAltBottom">#D1D9F8</Color>
+    <Color x:Key="Border">#C4C2E8</Color>
     <!-- Input outlines need 3:1 non-text contrast (WCAG 1.4.11). -->
-    <Color x:Key="BorderStrong">#6E8198</Color>
-    <Color x:Key="Divider">#CDD6E1</Color>
-    <Color x:Key="Scrim">#66171F36</Color>
+    <Color x:Key="BorderStrong">#6E62A8</Color>
+    <Color x:Key="Divider">#CFCDEC</Color>
+    <Color x:Key="Scrim">#66231D42</Color>
 
     <!-- ================= Clay material ================= -->
     <!-- Light edge along the top of every clay surface. -->
-    <Color x:Key="ClayHighlight">#F6F8FB</Color>
+    <Color x:Key="ClayHighlight">#F9F7FF</Color>
     <!-- Slightly darker edge along the bottom, so the surface reads as pressed clay. -->
-    <Color x:Key="ClayEdgeLow">#BEC9D7</Color>
+    <Color x:Key="ClayEdgeLow">#BFB9E2</Color>
     <!-- Cast shadow: desaturated blue, applied at low opacity over the page. -->
-    <Color x:Key="ClayShadow">#9AA9BA</Color>
-    <Color x:Key="ClayShadowDeep">#617287</Color>
-    <Color x:Key="ClayInset">#D7DFE9</Color>
+    <Color x:Key="ClayShadow">#8C84C4</Color>
+    <Color x:Key="ClayShadowDeep">#5B5296</Color>
+    <Color x:Key="ClayInset">#DCD9F2</Color>
 
     <!-- ================= Text ================= -->
-    <Color x:Key="TextPrimary">#172638</Color>
-    <Color x:Key="TextSecondary">#34475C</Color>
-    <Color x:Key="TextMuted">#50637A</Color>
+    <Color x:Key="TextPrimary">#201B45</Color>
+    <Color x:Key="TextSecondary">#3A3568</Color>
+    <Color x:Key="TextMuted">#4F4A78</Color>
     <Color x:Key="TextOnPrimary">#FFFFFF</Color>
-    <Color x:Key="TextDisabled">#98A1BC</Color>
+    <Color x:Key="TextDisabled">#A6A1C4</Color>
 
     <!-- ================= Brushes ================= -->
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}" />

@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using KaamLink.Application.Abstractions;
 using KaamLink.Application.Common;
@@ -9,9 +11,9 @@ using KaamLink.Domain.Shared;
 namespace KaamLink.Application.Auth;
 
 /// <summary>
-/// Phone-OTP authentication use cases:
-/// request code → verify code (registers on first login) → refresh (rotating,
-/// reuse-detecting) → logout (revoke) → me.
+/// Authentication use cases: phone OTP (request → verify → register), Supabase
+/// magic-link exchange (verify → map → register), refresh (rotating,
+/// reuse-detecting), logout (revoke) and me.
 /// Save points are explicit (IUnitOfWork); audit events are write-through so
 /// security-relevant failures are persisted even when the operation throws.
 /// </summary>
@@ -22,6 +24,7 @@ public sealed class AuthService(
     IUnitOfWork unitOfWork,
     IOtpSender otpSender,
     ITokenService tokenService,
+    ISupabaseUserVerifier supabaseVerifier,
     IAuditService audit,
     OtpOptions otpOptions,
     JwtOptions jwtOptions,
@@ -147,6 +150,54 @@ public sealed class AuthService(
         return tokens.Response with { User = await BuildSummaryAsync(user, ct) };
     }
 
+    /// <summary>
+    /// Verifies a Supabase magic-link access token with GoTrue, maps (or creates)
+    /// the KaamLink user, and returns the app's own token pair. Supabase tokens
+    /// are never accepted as KaamLink API bearer tokens.
+    /// </summary>
+    public async Task<AuthTokensResponse> ExchangeSupabaseTokenAsync(
+        SupabaseExchangeRequest request, CancellationToken ct = default)
+    {
+        var identity = await supabaseVerifier.VerifyAsync(request.AccessToken, ct);
+        var email = identity.Email.Trim().ToLowerInvariant();
+        var now = timeProvider.GetUtcNow();
+
+        var user = await users.FindByEmailAsync(email, ct);
+        RejectUnavailableAccount(user);
+
+        var isNewUser = user is null;
+        if (user is null)
+        {
+            user = User.RegisterFromEmail(email, SyntheticPhone(identity.Subject), now);
+            await users.AddAsync(user, ct);
+        }
+
+        var tokens = IssueTokens(user, now);
+        await refreshTokens.AddAsync(tokens.RefreshTokenEntity, ct);
+        await unitOfWork.SaveChangesAsync(ct);
+
+        if (isNewUser)
+        {
+            await audit.RecordAsync(
+                AuditActions.UserRegistered,
+                "user",
+                user.Id.ToString(),
+                actorUserId: user.Id,
+                metadataJson: JsonSerializer.Serialize(new { email, provider = "supabase_magic_link" }),
+                ct: ct);
+        }
+
+        await audit.RecordAsync(
+            AuditActions.LoginSucceeded,
+            "user",
+            user.Id.ToString(),
+            actorUserId: user.Id,
+            metadataJson: JsonSerializer.Serialize(new { email, provider = "supabase_magic_link" }),
+            ct: ct);
+
+        return tokens.Response with { User = await BuildSummaryAsync(user, ct) };
+    }
+
     public async Task<AuthTokensResponse> RefreshAsync(RefreshTokenRequest request, CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(request.RefreshToken))
@@ -252,6 +303,20 @@ public sealed class AuthService(
     }
 
     // ---- internals ----
+
+    /// <summary>
+    /// Deterministic, non-dialable E.164-shaped identity for email-only users.
+    /// +999 is reserved, so it cannot collide with a real verified phone number;
+    /// 12 hash-derived digits keep the value inside E.164's 15-digit maximum.
+    /// </summary>
+    private static string SyntheticPhone(string supabaseSubject)
+    {
+        var hash = SHA256.HashData(Encoding.UTF8.GetBytes("supabase:" + supabaseSubject));
+        var phone = new StringBuilder("+999", 16);
+        for (var i = 0; i < 12; i++)
+            phone.Append((char)('0' + hash[i] % 10));
+        return phone.ToString();
+    }
 
     private async Task<UserSummary> BuildSummaryAsync(User user, CancellationToken ct) =>
         UserSummary.From(

@@ -543,5 +543,20 @@ namespace KaamLink.Resources.Strings
         public static string CountryPickerTitle => ResourceManager.GetString(nameof(CountryPickerTitle), Culture)!;
         public static string CountrySearchLabel => ResourceManager.GetString(nameof(CountrySearchLabel), Culture)!;
         public static string CountryNoResults => ResourceManager.GetString(nameof(CountryNoResults), Culture)!;
+        public static string LoginOrEmail => ResourceManager.GetString(nameof(LoginOrEmail), Culture)!;
+        public static string LoginEmailPlaceholder => ResourceManager.GetString(nameof(LoginEmailPlaceholder), Culture)!;
+        public static string LoginEmailHint => ResourceManager.GetString(nameof(LoginEmailHint), Culture)!;
+        public static string LoginEmailSendLink => ResourceManager.GetString(nameof(LoginEmailSendLink), Culture)!;
+        public static string LoginEmailSentTitle => ResourceManager.GetString(nameof(LoginEmailSentTitle), Culture)!;
+        public static string LoginEmailSent => ResourceManager.GetString(nameof(LoginEmailSent), Culture)!;
+        public static string LoginTermsCheckbox => ResourceManager.GetString(nameof(LoginTermsCheckbox), Culture)!;
+        public static string LoginTermsRequired => ResourceManager.GetString(nameof(LoginTermsRequired), Culture)!;
+        public static string LoginEmailErrorTitle => ResourceManager.GetString(nameof(LoginEmailErrorTitle), Culture)!;
+        public static string LoginEmailInvalid => ResourceManager.GetString(nameof(LoginEmailInvalid), Culture)!;
+        public static string LoginEmailNotConfigured => ResourceManager.GetString(nameof(LoginEmailNotConfigured), Culture)!;
+        public static string LoginEmailRateLimited => ResourceManager.GetString(nameof(LoginEmailRateLimited), Culture)!;
+        public static string LoginEmailLinkInvalid => ResourceManager.GetString(nameof(LoginEmailLinkInvalid), Culture)!;
+        public static string LoginEmailGeneric => ResourceManager.GetString(nameof(LoginEmailGeneric), Culture)!;
+        public static string LoginEmailLabel => ResourceManager.GetString(nameof(LoginEmailLabel), Culture)!;
     }
 }

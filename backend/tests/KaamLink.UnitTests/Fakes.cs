@@ -16,6 +16,7 @@ internal static class AuthServiceHarness
         public SpyUnitOfWork UnitOfWork { get; } = new();
         public SpyOtpSender OtpSender { get; } = new();
         public StubTokenService TokenService { get; } = new();
+        public StubSupabaseUserVerifier SupabaseVerifier { get; } = new();
         public SpyAuditService Audit { get; } = new();
 
         public FixedTimeProvider Time { get; } =
@@ -53,6 +54,7 @@ internal static class AuthServiceHarness
             UnitOfWork,
             OtpSender,
             TokenService,
+            SupabaseVerifier,
             Audit,
             OtpOptions,
             JwtOptions,
@@ -82,6 +84,10 @@ internal sealed class InMemoryUserRepository : IUserRepository
 
     public Task<User?> FindByPhoneAsync(string phoneNumber, CancellationToken ct = default) =>
         Task.FromResult(Store.FirstOrDefault(u => u.PhoneNumber == phoneNumber));
+
+    public Task<User?> FindByEmailAsync(string email, CancellationToken ct = default) =>
+        Task.FromResult(Store.FirstOrDefault(u =>
+            string.Equals(u.Email, email, StringComparison.OrdinalIgnoreCase)));
 
     public Task AddAsync(User user, CancellationToken ct = default)
     {
@@ -329,3 +335,21 @@ internal sealed class InMemorySkillCatalogRepository : ISkillCatalogRepository
         Task.FromResult(Skills.Any(s => s.Id == skillId));
 }
 
+internal sealed class StubSupabaseUserVerifier : ISupabaseUserVerifier
+{
+    public string Subject { get; set; } = "supabase-user-0001";
+
+    public string Email { get; set; } = "worker@example.com";
+
+    public Exception? Failure { get; set; }
+
+    public int Calls { get; private set; }
+
+    public Task<SupabaseIdentity> VerifyAsync(string accessToken, CancellationToken ct = default)
+    {
+        Calls++;
+        if (Failure is not null)
+            return Task.FromException<SupabaseIdentity>(Failure);
+        return Task.FromResult(new SupabaseIdentity(Subject, Email));
+    }
+}

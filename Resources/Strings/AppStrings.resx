@@ -1049,7 +1049,7 @@
     <value>Continue with Google</value>
   </data>
   <data name="LoginGoogleSetupNote" xml:space="preserve">
-    <value>Google sign-in is not available yet. Phone verification is still required; use your number to continue.</value>
+    <value>Google sign-in needs an OAuth client and server-side token checks. Use the free email link or phone verification instead.</value>
   </data>
   <data name="LoginOrPhone" xml:space="preserve">
     <value>OR CONTINUE WITH PHONE</value>
@@ -1077,5 +1077,50 @@
   </data>
   <data name="CountryNoResults" xml:space="preserve">
     <value>No matching countries found.</value>
+  </data>
+  <data name="LoginOrEmail" xml:space="preserve">
+    <value>OR CONTINUE WITH EMAIL</value>
+  </data>
+  <data name="LoginEmailPlaceholder" xml:space="preserve">
+    <value>name@example.com</value>
+  </data>
+  <data name="LoginEmailHint" xml:space="preserve">
+    <value>No password needed. We’ll email you a secure sign-in link.</value>
+  </data>
+  <data name="LoginEmailSendLink" xml:space="preserve">
+    <value>Email me a sign-in link</value>
+  </data>
+  <data name="LoginEmailSentTitle" xml:space="preserve">
+    <value>Check your inbox</value>
+  </data>
+  <data name="LoginEmailSent" xml:space="preserve">
+    <value>We sent a secure sign-in link to {0}. Open it on this device to finish signing in.</value>
+  </data>
+  <data name="LoginTermsCheckbox" xml:space="preserve">
+    <value>I accept KaamLink’s Terms of Use and Privacy Policy.</value>
+  </data>
+  <data name="LoginTermsRequired" xml:space="preserve">
+    <value>Please accept the terms and conditions to continue.</value>
+  </data>
+  <data name="LoginEmailErrorTitle" xml:space="preserve">
+    <value>Email sign-in error</value>
+  </data>
+  <data name="LoginEmailInvalid" xml:space="preserve">
+    <value>Enter a valid email address.</value>
+  </data>
+  <data name="LoginEmailNotConfigured" xml:space="preserve">
+    <value>Email sign-in is not configured. Rebuild the app with Supabase settings.</value>
+  </data>
+  <data name="LoginEmailRateLimited" xml:space="preserve">
+    <value>Too many sign-in emails. Please wait a minute and try again.</value>
+  </data>
+  <data name="LoginEmailLinkInvalid" xml:space="preserve">
+    <value>This sign-in link is invalid or expired. Request a new one.</value>
+  </data>
+  <data name="LoginEmailGeneric" xml:space="preserve">
+    <value>We couldn’t finish email sign-in. Please try again.</value>
+  </data>
+  <data name="LoginEmailLabel" xml:space="preserve">
+    <value>Email address</value>
   </data>
 </root>

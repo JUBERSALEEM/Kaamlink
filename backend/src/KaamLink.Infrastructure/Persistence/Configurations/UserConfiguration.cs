@@ -16,6 +16,11 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.PhoneNumber).HasColumnName("phone_number").HasMaxLength(20).IsRequired();
         builder.HasIndex(u => u.PhoneNumber).IsUnique().HasDatabaseName("ux_users_phone_number");
 
+        // Nullable: phone-only accounts have no email. PostgreSQL permits multiple
+        // NULLs in a unique index, so existing accounts continue to work.
+        builder.Property(u => u.Email).HasColumnName("email").HasMaxLength(320);
+        builder.HasIndex(u => u.Email).IsUnique().HasDatabaseName("ux_users_email");
+
         builder.Property(u => u.DisplayName).HasColumnName("display_name").HasMaxLength(120);
         builder.Property(u => u.PreferredLocale).HasColumnName("preferred_locale").HasMaxLength(8);
 

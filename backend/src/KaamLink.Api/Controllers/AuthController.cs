@@ -31,6 +31,17 @@ public sealed class AuthController(IAuthService authService, ICurrentUser curren
         CancellationToken cancellationToken) =>
         Ok(await authService.VerifyOtpAsync(request, cancellationToken));
 
+    /// <summary>
+    /// Exchange a verified Supabase email magic-link token for KaamLink's own
+    /// access/refresh token pair. The token is validated server-side with GoTrue.
+    /// </summary>
+    [HttpPost("email/exchange")]
+    [EnableRateLimiting(RateLimitPolicies.OtpVerify)]
+    public async Task<ActionResult<AuthTokensResponse>> ExchangeSupabaseToken(
+        [FromBody] SupabaseExchangeRequest request,
+        CancellationToken cancellationToken) =>
+        Ok(await authService.ExchangeSupabaseTokenAsync(request, cancellationToken));
+
     /// <summary>Rotate a refresh token into a new token pair. Presenting a rotated token revokes the session family.</summary>
     [HttpPost("token/refresh")]
     public async Task<ActionResult<AuthTokensResponse>> RefreshToken(

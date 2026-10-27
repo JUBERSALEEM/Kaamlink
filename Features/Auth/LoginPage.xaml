@@ -51,7 +51,7 @@
                         Padding="6"
                         HeightRequest="124">
                     <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="20" />
+                        <RoundRectangle CornerRadius="28" />
                     </Border.StrokeShape>
                     <Image Source="login_hero.svg"
                            Aspect="AspectFit"
@@ -68,6 +68,67 @@
                            HorizontalTextAlignment="Center"
                            Text="{x:Static strings:AppStrings.LoginGoogleSetupNote}" />
                 </VerticalStackLayout>
+
+                <!-- Supabase email magic link: free, passwordless signup and login. -->
+                <Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="10">
+                    <BoxView Grid.Column="0" Style="{StaticResource DividerLine}" VerticalOptions="Center" />
+                    <Label Grid.Column="1"
+                           Style="{StaticResource CaptionText}"
+                           Text="{x:Static strings:AppStrings.LoginOrEmail}" />
+                    <BoxView Grid.Column="2" Style="{StaticResource DividerLine}" VerticalOptions="Center" />
+                </Grid>
+
+                <VerticalStackLayout Spacing="7">
+                    <Label Style="{StaticResource LabelText}"
+                           Text="{x:Static strings:AppStrings.LoginEmailLabel}" />
+                    <Border Style="{StaticResource FieldBox}" Padding="10,0">
+                        <Grid MinimumHeightRequest="54">
+                            <Entry AutomationProperties.Name="{x:Static strings:AppStrings.LoginEmailLabel}"
+                                   BackgroundColor="Transparent"
+                                   IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}, FallbackValue=True}"
+                                   Keyboard="Email"
+                                   MaxLength="320"
+                                   MinimumHeightRequest="52"
+                                   Placeholder="{x:Static strings:AppStrings.LoginEmailPlaceholder}"
+                                   ReturnType="Send"
+                                   Text="{Binding Email}"
+                                   VerticalOptions="Center" />
+                        </Grid>
+                    </Border>
+                    <Label Style="{StaticResource FieldHint}"
+                           Text="{x:Static strings:AppStrings.LoginEmailHint}" />
+                </VerticalStackLayout>
+
+                <Button Style="{StaticResource PrimaryButton}"
+                        Command="{Binding SendMagicLinkCommand}"
+                        InputTransparent="False"
+                        IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}, FallbackValue=True}"
+                        SemanticProperties.Description="{x:Static strings:AppStrings.LoginEmailSendLink}"
+                        Text="{x:Static strings:AppStrings.LoginEmailSendLink}" />
+
+                <Border IsVisible="{Binding HasInfo}"
+                        SemanticProperties.Description="{Binding InfoTitle}"
+                        BackgroundColor="{DynamicResource SuccessSoft}"
+                        StrokeThickness="0"
+                        Padding="12">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="28" />
+                    </Border.StrokeShape>
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                        <Label Grid.Column="0"
+                               Style="{StaticResource IconGlyph}"
+                               TextColor="{DynamicResource Success}"
+                               Text="{StaticResource IconCheckCircle}"
+                               VerticalOptions="Start" />
+                        <VerticalStackLayout Grid.Column="1" Spacing="2">
+                            <Label Style="{StaticResource SmallStrongText}"
+                                   TextColor="{DynamicResource Success}"
+                                   Text="{Binding InfoTitle}" />
+                            <Label Style="{StaticResource SmallText}"
+                                   Text="{Binding InfoMessage}" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
 
                 <Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="10">
                     <BoxView Grid.Column="0" Style="{StaticResource DividerLine}" VerticalOptions="Center" />
@@ -108,12 +169,27 @@
                            Text="{x:Static strings:AppStrings.LoginOtpHint}" />
                 </VerticalStackLayout>
 
+                <!-- One shared acceptance gate for email and phone sign-in. -->
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" MinimumHeightRequest="48" Padding="0,2">
+                    <CheckBox Grid.Column="0"
+                              Color="{DynamicResource Primary}"
+                              IsChecked="{Binding TermsAccepted}"
+                              MinimumHeightRequest="48"
+                              MinimumWidthRequest="48"
+                              SemanticProperties.Description="{x:Static strings:AppStrings.LoginTermsCheckbox}"
+                              VerticalOptions="Center" />
+                    <Label Grid.Column="1"
+                           Style="{StaticResource SmallText}"
+                           Text="{x:Static strings:AppStrings.LoginTermsCheckbox}"
+                           VerticalTextAlignment="Center" />
+                </Grid>
+
                 <Border IsVisible="{Binding HasError}"
                         BackgroundColor="{DynamicResource ErrorSoft}"
                         StrokeThickness="0"
                         Padding="12">
                     <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="16" />
+                        <RoundRectangle CornerRadius="28" />
                     </Border.StrokeShape>
                     <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
                         <Label Grid.Column="0"
@@ -131,8 +207,9 @@
                     </Grid>
                 </Border>
 
-                <Button Style="{StaticResource PrimaryButton}"
+                <Button Style="{StaticResource SecondaryButton}"
                         Command="{Binding SendCodeCommand}"
+                        InputTransparent="False"
                         IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}, FallbackValue=True}"
                         SemanticProperties.Description="{x:Static strings:AppStrings.LoginPhoneContinue}"
                         Text="{x:Static strings:AppStrings.LoginPhoneContinue}" />
@@ -161,7 +238,7 @@
                     MaximumHeightRequest="560"
                     Padding="18">
                 <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="22" />
+                    <RoundRectangle CornerRadius="28" />
                 </Border.StrokeShape>
                 <Grid RowDefinitions="Auto,Auto,*" RowSpacing="12">
                     <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="8">

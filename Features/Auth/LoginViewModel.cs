@@ -3,29 +3,43 @@ using KaamLink.Core.Navigation;
 using KaamLink.Core.Presentation.Theming;
 using KaamLink.Core.Text;
 using KaamLink.Resources.Strings;
+using Microsoft.Maui.Storage;
 
 namespace KaamLink.Features.Auth
 {
     /// <summary>
-    /// Global phone sign-in entry point. It keeps the selected region through OTP;
-    /// a returning session proceeds to role choice without assuming a role.
-    /// Google auth must be backed by a real server-side identity exchange.
+    /// Sign-in entry point: Supabase email magic links and phone OTP. A tickable
+    /// terms acceptance gate applies to both. Google stays disabled until a real
+    /// OAuth client and server-side token verification exist.
     /// </summary>
     public partial class LoginViewModel : ObservableObject, IQueryAttributable
     {
+        private const string TermsAcceptedKey = "kaamlink.terms.accepted.v1";
+        private const string PendingEmailKey = "kaamlink.email.pending.v1";
+
         private readonly IApiClient _api;
         private readonly ISessionService _session;
         private readonly IThemeService _theme;
+        private readonly ISupabaseMagicLinkService _magicLinks;
+        private readonly IEmailAuthLinkService _emailAuthLinks;
         private bool _sessionRestoreAttempted;
         private bool _countryDirectoryLoaded;
         private IReadOnlyList<CountryPhoneOption> _countries = Array.Empty<CountryPhoneOption>();
 
-        public LoginViewModel(IApiClient api, ISessionService session, IThemeService theme)
+        public LoginViewModel(
+            IApiClient api,
+            ISessionService session,
+            IThemeService theme,
+            ISupabaseMagicLinkService magicLinks,
+            IEmailAuthLinkService emailAuthLinks)
         {
             _api = api;
             _session = session;
             _theme = theme;
+            _magicLinks = magicLinks;
+            _emailAuthLinks = emailAuthLinks;
             SyncThemeAffordance(theme.CurrentThemeId);
+            RestoreLocalAuthState();
         }
 
         [ObservableProperty]
@@ -65,6 +79,21 @@ namespace KaamLink.Features.Auth
         [ObservableProperty]
         private string _errorTitle = AppStrings.LoginPhoneErrorTitle;
 
+        [ObservableProperty]
+        private string _email = string.Empty;
+
+        [ObservableProperty]
+        private bool _termsAccepted;
+
+        [ObservableProperty]
+        private bool _hasInfo;
+
+        [ObservableProperty]
+        private string _infoTitle = AppStrings.LoginEmailSentTitle;
+
+        [ObservableProperty]
+        private string? _infoMessage;
+
         public string SelectedCountryCode => SelectedCountry.CallingCodeLabel;
 
         partial void OnSelectedCountryChanged(CountryPhoneOption value) =>
@@ -72,6 +101,18 @@ namespace KaamLink.Features.Auth
 
         partial void OnCountrySearchTextChanged(string value) =>
             ApplyCountryFilter();
+
+        partial void OnTermsAcceptedChanged(bool value)
+        {
+            try
+            {
+                Preferences.Default.Set(TermsAcceptedKey, value);
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"[KaamLink] terms preference could not be saved: {exception}");
+            }
+        }
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
@@ -83,11 +124,27 @@ namespace KaamLink.Features.Auth
             }
         }
 
-        /// <summary>Loads offline country metadata and restores any saved session once.</summary>
+        /// <summary>Loads offline country metadata, consumes a magic-link callback, then restores any saved session.</summary>
         public async Task InitializeAsync()
         {
             await EnsureCountryDirectoryLoadedAsync();
+            await ProcessPendingEmailAuthCallbackAsync();
+            if (_session.IsAuthenticated)
+                return;
             await EnsureSessionRestoredAsync();
+        }
+
+        private void RestoreLocalAuthState()
+        {
+            try
+            {
+                TermsAccepted = Preferences.Default.Get(TermsAcceptedKey, false);
+                Email = Preferences.Default.Get(PendingEmailKey, string.Empty);
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"[KaamLink] local email-auth state could not be restored: {exception}");
+            }
         }
 
         private async Task EnsureCountryDirectoryLoadedAsync()
@@ -198,6 +255,12 @@ namespace KaamLink.Features.Auth
             if (IsBusy || IsRestoringSession)
                 return;
 
+            if (!TermsAccepted)
+            {
+                ShowError(AppStrings.LoginTermsRequired);
+                return;
+            }
+
             var normalized = PhoneInput.TryNormalize(Phone, SelectedCountry);
             if (normalized is null)
             {
@@ -207,6 +270,7 @@ namespace KaamLink.Features.Auth
 
             IsBusy = true;
             ClearError();
+            ClearInfo();
             try
             {
                 var response = await _api.RequestOtpAsync(normalized);
@@ -223,12 +287,114 @@ namespace KaamLink.Features.Auth
             }
         }
 
+        [RelayCommand]
+        private async Task SendMagicLinkAsync()
+        {
+            if (IsBusy || IsRestoringSession)
+                return;
+
+            if (!TermsAccepted)
+            {
+                ShowError(AppStrings.LoginTermsRequired, AppStrings.LoginEmailErrorTitle);
+                return;
+            }
+
+            var email = Email.Trim();
+            if (!SupabaseMagicLinkService.IsValidEmail(email))
+            {
+                ShowError(AppStrings.LoginEmailInvalid, AppStrings.LoginEmailErrorTitle);
+                return;
+            }
+
+            IsBusy = true;
+            ClearError();
+            ClearInfo();
+            try
+            {
+                await _magicLinks.SendLinkAsync(email);
+                email = email.ToLowerInvariant();
+                Email = email;
+                try
+                {
+                    Preferences.Default.Set(PendingEmailKey, email);
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine($"[KaamLink] pending email could not be saved: {exception}");
+                }
+
+                ShowInfo(AppStrings.LoginEmailSentTitle,
+                    string.Format(AppStrings.LoginEmailSent, email));
+            }
+            catch (ApiException exception)
+            {
+                ShowError(MapError(exception), MapErrorTitle(exception, AppStrings.LoginEmailErrorTitle));
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        /// <summary>
+        /// Consumes a deep-link callback once. Called on login-page appearance and
+        /// directly after App routes an incoming link to this page.
+        /// </summary>
+        public async Task ProcessPendingEmailAuthCallbackAsync()
+        {
+            if (!_emailAuthLinks.TryTakePending(out var callback))
+                return;
+
+            if (callback.HasError || !callback.HasTokens)
+            {
+                ShowError(AppStrings.LoginEmailLinkInvalid, AppStrings.LoginEmailErrorTitle);
+                return;
+            }
+
+            if (!TermsAccepted)
+            {
+                ShowError(AppStrings.LoginTermsRequired, AppStrings.LoginEmailErrorTitle);
+                return;
+            }
+
+            IsBusy = true;
+            ClearError();
+            ClearInfo();
+            try
+            {
+                // Supabase's token is exchanged for KaamLink's own token pair;
+                // the backend verifies it with GoTrue before issuing a session.
+                var tokens = await _api.ExchangeSupabaseAsync(callback.AccessToken!);
+                await _session.CompleteLoginAsync(tokens);
+                try
+                {
+                    Preferences.Default.Remove(PendingEmailKey);
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine($"[KaamLink] pending email could not be cleared: {exception}");
+                }
+
+                await Shell.Current.GoToAsync(RoleNavigator.AbsoluteRouteFor(tokens.User, Role));
+            }
+            catch (ApiException exception)
+            {
+                ShowError(MapError(exception), MapErrorTitle(exception, AppStrings.LoginEmailErrorTitle));
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
         internal static string MapErrorTitle(ApiException exception, string inputTitle)
         {
             if (exception.IsNoInternet)
                 return AppStrings.ErrorNoInternetTitle;
             if (exception.IsMisconfigured)
                 return AppStrings.ErrorApiNotConfiguredTitle;
+            if (IsEmailAuthCode(exception.Code))
+                return AppStrings.LoginEmailErrorTitle;
             return exception.IsOffline ? AppStrings.ErrorOfflineTitle : inputTitle;
         }
 
@@ -238,6 +404,17 @@ namespace KaamLink.Features.Auth
                 return AppStrings.ErrorNoInternet;
             if (exception.IsMisconfigured)
                 return AppStrings.ErrorApiNotConfigured;
+
+            // Client-side email errors have no HTTP status. Match their codes
+            // before the generic offline fallback, or they are reported as
+            // "server unavailable" instead of actionable copy.
+            if (exception.Code is not null)
+            {
+                var emailMessage = MapEmailAuthCode(exception.Code);
+                if (emailMessage is not null)
+                    return emailMessage;
+            }
+
             if (exception.IsOffline)
                 return AppStrings.ErrorOffline;
             return exception.Code switch
@@ -252,8 +429,25 @@ namespace KaamLink.Features.Auth
             };
         }
 
+        private static bool IsEmailAuthCode(string? code) => MapEmailAuthCode(code) is not null;
+
+        private static string? MapEmailAuthCode(string? code) => code switch
+        {
+            ApiClient.Codes.EmailInvalid => AppStrings.LoginEmailInvalid,
+            ApiClient.Codes.TermsRequired => AppStrings.LoginTermsRequired,
+            ApiClient.Codes.SupabaseNotConfigured => AppStrings.LoginEmailNotConfigured,
+            ApiClient.Codes.SupabaseServerNotConfigured => AppStrings.LoginEmailNotConfigured,
+            ApiClient.Codes.SupabaseRateLimited => AppStrings.LoginEmailRateLimited,
+            ApiClient.Codes.SupabaseInvalidLink => AppStrings.LoginEmailLinkInvalid,
+            ApiClient.Codes.SupabaseTokenRequired => AppStrings.LoginEmailLinkInvalid,
+            ApiClient.Codes.SupabaseUnavailable => AppStrings.LoginEmailGeneric,
+            ApiClient.Codes.SupabaseSendFailed => AppStrings.LoginEmailGeneric,
+            _ => null
+        };
+
         private void ShowError(string message, string? title = null)
         {
+            ClearInfo();
             ErrorTitle = title ?? AppStrings.LoginPhoneErrorTitle;
             ErrorMessage = message;
             HasError = true;
@@ -263,6 +457,20 @@ namespace KaamLink.Features.Auth
         {
             ErrorMessage = null;
             HasError = false;
+        }
+
+        private void ShowInfo(string title, string message)
+        {
+            ClearError();
+            InfoTitle = title;
+            InfoMessage = message;
+            HasInfo = true;
+        }
+
+        private void ClearInfo()
+        {
+            InfoMessage = null;
+            HasInfo = false;
         }
     }
 }

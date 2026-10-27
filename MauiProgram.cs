@@ -7,6 +7,7 @@ using KaamLink.Features.Jobs;
 using KaamLink.Features.Onboarding;
 using KaamLink.Features.Worker;
 using Microsoft.Extensions.Logging;
+using Microsoft.Maui.LifecycleEvents;
 
 namespace KaamLink
 {
@@ -37,6 +38,19 @@ namespace KaamLink
                     // Single codepoint per icon; keys live in Icons.xaml (IconXxx) so a
                     // page never inlines a private-use glyph.
                     fonts.AddFont("lucide.ttf", "Lucide");
+                })
+                .ConfigureLifecycleEvents(lifecycle =>
+                {
+#if ANDROID
+                    // Android does not call Application.OnAppLinkRequestReceived
+                    // automatically for a custom scheme. Forward both cold-start
+                    // (OnCreate) and resumed-app (OnNewIntent) VIEW intents to App.
+                    lifecycle.AddAndroid(android =>
+                    {
+                        android.OnCreate((activity, _) => ForwardAndroidAppLink(activity.Intent));
+                        android.OnNewIntent((_, intent) => ForwardAndroidAppLink(intent));
+                    });
+#endif
                 });
 
 #if DEBUG
@@ -47,6 +61,26 @@ namespace KaamLink
 
             return builder.Build();
         }
+
+#if ANDROID
+        /// <summary>
+        /// Only forward the known magic-link callback host. Other VIEW intents are
+        /// ignored, so a malicious app cannot inject arbitrary URIs into auth.
+        /// </summary>
+        private static void ForwardAndroidAppLink(Android.Content.Intent? intent)
+        {
+            if (intent is null || intent.Action != Android.Content.Intent.ActionView)
+                return;
+
+            var data = intent.Data?.ToString();
+            if (string.IsNullOrWhiteSpace(data)
+                || !Uri.TryCreate(data, UriKind.Absolute, out var uri)
+                || !EmailAuthLinkParser.IsCallback(uri))
+                return;
+
+            Microsoft.Maui.Controls.Application.Current?.SendOnAppLinkRequestReceived(uri);
+        }
+#endif
 
         /// <summary>
         /// Composition root. Core services are singletons (session spans the whole
@@ -64,6 +98,9 @@ namespace KaamLink
             // stale BaseAddress or missing timeout cannot diverge between the API
             // and the silent-refresh client.
             services.AddSingleton<INetworkStatus, NetworkStatus>();
+            services.AddSingleton<IEmailAuthLinkService, EmailAuthLinkService>();
+            services.AddHttpClient<ISupabaseMagicLinkService, SupabaseMagicLinkService>(
+                ApiHttp.ConfigureSupabase);
             services.AddSingleton<ITokenStore, SecureStorageTokenStore>();
             services.AddHttpClient(ApiHttp.AuthClientName, ApiHttp.Configure);
             services.AddSingleton<SessionService>();

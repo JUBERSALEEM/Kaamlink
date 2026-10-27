@@ -1,14 +1,15 @@
 # First Boot Guide — build, install, and walk through KaamLink end-to-end
 
 Audience: developers (and the product owner). Time needed: ~30–45 minutes on a
-clean machine. By the end you will have signed in with your own phone number,
-completed onboarding as a worker AND registered a company as an employer, and
-seen both homes render real server data.
+clean machine. By the end you will have signed in with a Supabase email magic link
+or your own phone number, completed onboarding as a worker AND registered a
+company as an employer, and seen both homes render real server data.
 
-> Known environment note: Phase 03 code was statically cross-verified
-> (`python3 tools/verify-phase03.py` — 93 checks) but this repo environment has
-> no .NET SDK. **The first `dotnet build` below is the formal verification gate.**
-> If anything fails to compile, report the exact error — do not paper over it.
+> Known environment note: all code is statically cross-verified by
+> `bash tools/verify-all.sh` (eleven gates), but this repo environment has no
+> .NET/Android SDK. **The first `dotnet build` below is the formal verification
+> gate.** If anything fails to compile, report the exact error — do not paper over
+> it.
 
 ---
 
@@ -53,7 +54,11 @@ simplest way to get it).
 
 **Keep the compose terminal visible.** The OTP "SMS" is the logging sandbox in this
 phase (`Otp:Provider=log`): the 6-digit code is printed in the API logs every time
-you tap "Send code". A real SMS provider is a later-phase, paid integration (§35).
+you tap "Continue with phone". A real SMS provider is a later-phase, paid
+integration (§35). Email magic links are sent by the configured Supabase project;
+`.env.example` includes the public `SUPABASE_URL` / `SUPABASE_ANON_KEY` values.
+Supabase's built-in email provider is rate-limited, so use a test inbox you control
+and configure custom SMTP before production. See `docs/email-magic-link-setup.md`.
 
 Optional API playground instead of the app: `backend/requests.http` walks every
 endpoint with copy-paste requests (VS Code "REST Client" / Rider).
@@ -127,14 +132,18 @@ distributable.
 
 ## 3. First boot walkthrough (worker)
 
-1. **Sign in** — the app opens on KaamLink's login screen. The offline country picker defaults
-   to the device region; search by country name, ISO code or calling code to change it. Enter a
-   national number or a pasted `+` international number (for example, UAE `0501234567` becomes
-   `+971501234567`; the API re-validates the E.164 envelope) and tap **Continue with phone**.
-   Google sign-in remains visibly unavailable until the OAuth client, server-side verification,
-   and account-linking flow are deployed. Recommended policy: keep phone verification mandatory
-   and link Google only as a convenience credential; see `docs/auth-and-phone-login-decision.md`.
-2. **Read the OTP from the API logs** — in the compose terminal look for the warning line:
+1. **Accept the terms and sign in** — the app opens on KaamLink's Aurora Clay login
+   screen. Tick the Terms and Conditions checkbox first; both sign-in methods are
+   blocked until it is checked. For the free passwordless path, enter an email and
+   tap **Email me a sign-in link**, then open the Supabase email on the device. The
+   link uses `kaamlink://auth-callback`, app exchanges the verified Supabase token
+   for a KaamLink session, and you land on role choice. For phone OTP, the offline
+   country picker defaults to the device region; enter a national or `+` international
+   number (UAE `0501234567` becomes `+971501234567`) and tap **Continue with phone**.
+   Google sign-in remains visibly unavailable until the OAuth client, server-side
+   verification and account-linking flow are deployed; use email or phone instead.
+   See `docs/email-magic-link-setup.md` and `docs/auth-and-phone-login-decision.md`.
+2. **For phone login, read the OTP from the API logs** — in the compose terminal look for the warning line:
 
    ```
    kaamlink-api | warn: ...[OTP SANDBOX] Code for +971501234567 is 483920 (Otp:Provider=log — development only...)
@@ -142,7 +151,7 @@ distributable.
 
    Enter it on the code screen. Wrong code → "The code doesn't match" (5 attempts max);
    the **Resend** button re-arms after the cooldown shown on it.
-3. **Choose how to use KaamLink** — after verification, tap **I'm looking for work**.
+3. **Choose how to use KaamLink** — after sign-in, tap **I'm looking for work**.
    Employers instead choose **I'm hiring workers**. The selection is deliberately after
    sign-in; no role is assumed during login.
 4. **Onboarding, step 1 (Basics)** — name, profession group + profession (from the

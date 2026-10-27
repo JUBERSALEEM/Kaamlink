@@ -26,7 +26,7 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FONT_DIR = os.path.join(ROOT, "Resources", "Fonts")
 SCALE = 2
-W_DP, H_DP = 360, 780
+W_DP, H_DP = 360, 1120
 W, H = W_DP * SCALE, H_DP * SCALE
 
 FONT_CACHE: dict[tuple[str, int], ImageFont.FreeTypeFont] = {}
@@ -166,7 +166,7 @@ def button(
     fill: tuple[int, int, int],
     text: tuple[int, int, int],
     border: tuple[int, int, int],
-    radius: int = dp(18),
+    radius: int = dp(24),
     font_size: float = 15,
     shadow: tuple[int, int, int] = (154, 169, 186),
     disabled: bool = False,
@@ -193,6 +193,33 @@ def button(
     d.text((start, (y1 + y2 - dp(20)) // 2), label, font=f, fill=fg)
 
 
+def gradient_button(
+    img: Image.Image,
+    box: tuple[int, int, int, int],
+    label: str,
+    *,
+    top: tuple[int, int, int],
+    bottom: tuple[int, int, int],
+    text: tuple[int, int, int],
+    shadow: tuple[int, int, int],
+    radius: int = dp(24),
+) -> None:
+    """Draw a rich vertical-gradient action button with its own clay shadow."""
+    x1, y1, x2, y2 = box
+    w, h = x2 - x1, y2 - y1
+    grad = vertical_gradient((w, h), top, bottom)
+    mask = Image.new("L", (w, h), 0)
+    ImageDraw.Draw(mask).rounded_rectangle((0, 0, w - 1, h - 1), radius=radius, fill=255)
+    shadow_round(img, box, radius, bottom, shadow, offset=(dp(4), dp(6)), blur=dp(12),
+                 outline=top, width=dp(1))
+    img.paste(grad, (x1, y1), mask)
+    d = ImageDraw.Draw(img)
+    d.rounded_rectangle(box, radius=radius, outline=top, width=dp(1))
+    f = font(15, "semibold")
+    tw = text_width(d, label, f)
+    d.text(((x1 + x2 - tw) // 2, y1 + (h - dp(20)) // 2), label, font=f, fill=text)
+
+
 def draw_mark(img: Image.Image, box: tuple[int, int, int, int], p: dict[str, str]) -> None:
     """Draw the adaptive foreground K-link mark with a rich clay squircle."""
     x1, y1, x2, y2 = box
@@ -200,7 +227,7 @@ def draw_mark(img: Image.Image, box: tuple[int, int, int, int], p: dict[str, str
     grad = vertical_gradient((w, h), mix(p["PrimaryTop"], p["White"], 0.06), rgb(p["PrimaryBottom"]))
     mask = Image.new("L", (w, h), 0)
     md = ImageDraw.Draw(mask)
-    md.rounded_rectangle((0, 0, w - 1, h - 1), radius=int(w * 0.28), fill=255)
+    md.rounded_rectangle((0, 0, w - 1, h - 1), radius=int(w * 0.32), fill=255)
     img.paste(grad, (x1, y1), mask)
     d = ImageDraw.Draw(img)
     # Soft top highlight and lower clay edge.
@@ -232,7 +259,7 @@ def draw_hero(
     layer = Image.new("RGBA", (w, h), (0, 0, 0, 0))
     mask = Image.new("L", (w, h), 0)
     md = ImageDraw.Draw(mask)
-    md.rounded_rectangle((0, 0, w - 1, h - 1), radius=dp(20), fill=255)
+    md.rounded_rectangle((0, 0, w - 1, h - 1), radius=dp(28), fill=255)
     top = mix(p["CardSurfaceTop"], p["White"], 0.35)
     bottom = mix(p["CardSurfaceBottom"], p["PageBackground"], 0.15)
     layer.paste(vertical_gradient((w, h), top, bottom).convert("RGBA"), (0, 0), mask)
@@ -244,7 +271,7 @@ def draw_hero(
               fill=mix(p["PrimarySoft"], p["White"], 0.22))
     # Profile card on the left.
     card = (w * 0.07, h * 0.16, w * 0.43, h * 0.74)
-    d.rounded_rectangle(card, radius=dp(15), fill=rgb(p["White"]), outline=rgb(p["Border"]), width=dp(1))
+    d.rounded_rectangle(card, radius=dp(20), fill=rgb(p["White"]), outline=rgb(p["Border"]), width=dp(1))
     d.rounded_rectangle((card[0] + dp(12), card[1] + dp(14), card[0] + dp(70), card[1] + dp(23)),
                         radius=dp(5), fill=rgb(p["Primary"]))
     d.rounded_rectangle((card[0] + dp(12), card[1] + dp(30), card[0] + dp(115), card[1] + dp(37)),
@@ -280,7 +307,7 @@ def draw_hero(
            font=font(13, family="symbol"), fill=rgb(p["PrimaryDark"]))
     img.paste(layer, (x1, y1), mask)
     d = ImageDraw.Draw(img)
-    d.rounded_rectangle((x1, y1, x2, y2), radius=dp(20), outline=rgb(p["Border"]), width=dp(1))
+    d.rounded_rectangle((x1, y1, x2, y2), radius=dp(28), outline=rgb(p["Border"]), width=dp(1))
 
 def render(theme: str, out_path: str) -> None:
     palette_path = (os.path.join(ROOT, "Resources", "Themes", "ClayDusk.xaml")
@@ -309,6 +336,8 @@ def render(theme: str, out_path: str) -> None:
     shadow = rgb(p["ClayShadow"])
     primary_fill = rgb(p["PrimaryFill"])
     primary_fill_top = rgb(p["PrimaryFillTop"])
+    success = rgb(p["Success"])
+    success_soft = rgb(p["SuccessSoft"])
     error_soft = rgb(p["ErrorSoft"])
 
     # Status bar.
@@ -334,7 +363,7 @@ def render(theme: str, out_path: str) -> None:
     toggle_label = s.get("ThemeSwitchToLight", "Light mode") if theme == "dusk" else s["ThemeSwitchToDusk"]
     toggle_icon = icons.get("IconSun", "☀") if theme == "dusk" else icons.get("IconMoon", "☾")
     button(img, (W - pad - toggle_w, y + dp(1), W - pad, y + dp(45)), toggle_label,
-           fill=card, text=primary, border=border_strong, radius=dp(16), font_size=12.5,
+           fill=card, text=primary, border=border_strong, radius=dp(22), font_size=12.5,
            shadow=shadow, icon=toggle_icon, icon_font=font(15, family="icon"))
     y += dp(60)
 
@@ -355,7 +384,7 @@ def render(theme: str, out_path: str) -> None:
     # Disabled Google button and note.
     google_h = dp(52)
     button(img, (pad, y, W - pad, y + google_h), s["LoginContinueGoogle"],
-           fill=card, text=primary, border=border_strong, radius=dp(18), font_size=15,
+           fill=card, text=primary, border=border_strong, radius=dp(24), font_size=15,
            shadow=shadow, disabled=True)
     y += google_h + dp(5)
     d = ImageDraw.Draw(img)
@@ -363,56 +392,102 @@ def render(theme: str, out_path: str) -> None:
                    max_width=W - pad * 2 - dp(16), line_gap=dp(1))
     y += dp(10)
 
-    # Divider with label.
-    label_w = text_width(d, s["LoginOrPhone"], font(12.5)) + dp(18)
-    line_y = y + dp(9)
-    d.line((pad, line_y, (W - label_w) // 2 - dp(6), line_y), fill=rgb(p["Divider"]), width=dp(1))
-    d.line(((W + label_w) // 2 + dp(6), line_y, W - pad, line_y), fill=rgb(p["Divider"]), width=dp(1))
-    d.text(((W - label_w) // 2 + dp(9), y), s["LoginOrPhone"], font=font(12.5), fill=text_muted)
-    y += dp(26)
+    def divider(label: str) -> None:
+        nonlocal y, d
+        label_w = text_width(d, label, font(12.5)) + dp(18)
+        line_y = y + dp(9)
+        d.line((pad, line_y, (W - label_w) // 2 - dp(6), line_y), fill=rgb(p["Divider"]), width=dp(1))
+        d.line(((W + label_w) // 2 + dp(6), line_y, W - pad, line_y), fill=rgb(p["Divider"]), width=dp(1))
+        d.text(((W - label_w) // 2 + dp(9), y), label, font=font(12.5), fill=text_muted)
+        y += dp(26)
 
-    # Phone label + inset field.
+    primary_h = dp(52)
+
+    # Email magic-link signup/login.
+    divider(s["LoginOrEmail"])
+    d.text((pad, y), s["LoginEmailLabel"], font=font(13, "semibold"), fill=text_primary)
+    y += dp(22)
+    field_h = dp(54)
+    email_box = (pad, y, W - pad, y + field_h)
+    grad = vertical_gradient((W - pad * 2, field_h), card_bottom, card_top)
+    mask = Image.new("L", (W - pad * 2, field_h), 0)
+    ImageDraw.Draw(mask).rounded_rectangle((0, 0, W - pad * 2 - 1, field_h - 1),
+                                           radius=dp(24), fill=255)
+    img.paste(grad, (pad, y), mask)
+    d = ImageDraw.Draw(img)
+    d.rounded_rectangle(email_box, radius=dp(24), outline=border_strong, width=dp(1.5))
+    d.text((pad + dp(14), y + dp(17)), s["LoginEmailPlaceholder"], font=font(15), fill=text_muted)
+    y += field_h + dp(6)
+    y += draw_text(d, (pad + dp(2), y), s["LoginEmailHint"], font(12.5), text_muted,
+                   max_width=W - pad * 2 - dp(4), line_gap=dp(1))
+    y += dp(12)
+
+    gradient_button(img, (pad, y, W - pad, y + primary_h), s["LoginEmailSendLink"],
+                    top=primary_fill_top, bottom=primary_fill, text=white, shadow=shadow)
+    y += primary_h + dp(12)
+    d = ImageDraw.Draw(img)
+
+    # Success/info banner shown after the magic link is sent.
+    info_message = s["LoginEmailSent"].format("name@example.com")
+    info_font = font(12.5)
+    info_text_x = pad + dp(12) + dp(24)
+    info_text_w = W - pad * 2 - dp(24) - dp(24)
+    info_lines = wrap(d, info_message, info_font, info_text_w)
+    info_h = dp(14) + dp(20) + dp(2) + len(info_lines) * dp(20) + dp(14)
+    shadow_round(img, (pad, y, W - pad, y + info_h), dp(28), success_soft, shadow,
+                 offset=(dp(2), dp(4)), blur=dp(8), outline=success, width=dp(1))
+    d = ImageDraw.Draw(img)
+    d.text((pad + dp(12), y + dp(13)), icons.get("IconCheckCircle", "✓"),
+           font=font(16, family="icon"), fill=success)
+    d.text((info_text_x, y + dp(13)), s["LoginEmailSentTitle"],
+           font=font(13, "semibold"), fill=success)
+    for i, line in enumerate(info_lines):
+        d.text((info_text_x, y + dp(36) + i * dp(20)), line, font=info_font, fill=text_secondary)
+    y += info_h + dp(12)
+
+    # Phone OTP remains available as the second sign-in method.
+    divider(s["LoginOrPhone"])
     d.text((pad, y), s["PhoneLabel"], font=font(13, "semibold"), fill=text_primary)
     y += dp(22)
     field_h = dp(54)
-    field_box = (pad, y, W - pad, y + field_h)
-    # Inset well: top darker, base lighter.
-    grad = vertical_gradient((field_box[2] - field_box[0], field_h), card_bottom, card_top)
-    mask = Image.new("L", (field_box[2] - field_box[0], field_h), 0)
-    ImageDraw.Draw(mask).rounded_rectangle((0, 0, field_box[2] - field_box[0] - 1, field_h - 1),
-                                           radius=dp(18), fill=255)
-    img.paste(grad, (field_box[0], field_box[1]), mask)
+    phone_box = (pad, y, W - pad, y + field_h)
+    grad = vertical_gradient((W - pad * 2, field_h), card_bottom, card_top)
+    mask = Image.new("L", (W - pad * 2, field_h), 0)
+    ImageDraw.Draw(mask).rounded_rectangle((0, 0, W - pad * 2 - 1, field_h - 1),
+                                           radius=dp(24), fill=255)
+    img.paste(grad, (pad, y), mask)
     d = ImageDraw.Draw(img)
-    d.rounded_rectangle(field_box, radius=dp(18), outline=border_strong, width=dp(1.5))
-    # Country code button.
+    d.rounded_rectangle(phone_box, radius=dp(24), outline=border_strong, width=dp(1.5))
     code_w = dp(88)
     code_box = (pad + dp(6), y + dp(5), pad + dp(6) + code_w, y + field_h - dp(5))
-    d.rounded_rectangle(code_box, radius=dp(12), fill=card, outline=border_strong, width=dp(1))
+    d.rounded_rectangle(code_box, radius=dp(18), fill=card, outline=border_strong, width=dp(1))
     d.text((code_box[0] + dp(10), y + dp(17)), "+971", font=font(12.5, "semibold"), fill=primary)
     d.line((code_box[2] + dp(8), y + dp(14), code_box[2] + dp(8), y + field_h - dp(14)),
            fill=border_strong, width=dp(1))
-    # Entry placeholder.
     d.text((code_box[2] + dp(20), y + dp(17)), s["PhonePlaceholder"], font=font(15), fill=text_muted)
     y += field_h + dp(6)
     y += draw_text(d, (pad + dp(2), y), s["LoginOtpHint"], font(12.5), text_muted,
                    max_width=W - pad * 2 - dp(4), line_gap=dp(1))
-    y += dp(16)
+    y += dp(14)
 
-    # Primary action.
-    primary_h = dp(52)
-    # Gradient primary button (Border surfaces support gradients; preview uses one).
-    grad = vertical_gradient((W - pad * 2, primary_h), primary_fill_top, primary_fill)
-    mask = Image.new("L", (W - pad * 2, primary_h), 0)
-    ImageDraw.Draw(mask).rounded_rectangle((0, 0, W - pad * 2 - 1, primary_h - 1), radius=dp(18), fill=255)
-    shadow_round(img, (pad, y, W - pad, y + primary_h), dp(18), primary_fill, shadow,
-                 offset=(dp(4), dp(6)), blur=dp(12), outline=primary_fill_top, width=dp(1))
-    img.paste(grad, (pad, y), mask)
+    # Tickable terms checkbox (shown checked to demonstrate the enabled gate).
+    check_box = (pad + dp(2), y + dp(2), pad + dp(30), y + dp(30))
+    shadow_round(img, check_box, dp(9), primary, shadow,
+                 offset=(dp(1), dp(2)), blur=dp(5), outline=primary, width=dp(1))
     d = ImageDraw.Draw(img)
-    d.rounded_rectangle((pad, y, W - pad, y + primary_h), radius=dp(18), outline=primary_fill_top, width=dp(1))
-    f = font(15, "semibold")
-    tw = text_width(d, s["LoginPhoneContinue"], f)
-    d.text(((W - tw) // 2, y + dp(16)), s["LoginPhoneContinue"], font=f, fill=white)
+    d.text((check_box[0] + dp(7), check_box[1] + dp(2)), "✓",
+           font=font(13, family="symbol"), fill=white)
+    terms_lines = wrap(d, s["LoginTermsCheckbox"], font(12.5), W - pad * 2 - dp(40))
+    for i, line in enumerate(terms_lines):
+        d.text((check_box[2] + dp(8), y + i * dp(20)), line, font=font(12.5), fill=text_secondary)
+    y += max(dp(32), len(terms_lines) * dp(20)) + dp(12)
+
+    # Phone action is now the secondary CTA; email magic link is primary.
+    button(img, (pad, y, W - pad, y + primary_h), s["LoginPhoneContinue"],
+           fill=card, text=primary, border=border_strong, radius=dp(24), font_size=15,
+           shadow=shadow)
     y += primary_h + dp(15)
+    d = ImageDraw.Draw(img)
 
     # Terms note.
     y += draw_text(d, (pad + dp(8), y), s["WelcomeTermsNote"], font(12.5), text_muted,

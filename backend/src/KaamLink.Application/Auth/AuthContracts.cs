@@ -16,6 +16,16 @@ public sealed record VerifyOtpRequest
     public string Code { get; init; } = string.Empty;
 }
 
+/// <summary>
+/// A Supabase magic-link access token. The backend verifies it with GoTrue and
+/// exchanges it for the app's own access/refresh token pair; the Supabase token
+/// is never accepted directly by KaamLink API endpoints.
+/// </summary>
+public sealed record SupabaseExchangeRequest
+{
+    public string AccessToken { get; init; } = string.Empty;
+}
+
 public sealed record RefreshTokenRequest
 {
     public string RefreshToken { get; init; } = string.Empty;

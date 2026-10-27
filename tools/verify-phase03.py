@@ -107,7 +107,7 @@ harness_ctor = re.search(r"public AuthService CreateService\(\) => new\((.*?)\);
     "backend/tests/KaamLink.UnitTests/Fakes.cs"), re.S)
 auth_args = [a.strip() for a in auth_ctor.group(1).split(",") if a.strip()]
 harness_args = [a.strip() for a in harness_ctor.group(1).split(",") if a.strip()]
-check(len(auth_args) == 13, "AuthService has 13 ctor deps", f"AuthService deps = {len(auth_args)}")
+check(len(auth_args) == 14, "AuthService has 14 ctor deps", f"AuthService deps = {len(auth_args)}")
 check(len(harness_args) == len(auth_args), "test harness passes same arg count",
       f"harness args {len(harness_args)} != service args {len(auth_args)}")
 

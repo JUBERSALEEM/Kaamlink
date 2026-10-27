@@ -14,10 +14,12 @@ builder.Configuration.AddJsonFile("appsettings.local.json", optional: true, relo
 var jwtOptions = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>() ?? new JwtOptions();
 var otpOptions = builder.Configuration.GetSection(OtpOptions.SectionName).Get<OtpOptions>() ?? new OtpOptions();
 var adminOptions = builder.Configuration.GetSection(AdminOptions.SectionName).Get<AdminOptions>() ?? new AdminOptions();
-StartupGuards.ValidateOptions(jwtOptions, otpOptions);
+var supabaseOptions = builder.Configuration.GetSection(SupabaseOptions.SectionName).Get<SupabaseOptions>() ?? new SupabaseOptions();
+StartupGuards.ValidateOptions(jwtOptions, otpOptions, supabaseOptions);
 builder.Services.AddSingleton(jwtOptions);
 builder.Services.AddSingleton(otpOptions);
 builder.Services.AddSingleton(adminOptions);
+builder.Services.AddSingleton(supabaseOptions);
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
