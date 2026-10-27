@@ -8,8 +8,9 @@ using Microsoft.Maui.Storage;
 namespace KaamLink.Features.Auth
 {
     /// <summary>
-    /// Sign-in entry point: Supabase email magic links and phone OTP. A tickable
-    /// terms acceptance gate applies to both. Google stays disabled until a real
+    /// Sign-in entry point: Supabase email OTP (with optional password creation),
+    /// password sign-in for returning users, and phone OTP. A tickable terms
+    /// acceptance gate applies to all paths. Google stays disabled until a real
     /// OAuth client and server-side token verification exist.
     /// </summary>
     public partial class LoginViewModel : ObservableObject, IQueryAttributable
@@ -20,23 +21,25 @@ namespace KaamLink.Features.Auth
         private readonly IApiClient _api;
         private readonly ISessionService _session;
         private readonly IThemeService _theme;
-        private readonly ISupabaseMagicLinkService _magicLinks;
+        private readonly ISupabaseEmailAuthService _emailAuth;
         private readonly IEmailAuthLinkService _emailAuthLinks;
         private bool _sessionRestoreAttempted;
         private bool _countryDirectoryLoaded;
         private IReadOnlyList<CountryPhoneOption> _countries = Array.Empty<CountryPhoneOption>();
+        private string? _pendingSupabaseAccessToken;
+        private AuthTokensResponseDto? _pendingKaamLinkTokens;
 
         public LoginViewModel(
             IApiClient api,
             ISessionService session,
             IThemeService theme,
-            ISupabaseMagicLinkService magicLinks,
+            ISupabaseEmailAuthService emailAuth,
             IEmailAuthLinkService emailAuthLinks)
         {
             _api = api;
             _session = session;
             _theme = theme;
-            _magicLinks = magicLinks;
+            _emailAuth = emailAuth;
             _emailAuthLinks = emailAuthLinks;
             SyncThemeAffordance(theme.CurrentThemeId);
             RestoreLocalAuthState();
@@ -83,7 +86,22 @@ namespace KaamLink.Features.Auth
         private string _email = string.Empty;
 
         [ObservableProperty]
+        private string _emailCode = string.Empty;
+
+        [ObservableProperty]
+        private string _password = string.Empty;
+
+        [ObservableProperty]
+        private string _confirmPassword = string.Empty;
+
+        [ObservableProperty]
         private bool _termsAccepted;
+
+        [ObservableProperty]
+        private bool _isEmailCodePending;
+
+        [ObservableProperty]
+        private bool _isPasswordSetupPending;
 
         [ObservableProperty]
         private bool _hasInfo;
@@ -124,12 +142,12 @@ namespace KaamLink.Features.Auth
             }
         }
 
-        /// <summary>Loads offline country metadata, consumes a magic-link callback, then restores any saved session.</summary>
+        /// <summary>Loads offline country metadata, consumes any legacy link callback, then restores a saved session.</summary>
         public async Task InitializeAsync()
         {
             await EnsureCountryDirectoryLoadedAsync();
             await ProcessPendingEmailAuthCallbackAsync();
-            if (_session.IsAuthenticated)
+            if (_session.IsAuthenticated || IsPasswordSetupPending)
                 return;
             await EnsureSessionRestoredAsync();
         }
@@ -217,7 +235,7 @@ namespace KaamLink.Features.Auth
 
         /// <summary>
         /// A returning session bypasses the form and reaches role choice. Offline
-        /// restore failures leave the phone form available instead of crashing boot.
+        /// restore failures leave the sign-in form available instead of crashing boot.
         /// </summary>
         private async Task EnsureSessionRestoredAsync()
         {
@@ -252,7 +270,7 @@ namespace KaamLink.Features.Auth
         [RelayCommand]
         private async Task SendCodeAsync()
         {
-            if (IsBusy || IsRestoringSession)
+            if (IsBusy || IsRestoringSession || IsPasswordSetupPending)
                 return;
 
             if (!TermsAccepted)
@@ -288,9 +306,9 @@ namespace KaamLink.Features.Auth
         }
 
         [RelayCommand]
-        private async Task SendMagicLinkAsync()
+        private async Task SendEmailCodeAsync()
         {
-            if (IsBusy || IsRestoringSession)
+            if (IsBusy || IsRestoringSession || IsPasswordSetupPending)
                 return;
 
             if (!TermsAccepted)
@@ -300,7 +318,7 @@ namespace KaamLink.Features.Auth
             }
 
             var email = Email.Trim();
-            if (!SupabaseMagicLinkService.IsValidEmail(email))
+            if (!SupabaseEmailAuthService.IsValidEmail(email))
             {
                 ShowError(AppStrings.LoginEmailInvalid, AppStrings.LoginEmailErrorTitle);
                 return;
@@ -311,18 +329,12 @@ namespace KaamLink.Features.Auth
             ClearInfo();
             try
             {
-                await _magicLinks.SendLinkAsync(email);
+                await _emailAuth.SendOtpAsync(email);
                 email = email.ToLowerInvariant();
                 Email = email;
-                try
-                {
-                    Preferences.Default.Set(PendingEmailKey, email);
-                }
-                catch (Exception exception)
-                {
-                    Console.WriteLine($"[KaamLink] pending email could not be saved: {exception}");
-                }
-
+                EmailCode = string.Empty;
+                IsEmailCodePending = true;
+                SavePendingEmail(email);
                 ShowInfo(AppStrings.LoginEmailSentTitle,
                     string.Format(AppStrings.LoginEmailSent, email));
             }
@@ -336,9 +348,157 @@ namespace KaamLink.Features.Auth
             }
         }
 
+        [RelayCommand]
+        private async Task VerifyEmailCodeAsync()
+        {
+            if (IsBusy || IsRestoringSession || IsPasswordSetupPending || !IsEmailCodePending)
+                return;
+
+            if (!TermsAccepted)
+            {
+                ShowError(AppStrings.LoginTermsRequired, AppStrings.LoginEmailErrorTitle);
+                return;
+            }
+
+            var email = Email.Trim().ToLowerInvariant();
+            var code = DigitText.Normalize(EmailCode).Trim();
+            if (!SupabaseEmailAuthService.IsValidEmail(email)
+                || code.Length is < 6 or > 8
+                || !code.All(char.IsAsciiDigit))
+            {
+                ShowError(AppStrings.LoginEmailOtpInvalid, AppStrings.LoginEmailErrorTitle);
+                return;
+            }
+
+            IsBusy = true;
+            ClearError();
+            ClearInfo();
+            try
+            {
+                var session = await _emailAuth.VerifyOtpAsync(email, code);
+                await CompleteSupabaseLoginAsync(session.AccessToken);
+            }
+            catch (ApiException exception)
+            {
+                ShowError(MapError(exception), MapErrorTitle(exception, AppStrings.LoginEmailErrorTitle));
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        [RelayCommand]
+        private async Task SignInWithPasswordAsync()
+        {
+            if (IsBusy || IsRestoringSession || IsPasswordSetupPending)
+                return;
+
+            if (!TermsAccepted)
+            {
+                ShowError(AppStrings.LoginTermsRequired, AppStrings.LoginEmailErrorTitle);
+                return;
+            }
+
+            var email = Email.Trim().ToLowerInvariant();
+            if (!SupabaseEmailAuthService.IsValidEmail(email) || string.IsNullOrWhiteSpace(Password))
+            {
+                ShowError(AppStrings.LoginPasswordInvalidCredentials, AppStrings.LoginEmailErrorTitle);
+                return;
+            }
+
+            IsBusy = true;
+            ClearError();
+            ClearInfo();
+            try
+            {
+                var session = await _emailAuth.SignInWithPasswordAsync(email, Password);
+                var tokens = await _api.ExchangeSupabaseAsync(session.AccessToken);
+                await _session.CompleteLoginAsync(tokens);
+
+                // If metadata was never written (older account), mark it now so
+                // future OTP logins do not keep asking to create a password.
+                if (tokens.RequiresPasswordSetup)
+                {
+                    try
+                    {
+                        await _emailAuth.SetPasswordAsync(session.AccessToken, Password);
+                    }
+                    catch (ApiException exception)
+                    {
+                        Console.WriteLine($"[KaamLink] password metadata update failed: {exception.Message}");
+                    }
+                }
+
+                ClearPendingEmail();
+                await NavigateAfterLoginAsync(tokens);
+            }
+            catch (ApiException exception)
+            {
+                ShowError(MapError(exception), MapErrorTitle(exception, AppStrings.LoginEmailErrorTitle));
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        [RelayCommand]
+        private async Task SetPasswordAsync()
+        {
+            if (IsBusy || !IsPasswordSetupPending)
+                return;
+
+            if (!IsPasswordValid(Password))
+            {
+                ShowError(AppStrings.LoginPasswordInvalid, AppStrings.LoginEmailErrorTitle);
+                return;
+            }
+
+            if (!string.Equals(Password, ConfirmPassword, StringComparison.Ordinal))
+            {
+                ShowError(AppStrings.LoginPasswordMismatch, AppStrings.LoginEmailErrorTitle);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(_pendingSupabaseAccessToken))
+            {
+                ShowError(AppStrings.LoginEmailGeneric, AppStrings.LoginEmailErrorTitle);
+                return;
+            }
+
+            IsBusy = true;
+            ClearError();
+            ClearInfo();
+            try
+            {
+                await _emailAuth.SetPasswordAsync(_pendingSupabaseAccessToken, Password);
+                await FinishPasswordSetupAsync();
+            }
+            catch (ApiException exception)
+            {
+                ShowError(MapError(exception), MapErrorTitle(exception, AppStrings.LoginEmailErrorTitle));
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        [RelayCommand]
+        private async Task SkipPasswordAsync()
+        {
+            if (IsBusy || !IsPasswordSetupPending)
+                return;
+
+            ClearError();
+            ClearInfo();
+            await FinishPasswordSetupAsync();
+        }
+
         /// <summary>
-        /// Consumes a deep-link callback once. Called on login-page appearance and
-        /// directly after App routes an incoming link to this page.
+        /// Consumes a legacy deep-link callback once. OTP is now the primary flow,
+        /// but existing link-based emails can still finish here.
         /// </summary>
         public async Task ProcessPendingEmailAuthCallbackAsync()
         {
@@ -362,20 +522,7 @@ namespace KaamLink.Features.Auth
             ClearInfo();
             try
             {
-                // Supabase's token is exchanged for KaamLink's own token pair;
-                // the backend verifies it with GoTrue before issuing a session.
-                var tokens = await _api.ExchangeSupabaseAsync(callback.AccessToken!);
-                await _session.CompleteLoginAsync(tokens);
-                try
-                {
-                    Preferences.Default.Remove(PendingEmailKey);
-                }
-                catch (Exception exception)
-                {
-                    Console.WriteLine($"[KaamLink] pending email could not be cleared: {exception}");
-                }
-
-                await Shell.Current.GoToAsync(RoleNavigator.AbsoluteRouteFor(tokens.User, Role));
+                await CompleteSupabaseLoginAsync(callback.AccessToken!);
             }
             catch (ApiException exception)
             {
@@ -384,6 +531,76 @@ namespace KaamLink.Features.Auth
             finally
             {
                 IsBusy = false;
+            }
+        }
+
+        private async Task CompleteSupabaseLoginAsync(string supabaseAccessToken)
+        {
+            var tokens = await _api.ExchangeSupabaseAsync(supabaseAccessToken);
+            await _session.CompleteLoginAsync(tokens);
+            _pendingSupabaseAccessToken = supabaseAccessToken;
+            _pendingKaamLinkTokens = tokens;
+            IsEmailCodePending = false;
+            ClearPendingEmail();
+
+            if (tokens.RequiresPasswordSetup)
+            {
+                Password = string.Empty;
+                ConfirmPassword = string.Empty;
+                IsPasswordSetupPending = true;
+                return;
+            }
+
+            await NavigateAfterLoginAsync(tokens);
+        }
+
+        private async Task FinishPasswordSetupAsync()
+        {
+            _pendingSupabaseAccessToken = null;
+            IsPasswordSetupPending = false;
+            Password = string.Empty;
+            ConfirmPassword = string.Empty;
+
+            var tokens = _pendingKaamLinkTokens;
+            _pendingKaamLinkTokens = null;
+            if (tokens is null)
+            {
+                await Shell.Current.GoToAsync(AppRoutes.Absolute(AppRoutes.Welcome));
+                return;
+            }
+
+            await NavigateAfterLoginAsync(tokens);
+        }
+
+        private Task NavigateAfterLoginAsync(AuthTokensResponseDto tokens) =>
+            Shell.Current.GoToAsync(RoleNavigator.AbsoluteRouteFor(tokens.User, Role));
+
+        private static bool IsPasswordValid(string password) =>
+            password.Length >= 8
+            && password.Any(char.IsLetter)
+            && password.Any(char.IsAsciiDigit);
+
+        private void SavePendingEmail(string email)
+        {
+            try
+            {
+                Preferences.Default.Set(PendingEmailKey, email);
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"[KaamLink] pending email could not be saved: {exception}");
+            }
+        }
+
+        private void ClearPendingEmail()
+        {
+            try
+            {
+                Preferences.Default.Remove(PendingEmailKey);
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"[KaamLink] pending email could not be cleared: {exception}");
             }
         }
 
@@ -440,6 +657,9 @@ namespace KaamLink.Features.Auth
             ApiClient.Codes.SupabaseRateLimited => AppStrings.LoginEmailRateLimited,
             ApiClient.Codes.SupabaseInvalidLink => AppStrings.LoginEmailLinkInvalid,
             ApiClient.Codes.SupabaseTokenRequired => AppStrings.LoginEmailLinkInvalid,
+            ApiClient.Codes.SupabaseOtpInvalid => AppStrings.LoginEmailOtpInvalid,
+            ApiClient.Codes.SupabasePasswordSetFailed => AppStrings.LoginPasswordSetFailed,
+            ApiClient.Codes.SupabaseInvalidCredentials => AppStrings.LoginPasswordInvalidCredentials,
             ApiClient.Codes.SupabaseUnavailable => AppStrings.LoginEmailGeneric,
             ApiClient.Codes.SupabaseSendFailed => AppStrings.LoginEmailGeneric,
             _ => null

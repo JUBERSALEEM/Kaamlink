@@ -29,7 +29,7 @@ Requirements:
 |---|---|
 | `mockup_kit.py` | tokens, fonts, icons, layout primitives and components |
 | `render_mockups.py` | one function per screen; `SCREENS` lists the output order |
-| `*.png` | rendered screens (720 × 1560 @2×, design system sheet is taller) |
+| `*.png` | rendered screens (720 × 1560 @2× for the historical set; current `login-aurora-*.png` previews are 720 × 2840) |
 
 > **Historical set.** `render_mockups.py` documents the first flat design pass and
 > its `02-login.png` is **not** the current login screen. The current sign-in UI is

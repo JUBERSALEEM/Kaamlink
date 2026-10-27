@@ -1,8 +1,8 @@
 # First Boot Guide — build, install, and walk through KaamLink end-to-end
 
 Audience: developers (and the product owner). Time needed: ~30–45 minutes on a
-clean machine. By the end you will have signed in with a Supabase email magic link
-or your own phone number, completed onboarding as a worker AND registered a
+clean machine. By the end you will have signed in with a Supabase email OTP code
+(and optional password) or your own phone number, completed onboarding as a worker AND registered a
 company as an employer, and seen both homes render real server data.
 
 > Known environment note: all code is statically cross-verified by
@@ -55,8 +55,10 @@ simplest way to get it).
 **Keep the compose terminal visible.** The OTP "SMS" is the logging sandbox in this
 phase (`Otp:Provider=log`): the 6-digit code is printed in the API logs every time
 you tap "Continue with phone". A real SMS provider is a later-phase, paid
-integration (§35). Email magic links are sent by the configured Supabase project;
+integration (§35). Email OTP codes are sent by the configured Supabase project;
 `.env.example` includes the public `SUPABASE_URL` / `SUPABASE_ANON_KEY` values.
+Run `python3 tools/configure-supabase-otp-templates.py` once with a scoped
+`SUPABASE_ACCESS_TOKEN` PAT to switch the hosted templates from link to code.
 Supabase's built-in email provider is rate-limited, so use a test inbox you control
 and configure custom SMTP before production. See `docs/email-magic-link-setup.md`.
 
@@ -132,16 +134,17 @@ distributable.
 
 ## 3. First boot walkthrough (worker)
 
-1. **Accept the terms and sign in** — the app opens on KaamLink's Aurora Clay login
-   screen. Tick the Terms and Conditions checkbox first; both sign-in methods are
-   blocked until it is checked. For the free passwordless path, enter an email and
-   tap **Email me a sign-in link**, then open the Supabase email on the device. The
-   link uses `kaamlink://auth-callback`, app exchanges the verified Supabase token
-   for a KaamLink session, and you land on role choice. For phone OTP, the offline
-   country picker defaults to the device region; enter a national or `+` international
-   number (UAE `0501234567` becomes `+971501234567`) and tap **Continue with phone**.
-   Google sign-in remains visibly unavailable until the OAuth client, server-side
-   verification and account-linking flow are deployed; use email or phone instead.
+1. **Accept the terms and sign in** — the app opens on KaamLink's Aurora Clay
+   login screen. Tick the Terms and Conditions checkbox first; every path is
+   blocked until it is checked. For first-time signup, enter an email and tap
+   **Email me a code**. Open the Supabase email, copy the 6–8 digit code, enter it
+   in the app and tap **Verify code**. After confirmation the app asks you to set
+   a password for later visits (or choose **Maybe later**). On later visits enter
+   the email + password and tap **Sign in with password**. For phone OTP, the
+   offline country picker defaults to the device region; enter a national or `+`
+   international number (UAE `0501234567` becomes `+971501234567`) and tap
+   **Continue with phone**. Google sign-in remains visibly unavailable until the
+   OAuth client, server-side verification and account-linking flow are deployed.
    See `docs/email-magic-link-setup.md` and `docs/auth-and-phone-login-decision.md`.
 2. **For phone login, read the OTP from the API logs** — in the compose terminal look for the warning line:
 
@@ -149,7 +152,7 @@ distributable.
    kaamlink-api | warn: ...[OTP SANDBOX] Code for +971501234567 is 483920 (Otp:Provider=log — development only...)
    ```
 
-   Enter it on the code screen. Wrong code → "The code doesn't match" (5 attempts max);
+   For phone login, enter it on the code screen. Wrong code → "The code doesn't match" (5 attempts max);
    the **Resend** button re-arms after the cooldown shown on it.
 3. **Choose how to use KaamLink** — after sign-in, tap **I'm looking for work**.
    Employers instead choose **I'm hiring workers**. The selection is deliberately after

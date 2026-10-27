@@ -387,6 +387,30 @@ CASES = [
         ("ConfigureLifecycleEvents", "ConfigureLifecycleEventsTYPO"),
         ["tools/verify-email-auth.py"],
     ),
+    (
+        "email OTP command no longer bound",
+        "Features/Auth/LoginPage.xaml",
+        ("SendEmailCodeCommand", "SendEmailCodeCommandTYPO"),
+        ["tools/verify-email-auth.py"],
+    ),
+    (
+        "password setup ignores the backend flag",
+        "backend/src/KaamLink.Application/Auth/AuthService.cs",
+        ("RequiresPasswordSetup = !identity.PasswordSet", "RequiresPasswordSetup = false"),
+        ["tools/verify-email-auth.py"],
+    ),
+    (
+        "OTP template script drops confirm-signup template",
+        "tools/configure-supabase-otp-templates.py",
+        ("mailer_templates_confirmation_content", "mailer_templates_confirmation_contentTYPO"),
+        ["tools/verify-email-auth.py"],
+    ),
+    (
+        "Management API token missing from OTP script",
+        "tools/configure-supabase-otp-templates.py",
+        ('os.environ.get("SUPABASE_ACCESS_TOKEN"', 'os.environ.get("SUPABASE_MANAGEMENT_TOKEN_TYPO"'),
+        ["tools/verify-email-auth.py"],
+    ),
 ]
 
 

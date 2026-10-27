@@ -62,7 +62,7 @@ public static class StartupGuards
             || string.IsNullOrWhiteSpace(supabaseAnonKey))
         {
             throw new InvalidOperationException(
-                "Supabase:Url (HTTPS) and Supabase:AnonKey are required in Production for email magic-link sign-in.");
+                "Supabase:Url (HTTPS) and Supabase:AnonKey are required in Production for email OTP/password sign-in.");
         }
 
         var connectionString = configuration.GetConnectionString("Postgres") ?? string.Empty;

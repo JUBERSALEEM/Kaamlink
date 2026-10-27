@@ -1,7 +1,7 @@
 namespace KaamLink.Application.Options;
 
 /// <summary>
-/// Public Supabase project settings used to verify email magic-link access tokens.
+/// Public Supabase project settings used to verify email OTP/password session tokens.
 /// The publishable/anon key is safe to ship to clients; the service-role key is
 /// never used here and must never be committed to the mobile app.
 /// </summary>

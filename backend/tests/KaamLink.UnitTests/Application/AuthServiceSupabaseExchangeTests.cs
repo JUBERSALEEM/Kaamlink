@@ -18,6 +18,7 @@ public sealed class AuthServiceSupabaseExchangeTests
             new SupabaseExchangeRequest { AccessToken = "supabase-access-token" });
 
         Assert.Equal("Bearer", response.TokenType);
+        Assert.True(response.RequiresPasswordSetup);
         Assert.False(string.IsNullOrWhiteSpace(response.AccessToken));
         Assert.False(string.IsNullOrWhiteSpace(response.RefreshToken));
         Assert.Equal(1, harness.SupabaseVerifier.Calls);
@@ -58,6 +59,7 @@ public sealed class AuthServiceSupabaseExchangeTests
     public async Task Exchange_InvalidSupabaseToken_CreatesNoUser()
     {
         var harness = AuthServiceHarness.Create();
+        harness.SupabaseVerifier.PasswordSet = true;
         harness.SupabaseVerifier.Failure = AppException.Unauthorized(
             "auth.supabase_invalid", "This sign-in link is invalid or expired.");
         var service = harness.CreateService();

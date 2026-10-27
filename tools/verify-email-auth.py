@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
-"""Static gate for Supabase email magic-link auth, terms gating and Aurora Clay.
+"""Static gate for Supabase email OTP + password auth, terms gating and Aurora Clay.
 
-It does not replace `dotnet build`, XamlC, backend integration tests or a device
-deep-link test. It catches the cross-file drift that would otherwise ship a
-beautiful but non-functional "Email me a sign-in link" button: missing build
-metadata, a missing Android intent filter, an unregistered callback parser, a
-backend that trusts Supabase tokens without verification, and a terms checkbox
-that gates nothing.
+It does not replace `dotnet build`, backend integration tests, hosted Supabase
+template verification or a device OTP round trip. It catches cross-file drift
+that would otherwise ship an OTP button with no verifier, a password screen
+with no backend flag, or a terms checkbox that gates nothing.
 """
 from __future__ import annotations
 
@@ -35,7 +33,7 @@ def read(path: str) -> str:
 
 csproj = read("KaamLink.csproj")
 supabase_config = read("Core/Api/SupabaseConfig.cs")
-magic_service = read("Core/Api/SupabaseMagicLinkService.cs")
+email_service = read("Core/Api/SupabaseEmailAuthService.cs")
 link_service = read("Core/Api/EmailAuthLinkService.cs")
 api_client = read("Core/Api/ApiClient.cs")
 api_contracts = read("Core/Api/ApiContracts.cs")
@@ -79,6 +77,7 @@ compose = read("backend/docker-compose.yml")
 fakes = read("backend/tests/KaamLink.UnitTests/Fakes.cs")
 exchange_tests = read("backend/tests/KaamLink.UnitTests/Application/AuthServiceSupabaseExchangeTests.cs")
 setup_doc = read("docs/email-magic-link-setup.md")
+otp_script = read("tools/configure-supabase-otp-templates.py")
 all_sh = read("tools/verify-all.sh")
 
 # ------------------------------------------------------------------ client config
@@ -98,15 +97,16 @@ ok("service_role" not in csproj and "sb_secret_" not in csproj,
    "client ships only public keys", "csproj: a service-role key is baked into the mobile app")
 
 ok('RedirectUri = "kaamlink://auth-callback"' in supabase_config,
-   "magic-link redirect URI matches Android deep link", "SupabaseConfig: redirect URI drift")
-ok('OtpPath = "auth/v1/otp"' in supabase_config,
-   "magic-link OTP path present", "SupabaseConfig: missing auth/v1/otp")
+   "legacy deep-link redirect URI remains allowlisted", "SupabaseConfig: redirect URI drift")
+for path, name in (("VerifyPath", "auth/v1/verify"), ("UserPath", "auth/v1/user"),
+                   ("TokenPath", "auth/v1/token?grant_type=password")):
+    ok(path in supabase_config and name in supabase_config,
+       f"SupabaseConfig exposes {path}", f"SupabaseConfig: {path} missing")
 ok("Uri.UnescapeDataString" in link_service and "TrimStart('#')" in link_service,
-   "callback parser decodes the URL fragment", "EmailAuthLinkService: fragment tokens are not decoded")
-ok('scheme, "kaamlink"' in main_activity or 'DataScheme = "kaamlink"' in main_activity,
-   "Android activity declares the kaamlink scheme", "MainActivity: missing kaamlink intent-filter scheme")
-ok('DataHost = "auth-callback"' in main_activity and "Intent.CategoryBrowsable" in main_activity,
-   "Android activity declares a browsable auth-callback host", "MainActivity: auth-callback host/category missing")
+   "legacy callback parser decodes the URL fragment", "EmailAuthLinkService: fragment tokens are not decoded")
+ok('DataScheme = "kaamlink"' in main_activity and 'DataHost = "auth-callback"' in main_activity
+   and "Intent.CategoryBrowsable" in main_activity,
+   "Android activity declares the kaamlink callback", "MainActivity: deep-link intent-filter drift")
 ok("Exported = true" in main_activity and "LaunchMode.SingleTop" in main_activity,
    "Android activity is exported and single-top for deep links", "MainActivity: exported/single-top deep-link setup missing")
 ok(".ConfigureLifecycleEvents(lifecycle =>" in maui_program
@@ -117,70 +117,97 @@ ok(".ConfigureLifecycleEvents(lifecycle =>" in maui_program
 ok("protected override void OnAppLinkRequestReceived(Uri uri)" in app_cs
    and "base.OnAppLinkRequestReceived(uri)" in app_cs
    and "EmailAuthLinkParser.IsCallback" in app_cs,
-   "App receives and validates magic-link deep links", "App.xaml.cs: deep-link callback is not handled")
-ok("//login" in app_cs and "HandleEmailAuthCallbackAsync" in app_cs,
-   "deep link routes to the login page", "App.xaml.cs: deep link does not reach LoginPage")
-ok("IEmailAuthLinkService" in maui_program and "ISupabaseMagicLinkService" in maui_program,
+   "App receives and validates legacy deep links", "App.xaml.cs: deep-link callback is not handled")
+ok("IEmailAuthLinkService" in maui_program and "ISupabaseEmailAuthService" in maui_program,
    "email-auth services are registered", "MauiProgram: email-auth services not registered")
 ok("ApiHttp.ConfigureSupabase" in maui_program and "ConfigureSupabase" in api_http,
    "Supabase client shares the bounded HTTP policy", "Supabase HttpClient has no bounded timeout/config")
 ok("TimeSpan.FromSeconds(ApiConfig.TimeoutSeconds)" in api_http,
    "Supabase client uses the shared timeout", "Supabase HttpClient can hang on the default 100s timeout")
 
-# ------------------------------------------------------------------ client flow
-ok("SupabaseOtpRequestDto" in api_contracts and "create_user" in api_contracts
-   and "email_redirect_to" in api_contracts,
-   "magic-link request DTO uses Supabase snake_case", "ApiContracts: Supabase OTP body drift")
-ok("SupabaseExchangeRequestDto" in api_contracts
-   and "[JsonSerializable(typeof(SupabaseOtpRequestDto))]" in api_contracts
-   and "[JsonSerializable(typeof(SupabaseExchangeRequestDto))]" in api_contracts,
-   "source-generated DTOs are registered", "ApiContracts: Supabase DTO registration missing")
+# ------------------------------------------------------------------ client OTP flow
+for dto, marker in (
+    ("SupabaseOtpRequestDto", "create_user"),
+    ("SupabaseVerifyOtpRequestDto", '"token"'),
+    ("SupabasePasswordLoginRequestDto", '"password"'),
+    ("SupabaseUpdateUserRequestDto", '"password"'),
+    ("SupabaseUserMetadataDto", "password_set"),
+    ("SupabaseSessionResponseDto", "access_token"),
+):
+    ok(dto in api_contracts and marker in api_contracts,
+       f"{dto} is declared", f"ApiContracts: {dto} missing")
+    ok(f"[JsonSerializable(typeof({dto}))]" in api_contracts,
+       f"{dto} is source-gen registered", f"ApiContracts: {dto} registration missing")
+ok('JsonPropertyName("type")' in api_contracts and '"email"' in api_contracts,
+   "OTP verify body uses GoTrue field names", "ApiContracts: OTP verify body drift")
+ok("bool RequiresPasswordSetup = false" in api_contracts,
+   "client token response carries password-setup flag", "ApiContracts: RequiresPasswordSetup missing")
 ok("ExchangeSupabaseAsync" in api_client.split("public sealed class ApiClient")[0]
    and "ExchangeSupabaseAsync" in api_client.split("public sealed class ApiClient")[1],
    "API client interface + implementation expose the exchange", "ApiClient: exchange method parity broken")
 ok('auth/email/exchange' in api_client,
    "exchange endpoint is the backend contract", "ApiClient: wrong exchange endpoint")
-ok("auth/v1/otp" in supabase_config and "apikey" in magic_service
-   and "AuthenticationHeaderValue(\"Bearer\"" in magic_service,
-   "magic-link service calls GoTrue with public headers", "SupabaseMagicLinkService: GoTrue request drift")
-ok("SupabaseConfig.RedirectUri" in magic_service and "true" in magic_service,
-   "magic-link service requests user creation with the deep-link redirect", "SupabaseMagicLinkService: create_user/redirect drift")
-ok("_network.HasUsableNetwork()" in magic_service,
-   "magic-link service fails fast offline", "SupabaseMagicLinkService: no offline preflight")
+for code in ("SupabaseOtpInvalid", "SupabasePasswordSetFailed", "SupabaseInvalidCredentials"):
+    ok(f'public const string {code}' in api_client,
+       f"ApiClient.Codes.{code} exists", f"ApiClient: {code} missing")
 
-ok('IsChecked="{Binding TermsAccepted}"' in login_xaml
-   and 'Command="{Binding SendMagicLinkCommand}"' in login_xaml
-   and 'Text="{Binding Email}"' in login_xaml,
-   "login screen binds email, terms and magic-link command", "LoginPage.xaml: email-auth bindings missing")
-ok('IsVisible="{Binding HasInfo}"' in login_xaml and "IconCheckCircle" in login_xaml,
-   "login screen shows a localized sent-link state", "LoginPage.xaml: magic-link info state missing")
+for method in ("SendOtpAsync", "VerifyOtpAsync", "SetPasswordAsync", "SignInWithPasswordAsync"):
+    ok(f"public Task" in email_service and method in email_service,
+       f"email auth service exposes {method}", f"SupabaseEmailAuthService: {method} missing")
+ok("SupabaseConfig.OtpUri" in email_service and "SupabaseConfig.VerifyUri" in email_service
+   and "SupabaseConfig.UserUri" in email_service and "SupabaseConfig.TokenUri" in email_service,
+   "email auth service targets the correct GoTrue endpoints", "SupabaseEmailAuthService: endpoint drift")
+ok("apikey" in email_service and "AuthenticationHeaderValue" in email_service
+   and '"Bearer"' in email_service,
+   "email auth service sends public/bearer headers", "SupabaseEmailAuthService: GoTrue headers drift")
+ok("_network.HasUsableNetwork()" in email_service,
+   "email auth service fails fast offline", "SupabaseEmailAuthService: no offline preflight")
+
+# ------------------------------------------------------------------ login UI + VM
+for command in ("SendEmailCodeCommand", "VerifyEmailCodeCommand", "SignInWithPasswordCommand",
+                "SetPasswordCommand", "SkipPasswordCommand"):
+    ok(f'Command="{{Binding {command}}}' in login_xaml,
+       f"LoginPage binds {command}", f"LoginPage.xaml: {command} not bound")
+for binding in ("IsEmailCodePending", "IsPasswordSetupPending", "EmailCode",
+                "Password", "ConfirmPassword", "TermsAccepted", "HasInfo"):
+    ok(f"{{Binding {binding}" in login_xaml,
+       f"LoginPage binds {binding}", f"LoginPage.xaml: {binding} not bound")
+ok('IsChecked="{Binding TermsAccepted}"' in login_xaml,
+   "terms checkbox is tickable", "LoginPage.xaml: terms checkbox missing")
 ok('Text="{x:Static strings:AppStrings.LoginContinueGoogle}"' in login_xaml
    and 'IsEnabled="False"' in login_xaml and "LoginGoogleSetupNote" in login_xaml,
    "Google remains honestly disabled", "LoginPage.xaml: Google was enabled without OAuth backend")
 ok("HandleEmailAuthCallbackAsync" in login_cs,
    "login page exposes a callback handler", "LoginPage.xaml.cs: callback handler missing")
-ok("TermsAccepted" in login_vm and "SendMagicLinkAsync" in login_vm
-   and "ProcessPendingEmailAuthCallbackAsync" in login_vm,
-   "view model owns terms, magic-link and callback flow", "LoginViewModel: email-auth flow incomplete")
-ok(login_vm.count("if (!TermsAccepted)") >= 3,
-   "terms gate protects email, phone and callback paths", "LoginViewModel: terms gate does not protect all auth actions")
-ok("ExchangeSupabaseAsync" in login_vm and "CompleteLoginAsync" in login_vm,
-   "Supabase token is exchanged for a KaamLink session", "LoginViewModel: no backend exchange/session adoption")
+for method in ("SendEmailCodeAsync", "VerifyEmailCodeAsync", "SignInWithPasswordAsync",
+               "SetPasswordAsync", "SkipPasswordAsync", "CompleteSupabaseLoginAsync"):
+    ok(method in login_vm,
+       f"LoginViewModel implements {method}", f"LoginViewModel: {method} missing")
+ok(login_vm.count("if (!TermsAccepted)") >= 5,
+   "terms gate protects OTP, password, callback and phone paths", "LoginViewModel: terms gate does not protect all auth actions")
+ok("RequiresPasswordSetup" in login_vm and "_emailAuth.SetPasswordAsync" in login_vm,
+   "password setup follows the backend flag", "LoginViewModel: password setup flow missing")
+ok("DigitText.Normalize" in login_vm and "char.IsAsciiDigit" in login_vm,
+   "OTP code is normalized and ASCII-validated", "LoginViewModel: OTP input validation drift")
 ok("Preferences.Default.Set(TermsAcceptedKey" in login_vm and "Preferences.Default.Get(TermsAcceptedKey" in login_vm,
-   "terms acceptance survives the email app switch", "LoginViewModel: terms state is lost on deep-link return")
-for key in ("LoginOrEmail", "LoginEmailLabel", "LoginEmailPlaceholder", "LoginEmailHint",
-            "LoginEmailSendLink", "LoginEmailSent", "LoginTermsCheckbox", "LoginTermsRequired",
-            "LoginEmailErrorTitle", "LoginEmailInvalid", "LoginEmailNotConfigured",
-            "LoginEmailRateLimited", "LoginEmailLinkInvalid", "LoginEmailGeneric"):
+   "terms acceptance survives app switches", "LoginViewModel: terms state is not persisted")
+for key in ("LoginEmailOtpLabel", "LoginEmailOtpPlaceholder", "LoginEmailVerifyCode",
+            "LoginEmailOtpInvalid", "LoginPasswordLabel", "LoginPasswordPlaceholder",
+            "LoginPasswordSetTitle", "LoginPasswordSetHint", "LoginPasswordConfirmLabel",
+            "LoginPasswordConfirmPlaceholder", "LoginPasswordSetButton", "LoginPasswordSkip",
+            "LoginPasswordSignIn", "LoginPasswordInvalid", "LoginPasswordMismatch",
+            "LoginPasswordInvalidCredentials", "LoginPasswordSetFailed"):
     ok(f'<data name="{key}"' in en_resx and f'<data name="{key}"' in ar_resx
        and f"public static string {key} =>" in designer,
        f"localized {key}", f"localization: {key} missing from EN/AR/Designer")
-ok("LoginGoogleSetupNote" in en_resx and "OAuth client" in en_resx,
-   "Google note explains the real blocker", "LoginGoogleSetupNote: stale explanation")
+ok("code" in en_resx and "OAuth client" in en_resx,
+   "Google note and email CTA now describe OTP", "strings: link-era copy remains")
 
 # ------------------------------------------------------------------ backend exchange
 ok("SupabaseExchangeRequest" in auth_contracts and "AccessToken" in auth_contracts,
    "backend exchange DTO exists", "AuthContracts: SupabaseExchangeRequest missing")
+ok("bool RequiresPasswordSetup = false" in auth_contracts,
+   "backend token response carries password-setup flag", "AuthContracts: RequiresPasswordSetup missing")
 ok("ExchangeSupabaseTokenAsync" in auth_interface and "ExchangeSupabaseTokenAsync" in auth_service,
    "backend auth service exposes the exchange", "IAuthService/AuthService: exchange method drift")
 ok('HttpPost("email/exchange")' in auth_controller and "EnableRateLimiting" in auth_controller,
@@ -188,6 +215,8 @@ ok('HttpPost("email/exchange")' in auth_controller and "EnableRateLimiting" in a
 ok("supabaseVerifier.VerifyAsync" in auth_service and "FindByEmailAsync" in auth_service
    and "RegisterFromEmail" in auth_service and "SyntheticPhone" in auth_service,
    "backend verifies, maps and registers email identities", "AuthService: email exchange is incomplete")
+ok("identity.PasswordSet" in auth_service and "RequiresPasswordSetup = !identity.PasswordSet" in auth_service,
+   "backend derives password-setup need from Supabase metadata", "AuthService: PasswordSet flag not used")
 ok("unitOfWork.SaveChangesAsync" in auth_service,
    "backend persists the new email user/token", "AuthService: exchange does not save changes")
 ok("SupabaseOptions" in program and "AddSingleton(supabaseOptions)" in program
@@ -195,11 +224,11 @@ ok("SupabaseOptions" in program and "AddSingleton(supabaseOptions)" in program
    "Supabase options are bound and validated at startup", "Program.cs: Supabase options wiring missing")
 ok("Supabase:Url (HTTPS) and Supabase:AnonKey are required in Production" in startup_guards,
    "production startup requires Supabase config", "StartupGuards: production Supabase guard missing")
-ok("ISupabaseUserVerifier" in verifier_interface and "SupabaseIdentity" in verifier_interface,
-   "verification port is defined in Application", "ISupabaseUserVerifier: port missing")
+ok("SupabaseIdentity" in verifier_interface and "PasswordSet" in verifier_interface,
+   "verification port carries password metadata", "ISupabaseUserVerifier: PasswordSet missing")
 ok("auth/v1/user" in verifier and "apikey" in verifier
-   and "email_confirmed_at" in verifier and "Bearer" in verifier,
-   "GoTrue /user verification checks confirmed email", "SupabaseUserVerifier: token validation drift")
+   and "email_confirmed_at" in verifier and "user_metadata" in verifier and "password_set" in verifier,
+   "GoTrue /user verification checks confirmed email + password metadata", "SupabaseUserVerifier: token validation drift")
 ok("ISupabaseUserVerifier, SupabaseUserVerifier" in infra_di and "Timeout = TimeSpan.FromSeconds(10)" in infra_di,
    "verifier is registered with a bounded client", "DependencyInjection: verifier registration/timeout missing")
 ok("SectionName = \"Supabase\"" in supabase_options and "IsConfigured" in supabase_options,
@@ -218,11 +247,23 @@ ok('name: "email"' in migration and "ux_users_email" in migration
 ok("ux_users_email" in snapshot and "ux_users_email" in migration_designer,
    "unique email index is in the model", "Phase06: unique email index missing")
 ok("SupabaseVerifier" in fakes and "StubSupabaseUserVerifier" in fakes
-   and "ExchangeSupabaseTokenAsync" in exchange_tests,
-   "unit-test harness covers the exchange", "tests: Supabase exchange not covered")
+   and "PasswordSet" in fakes and "ExchangeSupabaseTokenAsync" in exchange_tests,
+   "unit-test harness covers password metadata", "tests: PasswordSet wiring not covered")
 ok("SUPABASE_URL" in env_example and "Supabase__Url" in compose
    and "\"Supabase\"" in appsettings,
    "local and deployed backend receive Supabase config", "Supabase config is missing from one environment")
+
+# ------------------------------------------------------------------ hosted templates
+ok('os.environ.get("SUPABASE_ACCESS_TOKEN"' in otp_script
+   and '"mailer_templates_magic_link_content":' in otp_script
+   and '"mailer_templates_confirmation_content":' in otp_script
+   and "{{ .Token }}" in otp_script,
+   "Management API script changes both OTP templates", "tools/configure-supabase-otp-templates.py incomplete")
+ok("mailer_otp_length" in otp_script and "password_min_length" in otp_script,
+   "Management API script sets OTP length and password minimum", "OTP script: config fields missing")
+ok("SUPABASE_ACCESS_TOKEN" in setup_doc and "configure-supabase-otp-templates.py" in setup_doc
+   and "custom SMTP" in setup_doc and "service-role" in setup_doc,
+   "setup doc records PAT, script, SMTP and key safety", "docs/email-magic-link-setup.md incomplete")
 
 # ------------------------------------------------------------------ aurora theme
 ok("#4B3FD6" in colors and "#5DE3D4" in colors and "#EBE9FF" in colors,
@@ -234,11 +275,6 @@ ok('Property="CornerRadius" Value="24"' in styles and 'CornerRadius="28"' in sty
 ok("#6FE7D2" in appicon and "#6FE7D2" in appiconfg and "#6FE7D2" in mark
    and "#8B7BFF" in appicon and "#4B3FD6" in mark,
    "app icon assets share the aurora accents", "brand assets no longer share the palette")
-
-# ------------------------------------------------------------------ docs + gate wiring
-ok("kaamlink://auth-callback" in setup_doc and "Supabase" in setup_doc
-   and "custom SMTP" in setup_doc and "service-role" in setup_doc,
-   "setup doc records redirect, production email and key safety", "docs/email-magic-link-setup.md incomplete")
 ok("verify-email-auth.py" in all_sh,
    "email-auth gate is part of verify-all", "verify-all.sh: new gate is not run")
 
@@ -248,4 +284,4 @@ if failures:
     for failure in sorted(set(failures)):
         print("  -", failure)
     sys.exit(1)
-print("EMAIL MAGIC-LINK, TERMS AND AURORA GATES PASSED")
+print("EMAIL OTP, PASSWORD, TERMS AND AURORA GATES PASSED")

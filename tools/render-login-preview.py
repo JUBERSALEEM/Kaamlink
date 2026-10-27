@@ -26,7 +26,7 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FONT_DIR = os.path.join(ROOT, "Resources", "Fonts")
 SCALE = 2
-W_DP, H_DP = 360, 1120
+W_DP, H_DP = 360, 1420
 W, H = W_DP * SCALE, H_DP * SCALE
 
 FONT_CACHE: dict[tuple[str, int], ImageFont.FreeTypeFont] = {}
@@ -403,7 +403,7 @@ def render(theme: str, out_path: str) -> None:
 
     primary_h = dp(52)
 
-    # Email magic-link signup/login.
+    # Email OTP + password sign-in.
     divider(s["LoginOrEmail"])
     d.text((pad, y), s["LoginEmailLabel"], font=font(13, "semibold"), fill=text_primary)
     y += dp(22)
@@ -422,12 +422,30 @@ def render(theme: str, out_path: str) -> None:
                    max_width=W - pad * 2 - dp(4), line_gap=dp(1))
     y += dp(12)
 
+    # Optional password login field.
+    d.text((pad, y), s["LoginPasswordLabel"], font=font(13, "semibold"), fill=text_primary)
+    y += dp(22)
+    pw_box = (pad, y, W - pad, y + field_h)
+    grad = vertical_gradient((W - pad * 2, field_h), card_bottom, card_top)
+    mask = Image.new("L", (W - pad * 2, field_h), 0)
+    ImageDraw.Draw(mask).rounded_rectangle((0, 0, W - pad * 2 - 1, field_h - 1),
+                                           radius=dp(24), fill=255)
+    img.paste(grad, (pad, y), mask)
+    d = ImageDraw.Draw(img)
+    d.rounded_rectangle(pw_box, radius=dp(24), outline=border_strong, width=dp(1.5))
+    d.text((pad + dp(14), y + dp(17)), s["LoginPasswordPlaceholder"], font=font(15), fill=text_muted)
+    y += field_h + dp(8)
+
     gradient_button(img, (pad, y, W - pad, y + primary_h), s["LoginEmailSendLink"],
                     top=primary_fill_top, bottom=primary_fill, text=white, shadow=shadow)
+    y += primary_h + dp(8)
+    button(img, (pad, y, W - pad, y + primary_h), s["LoginPasswordSignIn"],
+           fill=card, text=primary, border=border_strong, radius=dp(24), font_size=15,
+           shadow=shadow)
     y += primary_h + dp(12)
     d = ImageDraw.Draw(img)
 
-    # Success/info banner shown after the magic link is sent.
+    # Info banner: code sent.
     info_message = s["LoginEmailSent"].format("name@example.com")
     info_font = font(12.5)
     info_text_x = pad + dp(12) + dp(24)
@@ -444,6 +462,24 @@ def render(theme: str, out_path: str) -> None:
     for i, line in enumerate(info_lines):
         d.text((info_text_x, y + dp(36) + i * dp(20)), line, font=info_font, fill=text_secondary)
     y += info_h + dp(12)
+
+    # Inline OTP field + verify button.
+    d.text((pad, y), s["LoginEmailOtpLabel"], font=font(13, "semibold"), fill=text_primary)
+    y += dp(22)
+    otp_box = (pad, y, W - pad, y + field_h)
+    grad = vertical_gradient((W - pad * 2, field_h), card_bottom, card_top)
+    mask = Image.new("L", (W - pad * 2, field_h), 0)
+    ImageDraw.Draw(mask).rounded_rectangle((0, 0, W - pad * 2 - 1, field_h - 1),
+                                           radius=dp(24), fill=255)
+    img.paste(grad, (pad, y), mask)
+    d = ImageDraw.Draw(img)
+    d.rounded_rectangle(otp_box, radius=dp(24), outline=border_strong, width=dp(1.5))
+    d.text((pad + dp(14), y + dp(17)), s["LoginEmailOtpPlaceholder"], font=font(15), fill=text_muted)
+    y += field_h + dp(8)
+    gradient_button(img, (pad, y, W - pad, y + primary_h), s["LoginEmailVerifyCode"],
+                    top=primary_fill_top, bottom=primary_fill, text=white, shadow=shadow)
+    y += primary_h + dp(12)
+    d = ImageDraw.Draw(img)
 
     # Phone OTP remains available as the second sign-in method.
     divider(s["LoginOrPhone"])
@@ -482,7 +518,7 @@ def render(theme: str, out_path: str) -> None:
         d.text((check_box[2] + dp(8), y + i * dp(20)), line, font=font(12.5), fill=text_secondary)
     y += max(dp(32), len(terms_lines) * dp(20)) + dp(12)
 
-    # Phone action is now the secondary CTA; email magic link is primary.
+    # Phone action is now the secondary CTA; email OTP is primary.
     button(img, (pad, y, W - pad, y + primary_h), s["LoginPhoneContinue"],
            fill=card, text=primary, border=border_strong, radius=dp(24), font_size=15,
            shadow=shadow)

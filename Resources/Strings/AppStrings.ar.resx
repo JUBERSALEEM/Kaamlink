@@ -1037,7 +1037,7 @@
     <value>المتابعة باستخدام Google</value>
   </data>
   <data name="LoginGoogleSetupNote" xml:space="preserve">
-    <value>يتطلب تسجيل الدخول عبر Google عميل OAuth والتحقق من الرمز على الخادم. استخدم رابط البريد الإلكتروني المجاني أو التحقق بالهاتف.</value>
+    <value>يتطلب تسجيل الدخول عبر Google عميل OAuth والتحقق من الرمز على الخادم. استخدم رمز البريد الإلكتروني المجاني أو التحقق بالهاتف.</value>
   </data>
   <data name="LoginOrPhone" xml:space="preserve">
     <value>أو تابع باستخدام الهاتف</value>
@@ -1073,16 +1073,16 @@
     <value>بريدك@example.com</value>
   </data>
   <data name="LoginEmailHint" xml:space="preserve">
-    <value>لا حاجة لكلمة مرور. سنرسل إليك رابط دخول آمنًا عبر البريد الإلكتروني.</value>
+    <value>لا حاجة لكلمة مرور في المرة الأولى. سنرسل إليك رمزًا لمرة واحدة عبر البريد الإلكتروني.</value>
   </data>
   <data name="LoginEmailSendLink" xml:space="preserve">
-    <value>أرسل لي رابط تسجيل الدخول</value>
+    <value>أرسل لي رمز التحقق</value>
   </data>
   <data name="LoginEmailSentTitle" xml:space="preserve">
     <value>تحقق من بريدك الوارد</value>
   </data>
   <data name="LoginEmailSent" xml:space="preserve">
-    <value>أرسلنا رابط دخول آمنًا إلى {0}. افتحه على هذا الجهاز لإكمال تسجيل الدخول.</value>
+    <value>أرسلنا رمز تحقق إلى {0}. أدخله أدناه لتأكيد عنوان بريدك الإلكتروني.</value>
   </data>
   <data name="LoginTermsCheckbox" xml:space="preserve">
     <value>أوافق على شروط الاستخدام وسياسة الخصوصية في كاملينك.</value>
@@ -1103,12 +1103,63 @@
     <value>تم إرسال عدد كبير جدًا من رسائل تسجيل الدخول. يرجى الانتظار دقيقة ثم المحاولة مرة أخرى.</value>
   </data>
   <data name="LoginEmailLinkInvalid" xml:space="preserve">
-    <value>رابط تسجيل الدخول هذا غير صالح أو منتهي الصلاحية. اطلب رابطًا جديدًا.</value>
+    <value>رابط تسجيل الدخول هذا غير صالح أو منتهي الصلاحية. اطلب رمزًا جديدًا.</value>
   </data>
   <data name="LoginEmailGeneric" xml:space="preserve">
     <value>لم نتمكن من إكمال تسجيل الدخول بالبريد الإلكتروني. يرجى المحاولة مرة أخرى.</value>
   </data>
   <data name="LoginEmailLabel" xml:space="preserve">
     <value>عنوان البريد الإلكتروني</value>
+  </data>
+  <data name="LoginEmailOtpLabel" xml:space="preserve">
+    <value>رمز التحقق</value>
+  </data>
+  <data name="LoginEmailOtpPlaceholder" xml:space="preserve">
+    <value>رمز من 6 إلى 8 أرقام</value>
+  </data>
+  <data name="LoginEmailVerifyCode" xml:space="preserve">
+    <value>تحقق من الرمز</value>
+  </data>
+  <data name="LoginEmailOtpInvalid" xml:space="preserve">
+    <value>أدخل الرمز المكون من 6 إلى 8 أرقام من بريدك الإلكتروني.</value>
+  </data>
+  <data name="LoginPasswordLabel" xml:space="preserve">
+    <value>كلمة المرور</value>
+  </data>
+  <data name="LoginPasswordPlaceholder" xml:space="preserve">
+    <value>أدخل كلمة المرور</value>
+  </data>
+  <data name="LoginPasswordSetTitle" xml:space="preserve">
+    <value>أنشئ كلمة مرور للمرة القادمة</value>
+  </data>
+  <data name="LoginPasswordSetHint" xml:space="preserve">
+    <value>يمكنك لاحقًا تسجيل الدخول ببريدك الإلكتروني وكلمة المرور بدل طلب رمز جديد.</value>
+  </data>
+  <data name="LoginPasswordConfirmLabel" xml:space="preserve">
+    <value>تأكيد كلمة المرور</value>
+  </data>
+  <data name="LoginPasswordConfirmPlaceholder" xml:space="preserve">
+    <value>أعد إدخال كلمة المرور</value>
+  </data>
+  <data name="LoginPasswordSetButton" xml:space="preserve">
+    <value>حفظ كلمة المرور</value>
+  </data>
+  <data name="LoginPasswordSkip" xml:space="preserve">
+    <value>ربما لاحقًا</value>
+  </data>
+  <data name="LoginPasswordSignIn" xml:space="preserve">
+    <value>تسجيل الدخول بكلمة المرور</value>
+  </data>
+  <data name="LoginPasswordInvalid" xml:space="preserve">
+    <value>يجب ألا تقل كلمة المرور عن 8 أحرف وأن تحتوي على حرف ورقم.</value>
+  </data>
+  <data name="LoginPasswordMismatch" xml:space="preserve">
+    <value>كلمتا المرور غير متطابقتين.</value>
+  </data>
+  <data name="LoginPasswordInvalidCredentials" xml:space="preserve">
+    <value>البريد الإلكتروني أو كلمة المرور غير صحيح. لا يزال بإمكانك طلب رمز.</value>
+  </data>
+  <data name="LoginPasswordSetFailed" xml:space="preserve">
+    <value>لم نتمكن من حفظ كلمة المرور. يمكنك المحاولة لاحقًا برمز جديد.</value>
   </data>
 </root>

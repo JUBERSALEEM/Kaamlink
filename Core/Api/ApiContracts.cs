@@ -22,11 +22,36 @@ namespace KaamLink.Core.Api
 
     public sealed record LogoutRequestDto(string RefreshToken);
 
-    /// <summary>POST /auth/v1/otp — Supabase's email magic-link request body.</summary>
+    /// <summary>POST /auth/v1/otp — request an email OTP (not a link).</summary>
     public sealed record SupabaseOtpRequestDto(
         [property: JsonPropertyName("email")] string Email,
-        [property: JsonPropertyName("create_user")] bool CreateUser,
-        [property: JsonPropertyName("email_redirect_to")] string EmailRedirectTo);
+        [property: JsonPropertyName("create_user")] bool CreateUser);
+
+    /// <summary>POST /auth/v1/verify — verify the emailed one-time code.</summary>
+    public sealed record SupabaseVerifyOtpRequestDto(
+        [property: JsonPropertyName("email")] string Email,
+        [property: JsonPropertyName("token")] string Token,
+        [property: JsonPropertyName("type")] string Type);
+
+    /// <summary>POST /auth/v1/token?grant_type=password — later password sign-in.</summary>
+    public sealed record SupabasePasswordLoginRequestDto(
+        [property: JsonPropertyName("email")] string Email,
+        [property: JsonPropertyName("password")] string Password);
+
+    /// <summary>PUT /auth/v1/user — set a password after OTP confirmation.</summary>
+    public sealed record SupabaseUpdateUserRequestDto(
+        [property: JsonPropertyName("password")] string Password,
+        [property: JsonPropertyName("data")] SupabaseUserMetadataDto Data);
+
+    public sealed record SupabaseUserMetadataDto(
+        [property: JsonPropertyName("password_set")] bool PasswordSet);
+
+    /// <summary>Common Supabase session payload (snake_case on the wire).</summary>
+    public sealed record SupabaseSessionResponseDto(
+        [property: JsonPropertyName("access_token")] string? AccessToken,
+        [property: JsonPropertyName("refresh_token")] string? RefreshToken,
+        [property: JsonPropertyName("token_type")] string? TokenType,
+        [property: JsonPropertyName("expires_in")] int? ExpiresIn);
 
     /// <summary>POST /api/v1/auth/email/exchange — verified Supabase access token.</summary>
     public sealed record SupabaseExchangeRequestDto(string AccessToken);
@@ -37,7 +62,8 @@ namespace KaamLink.Core.Api
         int AccessTokenExpiresIn,
         string RefreshToken,
         int RefreshTokenExpiresIn,
-        UserSummaryDto User);
+        UserSummaryDto User,
+        bool RequiresPasswordSetup = false);
 
     public sealed record UserSummaryDto(
         Guid Id,
@@ -314,6 +340,11 @@ namespace KaamLink.Core.Api
     [JsonSerializable(typeof(RefreshTokenRequestDto))]
     [JsonSerializable(typeof(LogoutRequestDto))]
     [JsonSerializable(typeof(SupabaseOtpRequestDto))]
+    [JsonSerializable(typeof(SupabaseVerifyOtpRequestDto))]
+    [JsonSerializable(typeof(SupabasePasswordLoginRequestDto))]
+    [JsonSerializable(typeof(SupabaseUpdateUserRequestDto))]
+    [JsonSerializable(typeof(SupabaseUserMetadataDto))]
+    [JsonSerializable(typeof(SupabaseSessionResponseDto))]
     [JsonSerializable(typeof(SupabaseExchangeRequestDto))]
     [JsonSerializable(typeof(AuthTokensResponseDto))]
     [JsonSerializable(typeof(UserSummaryDto))]

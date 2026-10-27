@@ -14,6 +14,9 @@ namespace KaamLink.Core.Api
     {
         public const string RedirectUri = "kaamlink://auth-callback";
         public const string OtpPath = "auth/v1/otp";
+        public const string VerifyPath = "auth/v1/verify";
+        public const string UserPath = "auth/v1/user";
+        public const string TokenPath = "auth/v1/token?grant_type=password";
 
         private const string UrlMetadataKey = "KaamLink.SupabaseUrl";
         private const string AnonKeyMetadataKey = "KaamLink.SupabaseAnonKey";
@@ -29,6 +32,12 @@ namespace KaamLink.Core.Api
         public static string? ConfigurationIssue => Resolved.Value.Issue;
 
         public static Uri OtpUri => new(new Uri(Url, UriKind.Absolute), OtpPath);
+
+        public static Uri VerifyUri => new(new Uri(Url, UriKind.Absolute), VerifyPath);
+
+        public static Uri UserUri => new(new Uri(Url, UriKind.Absolute), UserPath);
+
+        public static Uri TokenUri => new(new Uri(Url, UriKind.Absolute), TokenPath);
 
         private sealed record Resolution(string Url, string AnonKey, bool Configured, string? Issue);
 

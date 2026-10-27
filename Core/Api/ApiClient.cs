@@ -93,6 +93,9 @@ namespace KaamLink.Core.Api
             public const string SupabaseRateLimited = "auth.supabase_rate_limited";
             public const string SupabaseSendFailed = "client.supabase_send_failed";
             public const string SupabaseInvalidLink = "auth.supabase_invalid";
+            public const string SupabaseOtpInvalid = "client.supabase_otp_invalid";
+            public const string SupabasePasswordSetFailed = "client.supabase_password_set_failed";
+            public const string SupabaseInvalidCredentials = "client.supabase_invalid_credentials";
             public const string SupabaseUnavailable = "auth.supabase_unavailable";
             public const string SupabaseTokenRequired = "auth.supabase_token_required";
             public const string SupabaseServerNotConfigured = "auth.supabase_not_configured";

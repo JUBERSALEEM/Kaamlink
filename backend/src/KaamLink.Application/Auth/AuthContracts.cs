@@ -17,7 +17,7 @@ public sealed record VerifyOtpRequest
 }
 
 /// <summary>
-/// A Supabase magic-link access token. The backend verifies it with GoTrue and
+/// A verified Supabase email OTP/password session token. The backend verifies it with GoTrue and
 /// exchanges it for the app's own access/refresh token pair; the Supabase token
 /// is never accepted directly by KaamLink API endpoints.
 /// </summary>
@@ -92,7 +92,8 @@ public sealed record AuthTokensResponse(
     int AccessTokenExpiresIn,
     string RefreshToken,
     int RefreshTokenExpiresIn,
-    UserSummary User);
+    UserSummary User,
+    bool RequiresPasswordSetup = false);
 
 // ---- Internal issue result between token service and use case ----
 

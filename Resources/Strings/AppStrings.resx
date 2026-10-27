@@ -1049,7 +1049,7 @@
     <value>Continue with Google</value>
   </data>
   <data name="LoginGoogleSetupNote" xml:space="preserve">
-    <value>Google sign-in needs an OAuth client and server-side token checks. Use the free email link or phone verification instead.</value>
+    <value>Google sign-in needs an OAuth client and server-side token checks. Use the free email code or phone verification instead.</value>
   </data>
   <data name="LoginOrPhone" xml:space="preserve">
     <value>OR CONTINUE WITH PHONE</value>
@@ -1085,16 +1085,16 @@
     <value>name@example.com</value>
   </data>
   <data name="LoginEmailHint" xml:space="preserve">
-    <value>No password needed. We’ll email you a secure sign-in link.</value>
+    <value>No password needed the first time. We’ll email you a one-time code.</value>
   </data>
   <data name="LoginEmailSendLink" xml:space="preserve">
-    <value>Email me a sign-in link</value>
+    <value>Email me a code</value>
   </data>
   <data name="LoginEmailSentTitle" xml:space="preserve">
     <value>Check your inbox</value>
   </data>
   <data name="LoginEmailSent" xml:space="preserve">
-    <value>We sent a secure sign-in link to {0}. Open it on this device to finish signing in.</value>
+    <value>We sent a verification code to {0}. Enter it below to confirm your email address.</value>
   </data>
   <data name="LoginTermsCheckbox" xml:space="preserve">
     <value>I accept KaamLink’s Terms of Use and Privacy Policy.</value>
@@ -1115,12 +1115,63 @@
     <value>Too many sign-in emails. Please wait a minute and try again.</value>
   </data>
   <data name="LoginEmailLinkInvalid" xml:space="preserve">
-    <value>This sign-in link is invalid or expired. Request a new one.</value>
+    <value>This sign-in link is invalid or expired. Request a new code.</value>
   </data>
   <data name="LoginEmailGeneric" xml:space="preserve">
     <value>We couldn’t finish email sign-in. Please try again.</value>
   </data>
   <data name="LoginEmailLabel" xml:space="preserve">
     <value>Email address</value>
+  </data>
+  <data name="LoginEmailOtpLabel" xml:space="preserve">
+    <value>Verification code</value>
+  </data>
+  <data name="LoginEmailOtpPlaceholder" xml:space="preserve">
+    <value>6-8 digit code</value>
+  </data>
+  <data name="LoginEmailVerifyCode" xml:space="preserve">
+    <value>Verify code</value>
+  </data>
+  <data name="LoginEmailOtpInvalid" xml:space="preserve">
+    <value>Enter the 6-8 digit code from your email.</value>
+  </data>
+  <data name="LoginPasswordLabel" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="LoginPasswordPlaceholder" xml:space="preserve">
+    <value>Enter your password</value>
+  </data>
+  <data name="LoginPasswordSetTitle" xml:space="preserve">
+    <value>Set a password for next time</value>
+  </data>
+  <data name="LoginPasswordSetHint" xml:space="preserve">
+    <value>You can sign in later with your email and password instead of requesting another code.</value>
+  </data>
+  <data name="LoginPasswordConfirmLabel" xml:space="preserve">
+    <value>Confirm password</value>
+  </data>
+  <data name="LoginPasswordConfirmPlaceholder" xml:space="preserve">
+    <value>Re-enter password</value>
+  </data>
+  <data name="LoginPasswordSetButton" xml:space="preserve">
+    <value>Save password</value>
+  </data>
+  <data name="LoginPasswordSkip" xml:space="preserve">
+    <value>Maybe later</value>
+  </data>
+  <data name="LoginPasswordSignIn" xml:space="preserve">
+    <value>Sign in with password</value>
+  </data>
+  <data name="LoginPasswordInvalid" xml:space="preserve">
+    <value>Password must be at least 8 characters and include a letter and a number.</value>
+  </data>
+  <data name="LoginPasswordMismatch" xml:space="preserve">
+    <value>Passwords do not match.</value>
+  </data>
+  <data name="LoginPasswordInvalidCredentials" xml:space="preserve">
+    <value>Email or password is incorrect. You can still request a code.</value>
+  </data>
+  <data name="LoginPasswordSetFailed" xml:space="preserve">
+    <value>We could not save the password. You can try again later with a code.</value>
   </data>
 </root>

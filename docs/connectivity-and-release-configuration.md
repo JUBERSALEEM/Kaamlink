@@ -27,9 +27,9 @@ break was configuration and deployment:
    network/configuration check.
 4. **End-to-end login still needs a hosted backend.** The backend is present in
    this repository but is not deployed to a public HTTPS origin. Phone OTP also
-   needs a production SMS provider; email magic link needs the Supabase config
-   and, for production volume, custom SMTP. Those are infrastructure/provider
-   prerequisites, not client bugs.
+   needs a production SMS provider; email OTP needs the Supabase config, the
+   hosted OTP email templates, and for production volume custom SMTP. Those are
+   infrastructure/provider prerequisites, not client bugs.
 
 ## What changed in the app
 
@@ -38,10 +38,10 @@ break was configuration and deployment:
 | Release endpoint | Hardcoded reserved `.invalid` host | `-p:KaamLinkApiBaseUrl=https://api.example.com/` baked into `AssemblyMetadata`; unconfigured builds warn and show a localized setup error |
 | Debug endpoint | Emulator/USB loopback only | Same loopback defaults, plus a Debug-only Preferences override or any LAN URL passed to the build property |
 | Supabase auth | No client auth provider | Public URL + publishable/anon key baked in at build time; `-p:KaamLinkSupabaseUrl=...` / `-p:KaamLinkSupabaseAnonKey=...` override them |
-| Magic-link callback | No deep link | `kaamlink://auth-callback` Android intent filter, fragment-token parser, and backend exchange endpoint |
+| Email OTP + password | Link-only signup | `POST /auth/v1/otp`, inline 6–8 digit code verification, optional password creation, password sign-in, and legacy `kaamlink://auth-callback` fallback |
 | Cleartext policy | One strict policy for all builds | Strict `network_security_config.xml` for Release; `network_security_config_debug.xml` + `AndroidManifest.Debug.xml` for Debug only |
 | Transport | Typed client from `IHttpClientFactory`; static auth client from a second code path; default 100 s timeout | API/session clients use `ApiHttp.Configure`; Supabase uses `ApiHttp.ConfigureSupabase`; all use the shared 15 s timeout and JSON accept header |
-| Failure states | "Offline" for DNS failure, timeout, airplane mode and missing config | Distinct `client.no_internet`, `client.api_not_configured`, Supabase not-configured / rate-limit / invalid-link and offline codes with localized copy |
+| Failure states | "Offline" for DNS failure, timeout, airplane mode and missing config | Distinct `client.no_internet`, `client.api_not_configured`, Supabase not-configured / rate-limit / invalid-code / invalid-credentials and offline codes with localized copy |
 | Diagnostics | Base address only in Debug log | Base address, configuration source, network state and device type in Debug transport logs |
 | Theme/shadows | Dispatcher condition inverted on background threads | Correct `IsDispatchRequired` branch; compiled palettes, deferred dispatcher refresh, iterative cycle-safe shadow traversal |
 | Lists | Default `CollectionView` measurement | `ItemSizingStrategy="MeasureFirstItem"` + `KeepScrollOffset` on the country picker and job lists |
@@ -130,16 +130,20 @@ Connectivity is only the first hop. For a real user to complete login:
 4. Set `Supabase__Url` (HTTPS) and `Supabase__AnonKey` in the deployed API.
    Production startup guards reject a missing or half-configured Supabase
    section. See [`email-magic-link-setup.md`](email-magic-link-setup.md).
-5. Configure custom SMTP in Supabase before real magic-link traffic; the
+5. Run `python3 tools/configure-supabase-otp-templates.py` once with a scoped
+   `SUPABASE_ACCESS_TOKEN` Management API PAT. This changes both Supabase email
+   templates from `{{ .ConfirmationURL }}` to `{{ .Token }}`, sets OTP length to
+   6 and password minimum to 8. The app accepts 6–8 digits either way.
+6. Configure custom SMTP in Supabase before real OTP email traffic; the
    built-in email provider is rate-limited.
-6. Replace development `Otp:Provider=log` with a production **SMS** provider if
+7. Replace development `Otp:Provider=log` with a production **SMS** provider if
    phone OTP is offered, and store its credentials as secrets/environment
    variables — never in the mobile app or this repository.
-7. Keep Google disabled until server-side ID-token validation and account
+8. Keep Google disabled until server-side ID-token validation and account
    linking exist (see `docs/auth-and-phone-login-decision.md`).
-8. Verify `GET /health/ready`, then `POST api/v1/auth/otp/request` /
-   `api/v1/auth/otp/verify` **and** `POST api/v1/auth/email/exchange` from a real
-   phone on mobile data.
+9. Verify `GET /health/ready`, then `POST api/v1/auth/otp/request` /
+   `api/v1/auth/otp/verify`, the Supabase OTP/password endpoints, and
+   `POST api/v1/auth/email/exchange` from a real phone on mobile data.
 
 A connected Supabase project is not a deployed KaamLink API. No public KaamLink
 backend URL or SMS credentials were supplied, so this change cannot truthfully
@@ -155,8 +159,9 @@ bash tools/verify-all.sh
 
 That runs all eleven static gates, including `verify-global-phone-directory.py`
 (37 checks), `verify-connectivity.py` (49 checks),
-`verify-email-auth.py` (76 checks), `verify-ui-redesign.py` (480 checks),
-`verify-compile-surface.py` (387 checks) and 58 injected-defect negative tests.
-These are static/source-level gates. A `dotnet build` and a real-device network
-journey are still required before declaring production readiness; this workspace
-does not have the Android/.NET 10 toolchain or a hosted backend.
+`verify-email-auth.py` (119 checks), `verify-ui-redesign.py` (499 checks),
+`verify-compile-surface.py` (416 checks) and 62 injected-defect negative tests.
+These are static/source-level gates. A `dotnet build`, hosted Supabase template
+PATCH, and a real-device OTP/password journey are still required before declaring
+production readiness; this workspace does not have the Android/.NET 10 toolchain
+or a hosted backend.

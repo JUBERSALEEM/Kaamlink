@@ -12,7 +12,7 @@ namespace KaamLink.Application.Auth;
 
 /// <summary>
 /// Authentication use cases: phone OTP (request → verify → register), Supabase
-/// magic-link exchange (verify → map → register), refresh (rotating,
+/// email OTP/password session exchange (verify → map → register), refresh (rotating,
 /// reuse-detecting), logout (revoke) and me.
 /// Save points are explicit (IUnitOfWork); audit events are write-through so
 /// security-relevant failures are persisted even when the operation throws.
@@ -151,7 +151,7 @@ public sealed class AuthService(
     }
 
     /// <summary>
-    /// Verifies a Supabase magic-link access token with GoTrue, maps (or creates)
+    /// Verifies a Supabase email OTP/password session token with GoTrue, maps (or creates)
     /// the KaamLink user, and returns the app's own token pair. Supabase tokens
     /// are never accepted as KaamLink API bearer tokens.
     /// </summary>
@@ -183,7 +183,7 @@ public sealed class AuthService(
                 "user",
                 user.Id.ToString(),
                 actorUserId: user.Id,
-                metadataJson: JsonSerializer.Serialize(new { email, provider = "supabase_magic_link" }),
+                metadataJson: JsonSerializer.Serialize(new { email, provider = "supabase_email_otp" }),
                 ct: ct);
         }
 
@@ -192,10 +192,14 @@ public sealed class AuthService(
             "user",
             user.Id.ToString(),
             actorUserId: user.Id,
-            metadataJson: JsonSerializer.Serialize(new { email, provider = "supabase_magic_link" }),
+            metadataJson: JsonSerializer.Serialize(new { email, provider = "supabase_email_otp" }),
             ct: ct);
 
-        return tokens.Response with { User = await BuildSummaryAsync(user, ct) };
+        return tokens.Response with
+        {
+            User = await BuildSummaryAsync(user, ct),
+            RequiresPasswordSetup = !identity.PasswordSet
+        };
     }
 
     public async Task<AuthTokensResponse> RefreshAsync(RefreshTokenRequest request, CancellationToken ct = default)

@@ -341,6 +341,8 @@ internal sealed class StubSupabaseUserVerifier : ISupabaseUserVerifier
 
     public string Email { get; set; } = "worker@example.com";
 
+    public bool PasswordSet { get; set; }
+
     public Exception? Failure { get; set; }
 
     public int Calls { get; private set; }
@@ -350,6 +352,6 @@ internal sealed class StubSupabaseUserVerifier : ISupabaseUserVerifier
         Calls++;
         if (Failure is not null)
             return Task.FromException<SupabaseIdentity>(Failure);
-        return Task.FromResult(new SupabaseIdentity(Subject, Email));
+        return Task.FromResult(new SupabaseIdentity(Subject, Email, PasswordSet));
     }
 }

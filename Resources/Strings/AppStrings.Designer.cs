@@ -558,5 +558,22 @@ namespace KaamLink.Resources.Strings
         public static string LoginEmailLinkInvalid => ResourceManager.GetString(nameof(LoginEmailLinkInvalid), Culture)!;
         public static string LoginEmailGeneric => ResourceManager.GetString(nameof(LoginEmailGeneric), Culture)!;
         public static string LoginEmailLabel => ResourceManager.GetString(nameof(LoginEmailLabel), Culture)!;
+        public static string LoginEmailOtpLabel => ResourceManager.GetString(nameof(LoginEmailOtpLabel), Culture)!;
+        public static string LoginEmailOtpPlaceholder => ResourceManager.GetString(nameof(LoginEmailOtpPlaceholder), Culture)!;
+        public static string LoginEmailVerifyCode => ResourceManager.GetString(nameof(LoginEmailVerifyCode), Culture)!;
+        public static string LoginEmailOtpInvalid => ResourceManager.GetString(nameof(LoginEmailOtpInvalid), Culture)!;
+        public static string LoginPasswordLabel => ResourceManager.GetString(nameof(LoginPasswordLabel), Culture)!;
+        public static string LoginPasswordPlaceholder => ResourceManager.GetString(nameof(LoginPasswordPlaceholder), Culture)!;
+        public static string LoginPasswordSetTitle => ResourceManager.GetString(nameof(LoginPasswordSetTitle), Culture)!;
+        public static string LoginPasswordSetHint => ResourceManager.GetString(nameof(LoginPasswordSetHint), Culture)!;
+        public static string LoginPasswordConfirmLabel => ResourceManager.GetString(nameof(LoginPasswordConfirmLabel), Culture)!;
+        public static string LoginPasswordConfirmPlaceholder => ResourceManager.GetString(nameof(LoginPasswordConfirmPlaceholder), Culture)!;
+        public static string LoginPasswordSetButton => ResourceManager.GetString(nameof(LoginPasswordSetButton), Culture)!;
+        public static string LoginPasswordSkip => ResourceManager.GetString(nameof(LoginPasswordSkip), Culture)!;
+        public static string LoginPasswordSignIn => ResourceManager.GetString(nameof(LoginPasswordSignIn), Culture)!;
+        public static string LoginPasswordInvalid => ResourceManager.GetString(nameof(LoginPasswordInvalid), Culture)!;
+        public static string LoginPasswordMismatch => ResourceManager.GetString(nameof(LoginPasswordMismatch), Culture)!;
+        public static string LoginPasswordInvalidCredentials => ResourceManager.GetString(nameof(LoginPasswordInvalidCredentials), Culture)!;
+        public static string LoginPasswordSetFailed => ResourceManager.GetString(nameof(LoginPasswordSetFailed), Culture)!;
     }
 }

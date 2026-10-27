@@ -1,6 +1,6 @@
 namespace KaamLink.Core.Api
 {
-    /// <summary>Decoded result of a Supabase magic-link redirect.</summary>
+    /// <summary>Decoded result of a legacy Supabase link callback.</summary>
     public sealed record EmailAuthCallback(
         string? AccessToken,
         string? RefreshToken,
@@ -14,7 +14,7 @@ namespace KaamLink.Core.Api
     }
 
     /// <summary>
-    /// Holds a magic-link callback between the Android intent and the login page.
+    /// Holds a legacy link callback between the Android intent and the login page.
     /// A cold start can deliver OnAppLinkRequestReceived before the login view
     /// model exists, so the parsed callback must survive until OnAppearing.
     /// </summary>

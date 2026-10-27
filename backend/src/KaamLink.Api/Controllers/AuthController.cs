@@ -32,7 +32,7 @@ public sealed class AuthController(IAuthService authService, ICurrentUser curren
         Ok(await authService.VerifyOtpAsync(request, cancellationToken));
 
     /// <summary>
-    /// Exchange a verified Supabase email magic-link token for KaamLink's own
+    /// Exchange a verified Supabase email OTP/password session token for KaamLink's own
     /// access/refresh token pair. The token is validated server-side with GoTrue.
     /// </summary>
     [HttpPost("email/exchange")]

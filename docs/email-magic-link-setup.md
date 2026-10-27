@@ -1,102 +1,165 @@
-# Supabase email magic-link signup/login
+# KaamLink email OTP + password sign-in setup
 
-KaamLink now has a free, passwordless signup/login path: **email magic link**.
-It is real authentication, not a fake Google button. The mobile app asks Supabase
-GoTrue to email a one-time sign-in link; the link opens the Android app through a
-deep link; the app sends the verified Supabase access token to the KaamLink API;
-the API verifies it with Supabase and issues KaamLink's own access/refresh token
-pair.
+> File name is kept as `email-magic-link-setup.md` for existing links. The active
+> flow is **email one-time code (OTP)**, not a click-to-sign-in link.
 
-> Google sign-in is still disabled. It needs a Google Cloud OAuth client, redirect
-> configuration, and server-side ID-token verification/account linking. Those do
-> not exist yet, so enabling the button would have been a fake login.
+## What changed
 
-## What is configured
+The old Supabase magic-link email contained a `{{ .ConfirmationURL }}` link.
+Clicking it on a desktop/browser could land on an empty or unusable page. The app
+now asks Supabase for an **email OTP**, the user types the 6–8 digit code in the
+app, and after first confirmation the user can create a password for later
+password sign-in.
 
-- Supabase project: `kaamlink-magic-link`
-- Project ref: `sdxywcosqidyopbfevoe`
-- Public URL: `https://sdxywcosqidyopbfevoe.supabase.co`
-- Auth: email enabled, signup enabled, email confirmation required.
-- Redirect allowlist / site URL: `kaamlink://auth-callback`
-- Android deep link: `kaamlink://auth-callback` (see
-  `Platforms/Android/MainActivity.cs`).
-- Android `OnCreate` / `OnNewIntent` VIEW intents are forwarded by
-  `MauiProgram.ConfigureLifecycleEvents` to `App.OnAppLinkRequestReceived`;
-  only the known callback host is accepted.
-- App build defaults: `KaamLinkSupabaseUrl` and `KaamLinkSupabaseAnonKey` in
-  `KaamLink.csproj`.
-- Backend config: `Supabase:Url` and `Supabase:AnonKey` in
-  `backend/src/KaamLink.Api/appsettings.json`, overridable with
-  `Supabase__Url` / `Supabase__AnonKey`.
+Flow:
 
-Only the **publishable/anon** key is shipped. A service-role key must never be
-placed in the mobile app, the client `csproj`, or any client-side config. The
-backend uses the public key only to call GoTrue's `/auth/v1/user`; it does not
-use a database service role.
-
-## Flow
-
-1. User ticks the Terms and Conditions checkbox on the login screen.
-2. User enters an email and taps **Email me a sign-in link**.
-3. App `POST`s to `https://<project>.supabase.co/auth/v1/otp` with
-   `{ email, create_user: true, email_redirect_to: "kaamlink://auth-callback" }`.
-4. Supabase emails a magic link. Opening it on the device starts/resumes the app
-   with tokens in the URL fragment:
-   `kaamlink://auth-callback#access_token=...&refresh_token=...&type=magiclink`.
-5. `App.OnAppLinkRequestReceived` stores the callback and routes to `//login`.
-6. `LoginViewModel` sends the access token to
+1. User ticks the Terms and Conditions checkbox.
+2. User enters an email and taps **Email me a code**.
+3. App calls `POST /auth/v1/otp` with `{ email, create_user: true }`.
+4. Supabase emails a one-time code using a template that renders `{{ .Token }}`.
+5. User enters the code in the app; app calls `POST /auth/v1/verify` with
+   `{ email, token, type: "email" }`.
+6. App sends the returned Supabase access token to
    `POST /api/v1/auth/email/exchange`.
-7. `SupabaseUserVerifier` calls GoTrue `/auth/v1/user` with that token and the
-   public `apikey`, and requires a confirmed email. It never trusts a
-   client-supplied email.
-8. `AuthService` finds or creates a KaamLink `User` by the confirmed email,
-   assigns a synthetic non-dialable `+999...` phone identity for email-only
-   accounts, and issues the normal KaamLink JWT + rotating refresh token.
-9. `SessionService.CompleteLoginAsync` stores the KaamLink session and the app
-   navigates using the server's own role summary.
+7. Backend verifies the token with GoTrue `/auth/v1/user`, then maps/creates the
+   KaamLink user and issues KaamLink's own JWT + rotating refresh token.
+8. If `user_metadata.password_set` is missing/false, the backend returns
+   `requiresPasswordSetup: true`. The app shows **Set a password for next time**.
+9. `PUT /auth/v1/user` sets the password and `data: { password_set: true }`.
+10. Later sign-in uses `POST /auth/v1/token?grant_type=password` with email +
+    password, then the same KaamLink exchange endpoint.
 
-Supabase access tokens are **not** accepted directly by KaamLink API endpoints.
-The exchange is mandatory.
+Supabase access tokens are **not** accepted directly by other KaamLink API
+endpoints. The exchange is mandatory.
 
-## Database change
+## Supabase project
 
-Migration `20261027000000_Phase06EmailAuth` adds nullable `users.email` and a
-unique index `ux_users_email`. Existing phone-only accounts keep `NULL`;
-PostgreSQL allows multiple NULLs in a unique index. Email-only accounts get a
-deterministic `+999` E.164-shaped phone derived from the Supabase subject, so
-`users.phone_number` stays unique without pretending the user verified a real
-phone number.
+- Project: `kaamlink-magic-link`
+- Ref: `sdxywcosqidyopbfevoe`
+- Public URL: `https://sdxywcosqidyopbfevoe.supabase.co`
+- Android deep link (legacy/fallback): `kaamlink://auth-callback`
+- Confirmation page: `https://sdxywcosqidyopbfevoe.supabase.co/functions/v1/auth-confirmed`
+
+The connector **can** set supported auth flags (email enabled, signup enabled,
+`mailer_autoconfirm: false`, site URL, redirect allowlist). It **cannot** edit
+hosted email-template fields or `mailer_otp_length`. Those require the Supabase
+Management API or Dashboard.
+
+## Apply the OTP templates (required once)
+
+Supabase passwordless email uses the "Magic Link or OTP" template. A brand-new
+email with `create_user: true` uses the **Confirm signup** template, so both
+templates must show `{{ .Token }}` instead of `{{ .ConfirmationURL }}` [3](https://supabase.com/docs/guides/auth/auth-email-passwordless).
+
+### Option A — local script (recommended)
+
+1. Create a scoped Management API PAT at
+   `https://supabase.com/dashboard/account/tokens` with `auth:write`,
+   `auth_config_write` and `project_admin_write`.
+2. Do **not** paste the token into chat or commit it.
+3. Run from the repository root:
+
+```bash
+export SUPABASE_ACCESS_TOKEN=sbp_your_scoped_token_here
+python3 tools/configure-supabase-otp-templates.py
+```
+
+The script PATCHes `https://api.supabase.com/v1/projects/<ref>/config/auth` and
+sets:
+
+- `mailer_templates_magic_link_content` and
+  `mailer_templates_confirmation_content` to an OTP-code template with
+  `{{ .Token }}` and no link.
+- `mailer_subjects_magic_link` / `mailer_subjects_confirmation` to
+  `Your KaamLink verification code`.
+- `mailer_otp_length: 6`, `mailer_otp_exp: 3600`, `password_min_length: 8`.
+- `site_url` to the `auth-confirmed` Edge Function page (no empty click page).
+- `uri_allow_list` to the confirmed page + `kaamlink://auth-callback`.
+- Email signup enabled and `mailer_autoconfirm: false`.
+
+### Option B — Supabase secret + helper Edge Function
+
+A helper Edge Function `configure-otp-templates` is deployed on the project. It
+reads `SUPABASE_ACCESS_TOKEN` from Supabase secrets and applies the same PATCH
+from inside Supabase's network (useful when `api.supabase.com` is blocked from
+your machine).
+
+1. Supabase Dashboard → Project Settings → Edge Functions → Secrets.
+2. Add secret `SUPABASE_ACCESS_TOKEN` with the scoped PAT from Option A.
+3. Invoke the helper once:
+
+```bash
+curl -X POST \
+  https://sdxywcosqidyopbfevoe.supabase.co/functions/v1/configure-otp-templates \
+  -H "Content-Type: application/json" -d '{}'
+```
+
+4. Remove or rotate the secret after the templates are applied if it is no
+   longer needed.
+
+The helper returns `503` if the secret is missing, and a non-2xx status if the
+Management API rejects the PAT.
+
+## Current connector-applied config
+
+Already applied through the Supabase connector:
+
+- `external_email_enabled: true`
+- `disable_signup: false`
+- `mailer_autoconfirm: false`
+- `external_phone_enabled: false`, `sms_autoconfirm: false`
+- `jwt_exp: 3600`
+- `site_url`: the `auth-confirmed` Edge Function URL
+- `uri_allow_list`: `kaamlink://auth-callback` + the `auth-confirmed` URL
+- Deployed helper functions: `auth-confirmed`, `configure-otp-templates`
+
+Still requiring the Management API step above:
+
+- email templates (link → OTP code)
+- `mailer_otp_length: 6`
+- `password_min_length: 8`
+
+Until that step runs, Supabase's default `mailer_otp_length` is 8. The app
+accepts either 6 or 8 digits, so it works before and after the template change.
+
+## Password rules and security
+
+- Client requires at least 8 characters, one letter and one number, and a
+  matching confirmation.
+- Supabase `password_min_length` is set to 8 by the template script/helper.
+- `password_set: true` is stored in `user_metadata`, not in a client-only flag.
+- The backend derives `requiresPasswordSetup` from that metadata on every
+  exchange.
+- Only the public publishable/anon key ships in the mobile app. A service-role
+  key or Management API PAT must never be placed in the APK, `KaamLink.csproj`,
+  `appsettings.json`, or any client-side config.
 
 ## Production checklist
 
-- **Custom SMTP:** Supabase's built-in email provider is rate-limited (as low as
-  two emails/hour). Configure custom SMTP or a Send Email Hook in the Supabase
-  dashboard before real users rely on magic links.
+- **Custom SMTP:** Supabase's built-in email service is limited to about 2
+  emails/hour, so configure custom SMTP or a Send Email Hook before real users
+  rely on OTP [2](https://supabase.com/docs/guides/auth/rate-limits) [4](https://supabase.com/docs/guides/auth/auth-smtp).
 - **HTTPS API:** build the Android app with
-  `-p:KaamLinkApiBaseUrl=https://your-api.example.com/`. The exchange endpoint
-  and every other API call use that base URL. Without it, Release builds show a
-  clear "server not configured" state instead of a misleading DNS error.
-- **Backend environment:** set `Supabase__Url` (HTTPS) and
-  `Supabase__AnonKey` in the deployed API. Production startup guards reject a
-  missing or half-configured Supabase section.
-- **Migrations:** `Database:ApplyMigrationsOnStartup` or `dotnet ef database
-  update` must apply the Phase 06 migration before the first exchange.
-- **Redirect allowlist:** keep `kaamlink://auth-callback` in Supabase Auth URL
-  configuration. If the app ID/scheme changes, update both the Android intent
-  filter and the allowlist.
+  `-p:KaamLinkApiBaseUrl=https://your-api.example.com/`.
+- **Backend env:** set `Supabase__Url` and `Supabase__AnonKey`; Production
+  startup guards reject a missing/half-configured Supabase section.
+- **Migration:** apply `20261027000000_Phase06EmailAuth` (`users.email` +
+  `ux_users_email`).
+- **Redirect allowlist:** keep `kaamlink://auth-callback` and the
+  `auth-confirmed` URL in Supabase Auth URL configuration.
 - **Phone OTP:** remains available, but Production still needs a real SMS
   provider; the default `log` OTP sink is rejected by startup guards.
 
 ## Verification performed here
 
-- Supabase connector: project created and healthy; email auth enabled; redirect
-  allowlist set to `kaamlink://auth-callback`.
-- Static gate: `tools/verify-email-auth.py` checks build metadata, deep-link
-  parsing, DI, DTOs, backend exchange/verification, migration coherence, terms
-  gating, localization, aurora palette and docs.
+- Supabase connector: project healthy; supported auth flags + site URL +
+  allowlist applied; `auth-confirmed` and `configure-otp-templates` Edge
+  Functions deployed.
+- Static gate: `tools/verify-email-auth.py` checks OTP DTOs, password-set
+  metadata, backend exchange, migration coherence, terms gating, localization,
+  aurora palette and docs.
 - `bash tools/verify-all.sh` runs all static gates.
 
 Not performed in this environment: a .NET/Android build, XamlC compilation,
-backend startup, Supabase email delivery, a real device deep-link round trip, or
-production SMS/SMTP delivery. Those need a build-capable machine and a deployed
-HTTPS API.
+backend startup, hosted email-template PATCH (needs the PAT above), real email
+delivery, or a device OTP/password round trip.

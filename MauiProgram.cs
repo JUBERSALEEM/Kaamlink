@@ -99,7 +99,7 @@ namespace KaamLink
             // and the silent-refresh client.
             services.AddSingleton<INetworkStatus, NetworkStatus>();
             services.AddSingleton<IEmailAuthLinkService, EmailAuthLinkService>();
-            services.AddHttpClient<ISupabaseMagicLinkService, SupabaseMagicLinkService>(
+            services.AddHttpClient<ISupabaseEmailAuthService, SupabaseEmailAuthService>(
                 ApiHttp.ConfigureSupabase);
             services.AddSingleton<ITokenStore, SecureStorageTokenStore>();
             services.AddHttpClient(ApiHttp.AuthClientName, ApiHttp.Configure);

@@ -10,13 +10,13 @@ public sealed class User
     public Guid Id { get; private set; }
 
     /// <summary>
-    /// Normalized E.164 phone number. Unique. Email-magic-link accounts receive a
+    /// Normalized E.164 phone number. Unique. Email OTP accounts receive a
     /// synthetic, non-dialable +999 identity so phone-OTP and email identities can
     /// coexist in the same user table without weakening phone verification.
     /// </summary>
     public string PhoneNumber { get; private set; } = string.Empty;
 
-    /// <summary>Confirmed email for magic-link identities; null for phone-only accounts.</summary>
+    /// <summary>Confirmed email for OTP/password identities; null for phone-only accounts.</summary>
     public string? Email { get; private set; }
 
     /// <summary>Optional; set during profile onboarding (Phase 03), not at registration.</summary>
@@ -50,7 +50,7 @@ public sealed class User
     };
 
     /// <summary>
-    /// First successful Supabase magic-link exchange registers the account. The
+    /// First successful Supabase email OTP/password exchange registers the account. The
     /// synthetic phone is derived from the verified Supabase subject, not from a
     /// user-supplied number, so it cannot collide with a real phone identity.
     /// </summary>

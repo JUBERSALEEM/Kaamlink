@@ -3,7 +3,7 @@
 **Current implementation:** KaamLink supports two real authentication paths:
 
 1. **Phone OTP** accounts keep a verified E.164 phone as the primary identity.
-2. **Supabase email magic link** accounts use a confirmed email as the primary
+2. **Supabase email OTP + password** accounts use a confirmed email as the primary
    identity. The backend verifies the Supabase access token with GoTrue before
    issuing KaamLink's own JWT/session. Email-only accounts receive a synthetic,
    non-dialable `+999...` phone value so the existing unique `phone_number`
@@ -14,28 +14,35 @@ greyed-out button is intentional: there is no Google Cloud OAuth client and no
 server-side ID-token verification/account linking. A client-only “sign in with
 Google” would be fake authentication.
 
-## Implemented now: free/easy email magic link
+## Implemented now: free/easy email OTP + password sign-in
 
 - Supabase project `kaamlink-magic-link` (`sdxywcosqidyopbfevoe`) with email auth
-  enabled, signup enabled, and `kaamlink://auth-callback` allowlisted.
-- Android deep link `kaamlink://auth-callback` registered on `MainActivity`.
-- App calls `POST /auth/v1/otp` with `create_user: true` and the deep-link
-  redirect; only the public publishable/anon key ships in the APK.
-- Callback tokens in the URL fragment are parsed, then exchanged at
-  `POST /api/v1/auth/email/exchange`.
-- Backend `SupabaseUserVerifier` calls GoTrue `/auth/v1/user` with the token and
-  requires `email_confirmed_at`. It never trusts a client-supplied email.
-- `AuthService.ExchangeSupabaseTokenAsync` maps/creates the KaamLink user and
-  issues the normal rotating access/refresh token pair. Supabase tokens are not
-  accepted directly by other KaamLink endpoints.
-- A tickable Terms and Conditions checkbox gates both email and phone sign-in;
-  acceptance is persisted so the email-app round trip works.
+  enabled, signup enabled, and both `kaamlink://auth-callback` and the
+  `auth-confirmed` Edge Function URL allowlisted.
+- Android deep link `kaamlink://auth-callback` remains as a legacy fallback.
+- App calls `POST /auth/v1/otp` with `create_user: true`; only the public
+  publishable/anon key ships in the APK.
+- Supabase emails a 6–8 digit one-time code (no click link). The user types it in
+  the app; `POST /auth/v1/verify` returns a Supabase session.
+- The session access token is exchanged at `POST /api/v1/auth/email/exchange`.
+- Backend `SupabaseUserVerifier` calls GoTrue `/auth/v1/user`, requires
+  `email_confirmed_at`, and reads `user_metadata.password_set`.
+- `AuthService.ExchangeSupabaseTokenAsync` maps/creates the KaamLink user, issues
+  the normal rotating access/refresh token pair, and returns
+  `requiresPasswordSetup` when no password exists yet.
+- The app then shows **Set a password for next time**; `PUT /auth/v1/user` saves
+  the password and `data.password_set = true`. Users may skip and keep using OTP.
+- Later sessions can use `POST /auth/v1/token?grant_type=password` with email +
+  password, then the same KaamLink exchange endpoint.
+- A tickable Terms and Conditions checkbox gates every path; acceptance is
+  persisted so the email-app round trip works.
 
-Full setup and production checklist: [`email-magic-link-setup.md`](email-magic-link-setup.md).
+Full setup, exact Management API steps and production checklist:
+[`email-magic-link-setup.md`](email-magic-link-setup.md).
 
 Supabase's built-in email provider is free but rate-limited (as low as two
 emails/hour). Configure **custom SMTP** or a Send Email Hook before real users
-depend on magic links. A service-role key must never be placed in the mobile app.
+depend on OTP. A service-role key must never be placed in the mobile app.
 
 ## Google flow to implement when credentials/hosting exist
 
@@ -62,7 +69,9 @@ Google sign-in itself can be a no-cost provider flow, but it still needs an OAut
 - The Phase 06 database migration applied (`users.email` + `ux_users_email`).
 - `Supabase__Url` and `Supabase__AnonKey` set in the deployed API; Production
   startup guards reject a missing/half-configured Supabase section.
-- Custom SMTP in Supabase for production magic-link delivery.
+- Run `tools/configure-supabase-otp-templates.py` once with a scoped Management
+  API PAT so both Supabase email templates render `{{ .Token }}` instead of a link.
+- Custom SMTP in Supabase for production OTP email delivery.
 - A production server-side OTP provider and secure server credentials for actual
   SMS, if phone OTP is offered to real users.
 - For Google only: a Google Cloud OAuth project and Android + server/web client
@@ -71,8 +80,10 @@ Google sign-in itself can be a no-cost provider flow, but it still needs an OAut
 
 ## Sources reviewed (current as of 2026-10-27)
 
-- Supabase Auth docs: passwordless email OTP, implicit-flow callback fragments,
-  deep-link redirect allowlists, and built-in email rate limits / custom SMTP.
+- [Supabase passwordless email sign-in](https://supabase.com/docs/guides/auth/auth-email-passwordless) — email OTP / magic-link behavior and redirect allowlists.
+- [Supabase email templates](https://supabase.com/docs/guides/auth/auth-email-templates) — `{{ .Token }}` and hosted template variables.
+- [Supabase Management API auth config](https://supabase.com/docs/reference/api/v1-update-auth-service-config) — template and OTP-length fields.
+- [Supabase Auth rate limits](https://supabase.com/docs/guides/auth/rate-limits) and [custom SMTP](https://supabase.com/docs/guides/auth/auth-smtp) — built-in email limits and production SMTP.
 - [Google Credential Manager for Android](https://developers.google.com/identity/android-credential-manager) — current platform credential surface, including Sign in with Google.
 - [Google Sign in with Google implementation](https://developer.android.com/identity/sign-in/credential-manager-siwg-implementation) — obtain an ID token and validate it on the relying-party server.
 - [Google best practices](https://developers.google.com/identity/siwg/best-practices) — use Credential Manager for standard Android apps.

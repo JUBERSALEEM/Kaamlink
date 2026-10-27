@@ -4,7 +4,7 @@ ASP.NET Core 10 modular monolith behind versioned REST (`/api/v1/**`) — see
 `docs/phase-01-report.md` §E and ADR 0002. Phases so far: **02** identity + phone-OTP
 auth + authorization framework + audit log + rate limiting + CI; **03** worker profiles
 (Skill Passport), company onboarding + admin verification-lite, seeded occupation catalog;
-**06** Supabase email magic-link verification/exchange and nullable `users.email` identity.
+**06** Supabase email OTP/password session verification/exchange and nullable `users.email` identity.
 
 ## Layout
 
@@ -28,7 +28,11 @@ leaks into Application.
 ```
 POST /api/v1/auth/otp/request   { phone }                    → 6-digit code (rate-limited per phone)
 POST /api/v1/auth/otp/verify    { phone, code }              → token pair (registers on first login)
-POST /api/v1/auth/email/exchange { accessToken }             → verifies Supabase token with GoTrue, then issues KaamLink token pair
+POST /auth/v1/otp           { email, create_user }           → client → Supabase: email a one-time code
+POST /auth/v1/verify        { email, token, type }           → client → Supabase: verify the code
+PUT  /auth/v1/user          { password, data.password_set }  → client → Supabase: first-time password creation
+POST /auth/v1/token?...     { email, password }              → client → Supabase: later password sign-in
+POST /api/v1/auth/email/exchange { accessToken }             → verifies Supabase token with GoTrue, then issues KaamLink token pair + requiresPasswordSetup
 POST /api/v1/auth/token/refresh { refreshToken }             → rotated pair; reuse revokes the family
 POST /api/v1/auth/logout        { refreshToken }  (Bearer)   → revokes that refresh token
 GET  /api/v1/auth/me                              (Bearer)   → identity + worker progress + memberships
@@ -94,7 +98,7 @@ or `dotnet user-secrets` (Development only).
 **Option A — everything in Docker (recommended):**
 ```bash
 cd backend
-cp .env.example .env            # includes public Supabase URL/anon key for magic-link verification
+cp .env.example .env            # includes public Supabase URL/anon key for email OTP/password verification
 docker compose up --build       # API on http://localhost:8080 (OTP codes appear in API logs)
 ```
 

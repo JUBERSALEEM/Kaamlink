@@ -8,7 +8,7 @@ using KaamLink.Application.Options;
 namespace KaamLink.Infrastructure.Identity;
 
 /// <summary>
-/// Verifies a Supabase magic-link access token by calling GoTrue's /user endpoint.
+/// Verifies a Supabase email OTP/password session token by calling GoTrue's /user endpoint.
 /// The token is sent to the issuing Supabase project; only a confirmed email and
 /// stable subject are returned to the KaamLink backend, which then issues its own
 /// short-lived JWT and rotating refresh token.
@@ -68,6 +68,7 @@ public sealed class SupabaseUserVerifier(HttpClient http, SupabaseOptions option
                 var subject = GetString(root, "id");
                 var email = GetString(root, "email");
                 var confirmedAt = GetString(root, "email_confirmed_at");
+                var passwordSet = ReadPasswordSetFlag(root);
 
                 if (string.IsNullOrWhiteSpace(subject)
                     || string.IsNullOrWhiteSpace(email)
@@ -79,7 +80,7 @@ public sealed class SupabaseUserVerifier(HttpClient http, SupabaseOptions option
                         "This sign-in link is invalid or expired. Request a new one.");
                 }
 
-                return new SupabaseIdentity(subject, email.Trim().ToLowerInvariant());
+                return new SupabaseIdentity(subject, email.Trim().ToLowerInvariant(), passwordSet);
             }
             catch (JsonException)
             {
@@ -94,4 +95,23 @@ public sealed class SupabaseUserVerifier(HttpClient http, SupabaseOptions option
         root.TryGetProperty(name, out var value) && value.ValueKind == JsonValueKind.String
             ? value.GetString()
             : null;
+
+    /// <summary>
+    /// The app sets user_metadata.password_set when it calls PUT /auth/v1/user.
+    /// Missing/false means first-time OTP users still need password creation.
+    /// </summary>
+    private static bool ReadPasswordSetFlag(JsonElement root)
+    {
+        if (!root.TryGetProperty("user_metadata", out var metadata)
+            || metadata.ValueKind != JsonValueKind.Object
+            || !metadata.TryGetProperty("password_set", out var flag))
+            return false;
+
+        return flag.ValueKind switch
+        {
+            JsonValueKind.True => true,
+            JsonValueKind.String => string.Equals(flag.GetString(), "true", StringComparison.OrdinalIgnoreCase),
+            _ => false
+        };
+    }
 }

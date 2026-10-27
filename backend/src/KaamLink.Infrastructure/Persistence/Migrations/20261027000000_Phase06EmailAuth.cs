@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace KaamLink.Infrastructure.Persistence.Migrations
 {
     /// <summary>
-    /// Phase 06: email magic-link identities. The column is nullable so existing
+    /// Phase 06: email OTP/password identities. The column is nullable so existing
     /// phone-only users keep a null email; PostgreSQL allows multiple nulls in the
     /// unique index, while two confirmed emails still map to one KaamLink user.
     /// </summary>

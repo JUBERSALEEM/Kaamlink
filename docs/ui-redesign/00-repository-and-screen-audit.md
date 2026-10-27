@@ -25,7 +25,7 @@
 | Styles | `Resources/Styles/Colors.xaml` (tokens) + `Resources/Styles/Styles.xaml` (base + typography + `Card`) |
 | Converters | `InverseBoolConverter`, `VerificationStateColorConverter`, `StatusColorConverter`, `SelectedOptionBackgroundConverter`, `SelectedOptionTextColorConverter` (registered in `App.xaml`) |
 | Backend | ASP.NET Core 10 modular monolith + PostgreSQL; auth/worker/company/vacancy/application/assessment controllers present |
-| Static verifiers | `tools/verify-phase03.py` (105 checks), `tools/verify-phase04.py` (105), `tools/verify-phase05.py` (88), plus the redesign gates `tools/verify-bindings.py` (377 compiled bindings), `tools/verify-ui-redesign.py` (480 checks), `tools/verify-compile-surface.py` (387), `tools/verify-connectivity.py` (49) and `tools/verify-email-auth.py` (76) |
+| Static verifiers | `tools/verify-phase03.py` (105 checks), `tools/verify-phase04.py` (105), `tools/verify-phase05.py` (88), plus the redesign gates `tools/verify-bindings.py` (403 compiled bindings), `tools/verify-ui-redesign.py` (499 checks), `tools/verify-compile-surface.py` (416), `tools/verify-connectivity.py` (49) and `tools/verify-email-auth.py` (119) |
 | Tests | xUnit unit + integration tests under `backend/tests/` |
 | Sample-code leftovers | none found — every XAML page is live |
 

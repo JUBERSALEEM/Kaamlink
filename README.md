@@ -12,7 +12,7 @@ with employers (factories, workshops, contractors, SMEs, warehouses) — built a
 
 ## Status
 
-**Phase 06 — Supabase email magic-link signup/login, tickable terms gate and Aurora Clay theme live.**
+**Phase 06 — Supabase email OTP + password sign-in, tickable terms gate and Aurora Clay theme live.**
 
 * **Phase 01** — foundation: sample code removed, clean Android-first MAUI shell
   → [docs/phase-01-report.md](docs/phase-01-report.md)
@@ -29,9 +29,10 @@ with employers (factories, workshops, contractors, SMEs, warehouses) — built a
   server-scored attempts (no correct answers ever leave the server), pass flips a
   self-declared skill to Assessment Verified
   → [docs/phase-05-report.md](docs/phase-05-report.md)
-* **Phase 06** — free passwordless Supabase email magic-link auth, Android deep-link
-  callback, backend token verification/exchange, `users.email` migration, tickable
-  terms gate, and the richer Aurora Clay / Aurora Dusk palettes
+* **Phase 06** — free Supabase email OTP signup/login, inline 6–8 digit code
+  verification, optional password creation, password sign-in, backend token
+  verification/exchange, `users.email` migration, tickable terms gate, and the
+  richer Aurora Clay / Aurora Dusk palettes
   → [docs/email-magic-link-setup.md](docs/email-magic-link-setup.md)
 
 **UI redesign — every active screen rebuilt on one design system (Aurora Clay, Lucide icons,
@@ -39,10 +40,10 @@ EN/AR, 48dp targets, truthful states):** audit, 23 mockups, design-system spec a
 implementation/verification reports live in [docs/ui-redesign/](docs/ui-redesign);
 the latest Phase 06 report is [06-aurora-email-auth-report.md](docs/ui-redesign/06-aurora-email-auth-report.md).
 Static gates: `bash tools/verify-all.sh` runs `verify-phase03.py` (105),
-`verify-phase04.py` (105), `verify-phase05.py` (88), `verify-bindings.py` (377 compiled
-bindings), `verify-theme-contrast.py` (55), `verify-ui-redesign.py` (480),
-`verify-global-phone-directory.py` (37), `verify-compile-surface.py` (387),
-`verify-connectivity.py` (49) and `verify-email-auth.py` (76), plus 58 negative gate
+`verify-phase04.py` (105), `verify-phase05.py` (88), `verify-bindings.py` (403 compiled
+bindings), `verify-theme-contrast.py` (55), `verify-ui-redesign.py` (499),
+`verify-global-phone-directory.py` (37), `verify-compile-surface.py` (416),
+`verify-connectivity.py` (49) and `verify-email-auth.py` (119), plus 62 negative gate
 self-tests. Connectivity/Release and Supabase setup are documented in
 [docs/connectivity-and-release-configuration.md](docs/connectivity-and-release-configuration.md)
 and [docs/email-magic-link-setup.md](docs/email-magic-link-setup.md).
@@ -54,8 +55,8 @@ see §4 of the report.
 
 What exists today:
 
-* Android-first .NET MAUI app: role selection → Supabase email magic-link or
-  phone-OTP sign-in (both require a ticked terms checkbox) → guided onboarding →
+* Android-first .NET MAUI app: role selection → Supabase email OTP/password or
+  phone-OTP sign-in (all require a ticked terms checkbox) → guided onboarding →
   homes, session kept in the Android Keystore (secure storage), silent token refresh
 * Backend API (ASP.NET Core 10 + PostgreSQL): phone OTP and Supabase token
   exchange/verification, worker profiles, companies, admin review queue, bilingual
@@ -86,12 +87,12 @@ Core/
   Navigation/            AppRoutes (route registry), RoleNavigator (role gating)
   Api/                   ApiClient + DTOs (source-gen JSON), SessionService, token store,
                          bearer/refresh handler, ApiException, SupabaseConfig,
-                         SupabaseMagicLinkService, EmailAuthLinkService — URLs live here
+                         SupabaseEmailAuthService, EmailAuthLinkService — URLs live here
   Presentation/          EnumDisplay (enum ↔ localized labels), converters, localization helpers
   Text/                  PhoneInput (mirrors backend phone normalization)
 Features/
   Onboarding/            Role selection (worker vs employer entry)
-  Auth/                  Email magic-link / phone-OTP login, terms checkbox, OTP verify (resend cooldown)
+  Auth/                  Email OTP / password / phone-OTP login, terms checkbox, code + password setup
   Worker/                WorkerOnboarding (3 steps) + WorkerHome (live profile)
   Employer/              EmployerOnboarding (company) + EmployerHome (verification state)
 Resources/
@@ -126,15 +127,17 @@ defaults are baked in; override them with `-p:KaamLinkSupabaseUrl=...` and
 
 The app needs the backend: `cd backend && cp .env.example .env && docker compose up --build`
 (API on http://localhost:8080; OTP codes appear in the API logs while the SMS sandbox is `log`).
-Email magic links are sent by the configured Supabase project; apply the Phase 06
-migration and set `Supabase__Url` / `Supabase__AnonKey` in the deployed API.
+Email OTP codes are sent by the configured Supabase project. Apply the Phase 06
+migration, set `Supabase__Url` / `Supabase__AnonKey` in the deployed API, and run
+`python3 tools/configure-supabase-otp-templates.py` once with a scoped Management
+API PAT to switch the hosted templates from link to OTP code.
 **Complete walkthroughs: [docs/first-boot-guide.md](docs/first-boot-guide.md),
 [docs/email-magic-link-setup.md](docs/email-magic-link-setup.md) and
 [docs/connectivity-and-release-configuration.md](docs/connectivity-and-release-configuration.md).**
 
 > Note: this repository environment has no .NET/Android SDK, so code is authored
 > compile-correct and statically cross-verified (`bash tools/verify-all.sh`, all
-> eleven gates green). The first `dotnet build` locally/CI and a device deep-link
+> eleven gates green). The first `dotnet build` locally/CI and a device OTP/password
 > round trip remain the formal verification gates.
 
 ## Working agreements

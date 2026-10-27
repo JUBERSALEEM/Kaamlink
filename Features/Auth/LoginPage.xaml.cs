@@ -17,7 +17,7 @@ namespace KaamLink.Features.Auth
         }
 
         /// <summary>
-        /// App calls this after routing a magic-link deep link to the sign-in
+        /// App calls this after routing a legacy link deep link to the sign-in
         /// page. InitializeAsync also checks for a pending callback, and
         /// TryTakePending is one-shot, so at most one exchange can run.
         /// </summary>

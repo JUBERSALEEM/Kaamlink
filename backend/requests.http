@@ -1,6 +1,11 @@
 @host = http://localhost:8080
 @phone = +971501234567
-@supabaseAccessToken = paste-access-token-from-magic-link-fragment
+@supabaseUrl = https://sdxywcosqidyopbfevoe.supabase.co
+@supabaseAnonKey = PASTE_PUBLISHABLE_ANON_KEY
+@supabaseEmail = user@example.com
+@supabaseOtp = 12345678
+@supabasePassword = YourPass123
+@supabaseAccessToken = paste-verified-supabase-access-token
 
 ### Liveness / readiness
 GET {{host}}/health/live
@@ -21,13 +26,45 @@ Content-Type: application/json
 
 { "phone": "{{phone}}", "code": "000000" }
 
-### 2b) Exchange a verified Supabase magic-link access token → KaamLink token pair
+### 2b) Exchange a verified Supabase email OTP/password session token → KaamLink token pair
 # The API calls GoTrue /auth/v1/user with this token; it is not accepted directly.
 # @name emailExchange
 POST {{host}}/api/v1/auth/email/exchange
 Content-Type: application/json
 
 { "accessToken": "{{supabaseAccessToken}}" }
+
+### 2c) Request an email OTP code (client → Supabase GoTrue)
+POST {{supabaseUrl}}/auth/v1/otp
+apikey: {{supabaseAnonKey}}
+Authorization: Bearer {{supabaseAnonKey}}
+Content-Type: application/json
+
+{ "email": "{{supabaseEmail}}", "create_user": true }
+
+### 2d) Verify the emailed OTP code
+POST {{supabaseUrl}}/auth/v1/verify
+apikey: {{supabaseAnonKey}}
+Authorization: Bearer {{supabaseAnonKey}}
+Content-Type: application/json
+
+{ "email": "{{supabaseEmail}}", "token": "{{supabaseOtp}}", "type": "email" }
+
+### 2e) Set a password after first confirmation
+PUT {{supabaseUrl}}/auth/v1/user
+apikey: {{supabaseAnonKey}}
+Authorization: Bearer {{supabaseAccessToken}}
+Content-Type: application/json
+
+{ "password": "{{supabasePassword}}", "data": { "password_set": true } }
+
+### 2f) Later password sign-in
+POST {{supabaseUrl}}/auth/v1/token?grant_type=password
+apikey: {{supabaseAnonKey}}
+Authorization: Bearer {{supabaseAnonKey}}
+Content-Type: application/json
+
+{ "email": "{{supabaseEmail}}", "password": "{{supabasePassword}}" }
 
 ### 3) Authorized probe
 GET {{host}}/api/v1/auth/me
