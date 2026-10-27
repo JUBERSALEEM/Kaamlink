@@ -200,12 +200,42 @@
         <Setter Property="Stroke" Value="{DynamicResource BorderBrush}" />
         <Setter Property="StrokeThickness" Value="1" />
         <Setter Property="Padding" Value="6" />
-        <Setter Property="HeightRequest" Value="124" />
+        <Setter Property="HeightRequest" Value="154" />
+        <Setter Property="clay:ClayMaterial.Elevation" Value="Card" />
         <Setter Property="StrokeShape">
             <Setter.Value>
-                <RoundRectangle CornerRadius="20" />
+                <RoundRectangle CornerRadius="22" />
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <!-- Login form is a distinct focal surface; field and action still own their cues. -->
+    <Style TargetType="Border" x:Key="LoginFormSurface" BasedOn="{StaticResource SurfaceCard}">
+        <Setter Property="Background" Value="{DynamicResource ClayCardBrush}" />
+        <Setter Property="Stroke" Value="{DynamicResource BorderStrongBrush}" />
+        <Setter Property="StrokeThickness" Value="1.25" />
+        <Setter Property="Padding" Value="18" />
+        <Setter Property="clay:ClayMaterial.Elevation" Value="Raised" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="24" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Role choices use restrained, theme-aware color coding instead of shadow-only separation. -->
+    <Style TargetType="Border" x:Key="WorkerChoiceSurface" BasedOn="{StaticResource SurfaceCardDense}">
+        <Setter Property="Background" Value="{DynamicResource ClayPrimarySoftBrush}" />
+        <Setter Property="Stroke" Value="{DynamicResource BorderStrongBrush}" />
+        <Setter Property="StrokeThickness" Value="1.25" />
+        <Setter Property="Padding" Value="18" />
+    </Style>
+
+    <Style TargetType="Border" x:Key="EmployerChoiceSurface" BasedOn="{StaticResource SurfaceCardDense}">
+        <Setter Property="Background" Value="{DynamicResource ClayAccentSoftBrush}" />
+        <Setter Property="Stroke" Value="{DynamicResource AccentBrush}" />
+        <Setter Property="StrokeThickness" Value="1.25" />
+        <Setter Property="Padding" Value="18" />
     </Style>
 
     <!-- Soft, borderless group (used inside forms and for trust notes) -->

@@ -392,6 +392,13 @@ ok("login_hero.svg" in welcome and 'Style="{StaticResource LoginHeroSurface}"' i
 ok('Command="{Binding NavigateToWorkerCommand}"' in welcome
    and 'Command="{Binding NavigateToEmployerCommand}"' in welcome,
    "RoleSelectionPage: both role choices need real, visible action buttons")
+ok('Style="{StaticResource LoginFormSurface}"' in login
+   and 'Command="{Binding SendCodeCommand}"' in login
+   and 'Command="{Binding OpenCountryPickerCommand}"' in login
+   and 'IsEnabled="False"' in login,
+   "LoginPage: active phone flow and explicitly disabled Google affordance must remain")
+ok('WorkerChoiceSurface' in welcome and 'EmployerChoiceSurface' in welcome,
+   "RoleSelectionPage: worker and employer choices need distinct theme-aware surfaces")
 
 # The adaptive app icon is a real layered vector asset, and its emblem stays in
 # sync with the splash and in-app brand mark.

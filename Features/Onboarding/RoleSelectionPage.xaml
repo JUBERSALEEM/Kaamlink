@@ -11,7 +11,7 @@
     <!-- Mobile-first role chooser. Soft depth supports hierarchy; text, strokes,
          and native buttons remain the actual affordances. -->
     <ScrollView>
-        <VerticalStackLayout Padding="20,20,20,28" Spacing="15">
+        <VerticalStackLayout Padding="20,18,20,28" Spacing="15">
 
             <Grid ColumnDefinitions="48,*,Auto" ColumnSpacing="10">
                 <Image Grid.Column="0"
@@ -53,12 +53,14 @@
                                IsVisible="{Binding IsBusy}"
                                HorizontalOptions="Start" />
 
-            <Border Style="{StaticResource SurfaceCardDense}">
-                <VerticalStackLayout Spacing="10">
-                    <Grid ColumnDefinitions="52,*" ColumnSpacing="12">
+            <Border Style="{StaticResource WorkerChoiceSurface}">
+                <VerticalStackLayout Spacing="13">
+                    <Grid ColumnDefinitions="60,*" ColumnSpacing="14">
                         <Border Grid.Column="0"
                                 Style="{StaticResource IconTileLarge}"
-                                BackgroundColor="{DynamicResource AccentSoft}"
+                                HeightRequest="60"
+                                WidthRequest="60"
+                                BackgroundColor="{DynamicResource PrimarySoft}"
                                 VerticalOptions="Start">
                             <Label Style="{StaticResource IconGlyphPrimary}"
                                    FontSize="22"
@@ -66,11 +68,11 @@
                                    Text="{StaticResource IconHardHat}"
                                    HorizontalOptions="Center" />
                         </Border>
-                        <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
+                        <VerticalStackLayout Grid.Column="1" Spacing="5" VerticalOptions="Center">
                             <Label SemanticProperties.HeadingLevel="Level2"
-                                   Style="{StaticResource SectionText}"
+                                   Style="{StaticResource TitleText}"
                                    Text="{x:Static strings:AppStrings.RoleWorkerTitle}" />
-                            <Label Style="{StaticResource SmallText}"
+                            <Label Style="{StaticResource BodyText}"
                                    Text="{x:Static strings:AppStrings.RoleWorkerCardBody}" />
                         </VerticalStackLayout>
                     </Grid>
@@ -84,27 +86,32 @@
                 </VerticalStackLayout>
             </Border>
 
-            <Border Style="{StaticResource SurfaceCardDense}">
-                <VerticalStackLayout Spacing="10">
-                    <Grid ColumnDefinitions="52,*" ColumnSpacing="12">
+            <Border Style="{StaticResource EmployerChoiceSurface}">
+                <VerticalStackLayout Spacing="13">
+                    <Grid ColumnDefinitions="60,*" ColumnSpacing="14">
                         <Border Grid.Column="0"
                                 Style="{StaticResource IconTileLarge}"
-                                BackgroundColor="{DynamicResource PrimarySoft}"
+                                HeightRequest="60"
+                                WidthRequest="60"
+                                BackgroundColor="{DynamicResource AccentSoft}"
                                 VerticalOptions="Start">
                             <Label Style="{StaticResource IconGlyphPrimary}"
                                    FontSize="22"
+                                   TextColor="{DynamicResource Accent}"
                                    Text="{StaticResource IconBuilding}"
                                    HorizontalOptions="Center" />
                         </Border>
-                        <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
+                        <VerticalStackLayout Grid.Column="1" Spacing="5" VerticalOptions="Center">
                             <Label SemanticProperties.HeadingLevel="Level2"
-                                   Style="{StaticResource SectionText}"
+                                   Style="{StaticResource TitleText}"
                                    Text="{x:Static strings:AppStrings.RoleEmployerTitle}" />
-                            <Label Style="{StaticResource SmallText}"
+                            <Label Style="{StaticResource BodyText}"
                                    Text="{x:Static strings:AppStrings.RoleEmployerCardBody}" />
                         </VerticalStackLayout>
                     </Grid>
                     <Button Style="{StaticResource SecondaryButton}"
+                            TextColor="{DynamicResource Accent}"
+                            BorderColor="{DynamicResource Accent}"
                             Command="{Binding NavigateToEmployerCommand}"
                             SemanticProperties.Description="{x:Static strings:AppStrings.EmployerOnboardingCta}"
                             Text="{x:Static strings:AppStrings.EmployerOnboardingCta}" />
