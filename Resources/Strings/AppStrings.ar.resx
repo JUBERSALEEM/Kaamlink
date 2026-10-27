@@ -1054,4 +1054,10 @@
   <data name="CountryNoResults" xml:space="preserve">
     <value>لم يتم العثور على بلد مطابق.</value>
   </data>
+  <data name="WelcomeIllustrationDescription" xml:space="preserve">
+    <value>عمال وصاحب عمل يخططون للعمل معًا.</value>
+  </data>
+  <data name="WelcomeSkillFirstBadge" xml:space="preserve">
+    <value>المهارات العملية أولاً</value>
+  </data>
 </root>

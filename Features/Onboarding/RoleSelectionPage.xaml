@@ -8,9 +8,10 @@
              Title="{x:Static strings:AppStrings.AppName}"
              Shell.NavBarIsVisible="False">
 
-    <!-- Compact mobile role chooser; sign-in is the app's cold-start screen. -->
+    <!-- Mobile-first role chooser. Soft depth supports hierarchy; text, strokes,
+         and native buttons remain the actual affordances. -->
     <ScrollView>
-        <VerticalStackLayout Padding="20,18,20,24" Spacing="16">
+        <VerticalStackLayout Padding="20,14,20,24" Spacing="14">
 
             <Grid ColumnDefinitions="46,*,Auto" ColumnSpacing="10">
                 <Image Grid.Column="0"
@@ -32,6 +33,37 @@
                         Text="{Binding ThemeToggleLabel}" />
             </Grid>
 
+            <Border Style="{StaticResource WelcomeHeroSurface}">
+                <Grid>
+                    <Image Source="login_hero.svg"
+                           HeightRequest="154"
+                           Aspect="AspectFill"
+                           SemanticProperties.Description="{x:Static strings:AppStrings.WelcomeIllustrationDescription}" />
+                    <Border HorizontalOptions="End"
+                            VerticalOptions="End"
+                            Margin="10"
+                            Padding="10,6"
+                            BackgroundColor="{DynamicResource AccentSoft}"
+                            Stroke="{DynamicResource BorderStrongBrush}"
+                            StrokeThickness="1">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16" />
+                        </Border.StrokeShape>
+                        <HorizontalStackLayout Spacing="6">
+                            <Label Style="{StaticResource IconGlyphPrimary}"
+                                   FontSize="14"
+                                   TextColor="{DynamicResource Accent}"
+                                   Text="{StaticResource IconBadgeCheck}"
+                                   VerticalOptions="Center" />
+                            <Label Style="{StaticResource CaptionText}"
+                                   TextColor="{DynamicResource Accent}"
+                                   Text="{x:Static strings:AppStrings.WelcomeSkillFirstBadge}"
+                                   VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                    </Border>
+                </Grid>
+            </Border>
+
             <VerticalStackLayout Spacing="6" Padding="0,2,0,2">
                 <Label SemanticProperties.HeadingLevel="Level1"
                        Style="{StaticResource DisplayText}"
@@ -46,7 +78,7 @@
 
             <Border Style="{StaticResource SurfaceCardDense}">
                 <VerticalStackLayout Spacing="10">
-                    <Grid ColumnDefinitions="48,*" ColumnSpacing="12">
+                    <Grid ColumnDefinitions="52,*" ColumnSpacing="12">
                         <Border Grid.Column="0"
                                 Style="{StaticResource IconTileLarge}"
                                 BackgroundColor="{DynamicResource AccentSoft}"
@@ -57,7 +89,7 @@
                                    Text="{StaticResource IconHardHat}"
                                    HorizontalOptions="Center" />
                         </Border>
-                        <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
                             <Label SemanticProperties.HeadingLevel="Level2"
                                    Style="{StaticResource SectionText}"
                                    Text="{x:Static strings:AppStrings.RoleWorkerTitle}" />
@@ -77,16 +109,17 @@
 
             <Border Style="{StaticResource SurfaceCardDense}">
                 <VerticalStackLayout Spacing="10">
-                    <Grid ColumnDefinitions="48,*" ColumnSpacing="12">
+                    <Grid ColumnDefinitions="52,*" ColumnSpacing="12">
                         <Border Grid.Column="0"
                                 Style="{StaticResource IconTileLarge}"
+                                BackgroundColor="{DynamicResource PrimarySoft}"
                                 VerticalOptions="Start">
                             <Label Style="{StaticResource IconGlyphPrimary}"
                                    FontSize="22"
                                    Text="{StaticResource IconBuilding}"
                                    HorizontalOptions="Center" />
                         </Border>
-                        <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
                             <Label SemanticProperties.HeadingLevel="Level2"
                                    Style="{StaticResource SectionText}"
                                    Text="{x:Static strings:AppStrings.RoleEmployerTitle}" />

@@ -539,5 +539,7 @@ namespace KaamLink.Resources.Strings
         public static string CountryPickerTitle => ResourceManager.GetString(nameof(CountryPickerTitle), Culture)!;
         public static string CountrySearchLabel => ResourceManager.GetString(nameof(CountrySearchLabel), Culture)!;
         public static string CountryNoResults => ResourceManager.GetString(nameof(CountryNoResults), Culture)!;
+        public static string WelcomeIllustrationDescription => ResourceManager.GetString(nameof(WelcomeIllustrationDescription), Culture)!;
+        public static string WelcomeSkillFirstBadge => ResourceManager.GetString(nameof(WelcomeSkillFirstBadge), Culture)!;
     }
 }

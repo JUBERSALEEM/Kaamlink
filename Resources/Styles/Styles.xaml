@@ -194,6 +194,20 @@
         </Setter>
     </Style>
 
+    <!-- Welcome hero: one raised tactile frame, with the illustration as decoration. -->
+    <Style TargetType="Border" x:Key="WelcomeHeroSurface" BasedOn="{StaticResource SurfaceCard}">
+        <Setter Property="Background" Value="{DynamicResource ClayCardSoftBrush}" />
+        <Setter Property="Stroke" Value="{DynamicResource BorderStrongBrush}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="Padding" Value="6" />
+        <Setter Property="clay:ClayMaterial.Elevation" Value="Raised" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="24" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- Soft, borderless group (used inside forms and for trust notes) -->
     <Style TargetType="Border" x:Key="SurfaceSoft">
         <Setter Property="Background" Value="{DynamicResource ClayCardSoftBrush}" />
@@ -236,7 +250,14 @@
                     <VisualState x:Name="Pressed">
                         <VisualState.Setters>
                             <Setter Property="Scale" Value="0.97" />
-                            <Setter Property="Opacity" Value="0.94" />
+                            <Setter Property="Opacity" Value="0.96" />
+                            <Setter Property="clay:ClayMaterial.Elevation" Value="None" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="Focused">
+                        <VisualState.Setters>
+                            <Setter Property="BorderWidth" Value="2" />
+                            <Setter Property="Scale" Value="1.02" />
                         </VisualState.Setters>
                     </VisualState>
                     <VisualState x:Name="Disabled">
@@ -267,7 +288,14 @@
                     <VisualState x:Name="Pressed">
                         <VisualState.Setters>
                             <Setter Property="Scale" Value="0.97" />
-                            <Setter Property="Opacity" Value="0.94" />
+                            <Setter Property="Opacity" Value="0.96" />
+                            <Setter Property="clay:ClayMaterial.Elevation" Value="None" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="Focused">
+                        <VisualState.Setters>
+                            <Setter Property="BorderWidth" Value="2" />
+                            <Setter Property="Scale" Value="1.02" />
                         </VisualState.Setters>
                     </VisualState>
                     <VisualState x:Name="Disabled">

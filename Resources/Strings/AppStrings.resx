@@ -1066,4 +1066,10 @@
   <data name="CountryNoResults" xml:space="preserve">
     <value>No matching countries found.</value>
   </data>
+  <data name="WelcomeIllustrationDescription" xml:space="preserve">
+    <value>Workers and an employer planning work together.</value>
+  </data>
+  <data name="WelcomeSkillFirstBadge" xml:space="preserve">
+    <value>Practical skills first</value>
+  </data>
 </root>

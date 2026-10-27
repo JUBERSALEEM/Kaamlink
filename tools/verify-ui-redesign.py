@@ -379,6 +379,16 @@ for style_key in ("SurfaceCard", "PrimaryButton", "IconTile"):
 hardcoded_colors = re.findall(r'Value="#[0-9A-Fa-f]{3,8}"', STYLES)
 ok(not hardcoded_colors, f"Styles.xaml: raw hex values {hardcoded_colors}")
 
+# The post-auth welcome/role screen should retain a clear mobile hero, localized
+# proposition, and visible native role actions; decorative depth is not the CTA.
+welcome = PAGE_TEXT.get("Features/Onboarding/RoleSelectionPage.xaml", "")
+ok("login_hero.svg" in welcome and "WelcomeHeroSurface" in welcome
+   and "WelcomeSkillFirstBadge" in welcome,
+   "RoleSelectionPage: rich welcome hero/skill-first badge is missing")
+ok('Command="{Binding NavigateToWorkerCommand}"' in welcome
+   and 'Command="{Binding NavigateToEmployerCommand}"' in welcome,
+   "RoleSelectionPage: both role choices need real, visible action buttons")
+
 # shared controls are used, not re-invented per page
 ok(sum('controls:StatusPill' in t for t in PAGE_TEXT.values()) >= 4,
    "Redesign: StatusPill not reused across pages")

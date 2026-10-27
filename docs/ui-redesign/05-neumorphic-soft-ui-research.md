@@ -2,14 +2,16 @@
 
 ## Finding
 
-“Neumorphism” is a visual direction, not a current Android/.NET MAUI component standard. Its classic same-colour surfaces plus shadow-only boundaries can hide controls in glare and for low-vision users. For KaamLink, implement an **accessible soft-UI hybrid**: calm tonal surfaces, restrained directional elevation, gentle pressed depth, but keep readable labels, native controls, clear input outlines, and visible button edges. Shadows are decorative depth, never the only signal that something is interactive.
+“Neumorphism” is a visual direction, not a current Android/.NET MAUI component standard. A 2026 design review notes that pure, shadow-only neumorphism is mostly suited to concept work and focused instrument UIs; it is a poor whole-product default because identical fills and diffuse shadows obscure affordances. For KaamLink, use an **accessible soft-UI / clay hybrid**: reserve tactile depth for the welcome illustration frame and role cards, keep stronger color and strokes on actions, and retain readable labels, native controls and explicit states. Shadows add material mood, never the only signal that something is interactive.
 
 ## Decisions applied
 
 - The light palette now uses a cool, single-family grey-blue base; cards sit close to the page surface, with a restrained edge and a low-opacity cast shadow. The dusk palette uses the equivalent dark surface stack, not inverted bright shadows.
 - Primary actions stay saturated blue/teal with high-contrast labels. Secondary actions and the country/theme controls use explicit outline strokes and native `Button` hit-testing; the theme switch is no longer a `Border` gesture target.
 - Pressed controls visibly depress/scale; controls remain text-labelled and have semantic descriptions. The phone field has a visible outline independent of shadow.
-- The landing/role chooser is shortened to a focused mobile flow. The branded SVG illustration and mark remain separate image assets, not inline image data.
+- The role chooser now pairs a contained, raised illustration frame with two clear role cards. A small accent badge reinforces the skill-first proposition; the art has an EN/AR semantic description, and all actions remain native buttons.
+- The hero’s cast shadow, inset-tinted badge, strong frame and icon tiles add tactile layering. Pressing primary/secondary actions removes elevation and compresses the button; focused actions get a thicker border and slight lift. Text and labels—not shadow direction—still identify actions and states.
+- The landing/role chooser remains a focused mobile flow. The branded SVG illustration and mark remain separate image assets, not inline image data.
 - Runtime palette replacement continues through `DynamicResource`; this is the MAUI-supported mechanism for repainting current views when dictionary values are replaced.
 - MAUI exposes one `Shadow` per `VisualElement`, so this pass uses one restrained cast plus tonal surfaces/edges rather than pretending a layered two-shadow stack is a native multi-shadow primitive.
 
@@ -28,8 +30,10 @@ This is intentionally not a claim that the current development SMS sink delivers
 ## Sources reviewed
 
 - [.NET MAUI official theming guide](https://github.com/dotnet/docs-maui/blob/main/docs/user-interface/theming.md) — palette dictionaries and `DynamicResource` for live theme replacement.
-- [W3C WCAG discussion on non-text contrast and control boundaries](https://github.com/w3c/wcag/discussions/3865) and [SC 1.4.11 issue context](https://github.com/w3c/wcag/issues/3798) — do not communicate control identity/state with subtle shadow alone.
-- [Neumorphism design guide (2026)](https://www.setproduct.com/blog/neumorphism-design-guide) — practical soft-UI recommendations: contrast, visible focus, non-shadow interactive cue and adequate targets. Treated as design commentary, not a normative standard.
+- [W3C WCAG 2.2 SC 1.4.11](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html) — visual information that is necessary to identify controls or states needs 3:1 adjacent contrast. A separate boundary is not mandatory when visible text/icon already identifies a control, but focus cues still need to be visible.
+- [W3C WCAG 2.2 SC 1.4.3](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html) — normal text needs at least 4.5:1 contrast.
+- [2026 neumorphism design review](https://www.setproduct.com/blog/neumorphism-design-guide) — pure neumorphism is primarily suited to concept art and instrument-style single-purpose screens; for real products it recommends accent/border cues and accessible contrast. Treated as industry commentary, not a normative standard.
+- [.NET MAUI visual states](https://learn.microsoft.com/en-us/dotnet/maui/user-interface/visual-states?view=net-maui-10.0) and [semantic accessibility properties](https://learn.microsoft.com/en-us/dotnet/maui/fundamentals/accessibility?view=net-maui-10.0) — keep press/focus presentation in XAML states and expose useful image/control descriptions to platform screen readers.
 - [Google libphonenumber falsehoods](https://github.com/google/libphonenumber/blob/master/FALSEHOODS.md) — shared calling codes and region-specific numbering mean the picker must use region metadata and allow international-format entry.
 - [libphonenumber-js metadata project](https://github.com/catamphetamine/libphonenumber-js) — pinned data source for the bundled calling-code index; see `Resources/Raw/NOTICE-phone-calling-codes.txt`.
 

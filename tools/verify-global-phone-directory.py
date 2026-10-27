@@ -53,10 +53,11 @@ check('<MauiAsset Include="Resources\\Raw\\**"' in project,
       "country directory/license files are not packaged as MAUI assets")
 check('OpenAppPackageFileAsync(AssetName)' in directory and '"country-calling-codes.json"' in directory,
       "directory loader does not open the bundled logical asset")
-check("CountryPhoneDirectoryJsonContext.Default.CountryPhoneDirectoryData" in directory
-      and "[JsonSerializable(typeof(CountryPhoneDirectoryData))]" in
-      (root / "Core/Text/CountryPhoneDirectoryJsonContext.cs").read_text(encoding="utf-8"),
-      "bundled JSON is not using its trim-safe source-generated serializer")
+json_context = (root / "Core/Text/CountryPhoneDirectoryJsonContext.cs").read_text(encoding="utf-8")
+check("using System.Text.Json;" in json_context
+      and "CountryPhoneDirectoryJsonContext.Default.CountryPhoneDirectoryData" in directory
+      and "[JsonSerializable(typeof(CountryPhoneDirectoryData))]" in json_context,
+      "bundled JSON context is missing its System.Text.Json import or source-generated serializer")
 check("Microsoft.Maui.Storage" in directory, "MAUI FileSystem namespace is not imported")
 check("GetDeviceRegionIsoCode" in vm and "CountryPhoneDirectory.LoadAsync" in vm,
       "login view model does not initialize region/default country from offline metadata")
