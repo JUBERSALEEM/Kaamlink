@@ -86,7 +86,11 @@ LAN URL fails every request. Use `adb reverse`, over USB or `adb connect`.
 
 Cleartext HTTP to `10.0.2.2` / `localhost` is explicitly allowed by
 `Platforms/Android/Resources/xml/network_security_config.xml` — for these two
-dev addresses only. Nothing else runs without TLS.
+dev addresses only. Nothing else runs without TLS. This is only a local development route:
+when using mobile data or another Wi-Fi network, the app needs a reachable public HTTPS API
+base URL. Release currently points to an intentional `.invalid` placeholder, so having internet
+on the phone alone cannot make OTP work. A production SMS provider is also required for real
+OTP delivery; the development `log` provider only writes codes to API logs.
 
 **Installing an APK file directly (sideloading).** Two traps, both about *which* `.apk`:
 
@@ -117,10 +121,14 @@ distributable.
 
 ## 3. First boot walkthrough (worker)
 
-1. **Role selection** — tap **"Find work"** (👷).
-2. **Sign in** — enter any UAE-style mobile number, e.g. `0501234567`
-   (the app normalizes it to `+971501234567`; the backend re-validates). Tap **Send code**.
-3. **Read the OTP from the API logs** — in the compose terminal look for the warning line:
+1. **Sign in** — the app opens on KaamLink's login screen. The offline country picker defaults
+   to the device region; search by country name, ISO code or calling code to change it. Enter a
+   national number or a pasted `+` international number (for example, UAE `0501234567` becomes
+   `+971501234567`; the API re-validates the E.164 envelope) and tap **Continue with phone**.
+   Google sign-in remains visibly unavailable until the OAuth client, server-side verification,
+   and account-linking flow are deployed. Recommended policy: keep phone verification mandatory
+   and link Google only as a convenience credential; see `docs/auth-and-phone-login-decision.md`.
+2. **Read the OTP from the API logs** — in the compose terminal look for the warning line:
 
    ```
    kaamlink-api | warn: ...[OTP SANDBOX] Code for +971501234567 is 483920 (Otp:Provider=log — development only...)
@@ -128,6 +136,9 @@ distributable.
 
    Enter it on the code screen. Wrong code → "The code doesn't match" (5 attempts max);
    the **Resend** button re-arms after the cooldown shown on it.
+3. **Choose how to use KaamLink** — after verification, tap **I'm looking for work**.
+   Employers instead choose **I'm hiring workers**. The selection is deliberately after
+   sign-in; no role is assumed during login.
 4. **Onboarding, step 1 (Basics)** — name, profession group + profession (from the
    seeded bilingual catalog), emirate, optional area → **Continue**. The server saves
    this step immediately (progressive onboarding — a crash loses nothing).
@@ -178,7 +189,7 @@ the reason is then visible to the employer.
 
 | Symptom | Likely cause → fix |
 |---|---|
-| "No connection" on Send code | The app reached *no* server, so this is always the transport, never the phone number. In order: (1) is the API up? `curl -s http://localhost:8080/health/ready` → `Healthy`; (2) `docker compose ps` shows `kaamlink-api` **running** (not restarting); (3) if you started the API from Visual Studio, use the pinned **KaamLink.Api** profile — it binds 8080, a Kestrel default (5000–5300) will not work; (4) physical phone → `adb reverse tcp:8080 tcp:8080` |
+| “Server unavailable” on Send code | This means the app cannot reach its configured API; it does **not** prove the phone has no internet. For local development: verify `curl -s http://localhost:8080/health/ready` → `Healthy`; `docker compose ps` shows `kaamlink-api` running; then on a USB-connected phone run `adb reverse tcp:8080 tcp:8080`. On mobile data/other Wi-Fi, a publicly reachable HTTPS API base URL must first be deployed and configured; Release is still `.invalid`, and no production host has been supplied. |
 | Which URL did the app actually try? | Debug builds log every transport failure: `adb logcat -s DOTNET | grep KaamLink` (PowerShell: `adb logcat -s DOTNET | Select-String KaamLink`) → `[KaamLink] POST http://10.0.2.2:8080/api/v1/auth/otp/request failed: …`. Emulator images see the host as **10.0.2.2**, a physical phone via `adb reverse` as **localhost** — neither can use the other's address |
 | Cleartext HTTP blocked | You're on a Release build (not supported yet) — build Debug |
 | No OTP code arrives | By design: read it from the API logs (sandbox SMS) |

@@ -2,116 +2,203 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:KaamLink.Features.Auth"
+             xmlns:country="clr-namespace:KaamLink.Core.Text"
              xmlns:strings="clr-namespace:KaamLink.Resources.Strings"
              x:Class="KaamLink.Features.Auth.LoginPage"
              x:DataType="vm:LoginViewModel"
              Title="{x:Static strings:AppStrings.LoginTitle}"
              Shell.NavBarIsVisible="False">
 
-    <!-- Phone-first sign-in. One field, one primary action, visible role context
-         and a real way back to role selection. -->
-    <ScrollView>
-        <VerticalStackLayout Padding="16,24,16,24" Spacing="16">
+    <Grid>
+        <ScrollView>
+            <VerticalStackLayout Padding="20,20,20,28" Spacing="15">
 
-            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
-                <Border Grid.Column="0"
-                        Style="{StaticResource IconTile}"
-                        VerticalOptions="Center">
-                    <Label Style="{StaticResource IconGlyphPrimary}"
-                           Text="{StaticResource IconHardHat}"
-                           HorizontalOptions="Center" />
-                </Border>
-                <Label Grid.Column="1"
-                       Style="{StaticResource SectionText}"
-                       FontSize="18"
-                       TextColor="{DynamicResource Primary}"
-                       Text="{x:Static strings:AppStrings.AppName}"
-                       VerticalOptions="Center" />
-            </Grid>
-
-            <VerticalStackLayout Spacing="8" Padding="0,6,0,0">
-                <Label SemanticProperties.HeadingLevel="Level1"
-                       Style="{StaticResource TitleText}"
-                       Text="{x:Static strings:AppStrings.LoginTitle}" />
-                <Label Style="{StaticResource BodyText}"
-                       Text="{x:Static strings:AppStrings.LoginSubtitle}" />
-            </VerticalStackLayout>
-
-            <Border Style="{StaticResource SurfaceCard}">
-                <VerticalStackLayout Style="{StaticResource FormStack}">
-
-                    <VerticalStackLayout Style="{StaticResource FieldStack}">
-                        <Label Style="{StaticResource LabelText}"
-                               Text="{x:Static strings:AppStrings.PhoneLabel}" />
-                        <Border Style="{StaticResource FieldBox}">
-                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
-                                <Label Grid.Column="0"
-                                       Style="{StaticResource IconGlyph}"
-                                       Text="{StaticResource IconPhone}" />
-                                <Entry Grid.Column="1"
-                                       AutomationProperties.Name="{x:Static strings:AppStrings.PhoneLabel}"
-                                       BackgroundColor="Transparent"
-                                       IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}, FallbackValue=True}"
-                                       Keyboard="Telephone"
-                                       Placeholder="{x:Static strings:AppStrings.PhonePlaceholder}"
-                                       Text="{Binding Phone}" />
-                            </Grid>
-                        </Border>
-                        <Label Style="{StaticResource FieldHint}"
-                               Text="{x:Static strings:AppStrings.PhonePlaceholder}" />
+                <!-- Logo and theme switch are separate, accessible native controls. -->
+                <Grid ColumnDefinitions="48,*,Auto" ColumnSpacing="10">
+                    <Image Grid.Column="0"
+                           Source="kaamlink-mark.svg"
+                           HeightRequest="44"
+                           WidthRequest="44"
+                           Aspect="AspectFit"
+                           SemanticProperties.Description="{x:Static strings:AppStrings.AppName}" />
+                    <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
+                        <Label Style="{StaticResource SectionText}"
+                               FontSize="18"
+                               TextColor="{DynamicResource Primary}"
+                               Text="{x:Static strings:AppStrings.AppName}" />
+                        <Label Style="{StaticResource CaptionText}"
+                               Text="{x:Static strings:AppStrings.AppTagline}" />
                     </VerticalStackLayout>
+                    <Button Grid.Column="2"
+                            Style="{StaticResource ThemeToggleButton}"
+                            Command="{Binding ToggleThemeCommand}"
+                            SemanticProperties.Description="{Binding ThemeToggleLabel}"
+                            Text="{Binding ThemeToggleLabel}" />
+                </Grid>
 
-                    <!-- Validation summary: a banner, not a bare red line. -->
-                    <Border IsVisible="{Binding HasError}"
-                            BackgroundColor="{DynamicResource ErrorSoft}"
-                            StrokeThickness="0"
-                            Padding="12">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="20" />
-                        </Border.StrokeShape>
-                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
-                            <Label Grid.Column="0"
-                                   Style="{StaticResource IconGlyph}"
-                                   TextColor="{DynamicResource Error}"
-                                   Text="{StaticResource IconAlertCircle}"
-                                   VerticalOptions="Start" />
-                            <VerticalStackLayout Grid.Column="1" Spacing="2">
-                                <Label Style="{StaticResource SmallStrongText}"
-                                       TextColor="{DynamicResource Error}"
-                                       Text="{Binding ErrorTitle}" />
-                                <Label Style="{StaticResource SmallText}"
-                                       Text="{Binding ErrorMessage}" />
-                            </VerticalStackLayout>
+                <VerticalStackLayout Spacing="6" Padding="0,2,0,0">
+                    <Label SemanticProperties.HeadingLevel="Level1"
+                           Style="{StaticResource DisplayText}"
+                           Text="{x:Static strings:AppStrings.LoginWelcomeHeadline}" />
+                    <Label Style="{StaticResource BodyText}"
+                           Text="{x:Static strings:AppStrings.LoginWelcomeSubtitle}" />
+                </VerticalStackLayout>
+
+                <Border Background="{DynamicResource ClayCardBrush}"
+                        Stroke="{DynamicResource BorderBrush}"
+                        StrokeThickness="1"
+                        Padding="6"
+                        HeightRequest="124">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="20" />
+                    </Border.StrokeShape>
+                    <Image Source="login-hero.svg"
+                           Aspect="AspectFit"
+                           SemanticProperties.Description="{x:Static strings:AppStrings.LoginHeroDescription}" />
+                </Border>
+
+                <VerticalStackLayout Spacing="6">
+                    <!-- OAuth is disabled until the server has an identity exchange endpoint. -->
+                    <Button Style="{StaticResource SecondaryButton}"
+                            IsEnabled="False"
+                            SemanticProperties.Description="{x:Static strings:AppStrings.LoginContinueGoogle}"
+                            Text="{x:Static strings:AppStrings.LoginContinueGoogle}" />
+                    <Label Style="{StaticResource CaptionText}"
+                           HorizontalTextAlignment="Center"
+                           Text="{x:Static strings:AppStrings.LoginGoogleSetupNote}" />
+                </VerticalStackLayout>
+
+                <Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="10">
+                    <BoxView Grid.Column="0" Style="{StaticResource DividerLine}" VerticalOptions="Center" />
+                    <Label Grid.Column="1"
+                           Style="{StaticResource CaptionText}"
+                           Text="{x:Static strings:AppStrings.LoginOrPhone}" />
+                    <BoxView Grid.Column="2" Style="{StaticResource DividerLine}" VerticalOptions="Center" />
+                </Grid>
+
+                <VerticalStackLayout Spacing="7">
+                    <Label Style="{StaticResource LabelText}"
+                           Text="{x:Static strings:AppStrings.PhoneLabel}" />
+                    <Border Style="{StaticResource FieldBox}" Padding="8,0">
+                        <Grid ColumnDefinitions="Auto,1,*" ColumnSpacing="10" MinimumHeightRequest="54">
+                            <Button Grid.Column="0"
+                                    Style="{StaticResource CountryPickerButton}"
+                                    Command="{Binding OpenCountryPickerCommand}"
+                                    SemanticProperties.Description="{x:Static strings:AppStrings.PhoneCountryCodeDescription}"
+                                    Text="{Binding SelectedCountryCode}" />
+                            <BoxView Grid.Column="1"
+                                     WidthRequest="1"
+                                     HeightRequest="26"
+                                     Color="{DynamicResource BorderStrong}"
+                                     VerticalOptions="Center" />
+                            <Entry Grid.Column="2"
+                                   AutomationProperties.Name="{x:Static strings:AppStrings.PhoneLabel}"
+                                   BackgroundColor="Transparent"
+                                   IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}, FallbackValue=True}"
+                                   Keyboard="Telephone"
+                                   MaxLength="18"
+                                   Placeholder="{x:Static strings:AppStrings.PhonePlaceholder}"
+                                   ReturnType="Go"
+                                   Text="{Binding Phone}" />
                         </Grid>
                     </Border>
-
-                    <Button Style="{StaticResource PrimaryButton}"
-                            Command="{Binding SendCodeCommand}"
-                            IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}, FallbackValue=True}"
-                            SemanticProperties.Description="{x:Static strings:AppStrings.SendCodeCta}"
-                            Text="{x:Static strings:AppStrings.SendCodeCta}" />
-
-                    <ActivityIndicator IsRunning="{Binding IsBusy}"
-                                       IsVisible="{Binding IsBusy}"
-                                       HorizontalOptions="Center" />
+                    <Label Style="{StaticResource FieldHint}"
+                           Text="{x:Static strings:AppStrings.LoginOtpHint}" />
                 </VerticalStackLayout>
-            </Border>
 
-            <Label Style="{StaticResource CaptionText}"
-                   Text="{x:Static strings:AppStrings.LoginPrivacyNote}" />
+                <Border IsVisible="{Binding HasError}"
+                        BackgroundColor="{DynamicResource ErrorSoft}"
+                        StrokeThickness="0"
+                        Padding="12">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                        <Label Grid.Column="0"
+                               Style="{StaticResource IconGlyph}"
+                               TextColor="{DynamicResource Error}"
+                               Text="{StaticResource IconAlertCircle}"
+                               VerticalOptions="Start" />
+                        <VerticalStackLayout Grid.Column="1" Spacing="2">
+                            <Label Style="{StaticResource SmallStrongText}"
+                                   TextColor="{DynamicResource Error}"
+                                   Text="{Binding ErrorTitle}" />
+                            <Label Style="{StaticResource SmallText}"
+                                   Text="{Binding ErrorMessage}" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
 
-            <BoxView Style="{StaticResource DividerLine}" Margin="0,4" />
+                <Button Style="{StaticResource PrimaryButton}"
+                        Command="{Binding SendCodeCommand}"
+                        IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}, FallbackValue=True}"
+                        SemanticProperties.Description="{x:Static strings:AppStrings.LoginPhoneContinue}"
+                        Text="{x:Static strings:AppStrings.LoginPhoneContinue}" />
 
-            <VerticalStackLayout Spacing="4">
-                <Label Style="{StaticResource SmallStrongText}"
-                       Text="{x:Static strings:AppStrings.LoginWrongRoleTitle}" />
-                <Button Style="{StaticResource TextButton}"
-                        Command="{Binding BackToRolesCommand}"
-                        HorizontalOptions="Start"
-                        SemanticProperties.Description="{x:Static strings:AppStrings.LoginBackToRoles}"
-                        Text="{x:Static strings:AppStrings.LoginBackToRoles}" />
+                <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                   IsVisible="{Binding IsBusy}"
+                                   HorizontalOptions="Center" />
+
+                <Label Style="{StaticResource CaptionText}"
+                       HorizontalTextAlignment="Center"
+                       Text="{x:Static strings:AppStrings.WelcomeTermsNote}" />
+
+                <ActivityIndicator IsRunning="{Binding IsRestoringSession}"
+                                   IsVisible="{Binding IsRestoringSession}"
+                                   HorizontalOptions="Center" />
             </VerticalStackLayout>
+        </ScrollView>
 
-        </VerticalStackLayout>
-    </ScrollView>
+        <!-- Searchable, offline country picker overlay. -->
+        <Grid ZIndex="10"
+              IsVisible="{Binding IsCountryPickerVisible}"
+              BackgroundColor="{DynamicResource Scrim}"
+              Padding="18">
+            <Border Style="{StaticResource SurfaceCard}"
+                    VerticalOptions="Center"
+                    MaximumHeightRequest="560"
+                    Padding="18">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="22" />
+                </Border.StrokeShape>
+                <Grid RowDefinitions="Auto,Auto,*" RowSpacing="12">
+                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                        <Label Grid.Column="0"
+                               SemanticProperties.HeadingLevel="Level2"
+                               Style="{StaticResource SectionText}"
+                               Text="{x:Static strings:AppStrings.CountryPickerTitle}"
+                               VerticalOptions="Center" />
+                        <Button Grid.Column="1"
+                                Style="{StaticResource TextButton}"
+                                Command="{Binding CloseCountryPickerCommand}"
+                                SemanticProperties.Description="{x:Static strings:AppStrings.CloseCta}"
+                                Text="{x:Static strings:AppStrings.CloseCta}" />
+                    </Grid>
+                    <Entry Grid.Row="1"
+                           AutomationProperties.Name="{x:Static strings:AppStrings.CountrySearchLabel}"
+                           Placeholder="{x:Static strings:AppStrings.CountrySearchLabel}"
+                           Text="{Binding CountrySearchText}" />
+                    <CollectionView Grid.Row="2"
+                                    ItemsSource="{Binding FilteredCountries}"
+                                    SelectionMode="None">
+                        <CollectionView.EmptyView>
+                            <Label Style="{StaticResource BodyText}"
+                                   HorizontalTextAlignment="Center"
+                                   Text="{x:Static strings:AppStrings.CountryNoResults}"
+                                   Padding="12" />
+                        </CollectionView.EmptyView>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="country:CountryPhoneOption">
+                                <Button Style="{StaticResource CountryListButton}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectCountryCommand}"
+                                        CommandParameter="{Binding .}"
+                                        SemanticProperties.Description="{Binding PickerLabel}"
+                                        Text="{Binding PickerLabel}" />
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
 </ContentPage>

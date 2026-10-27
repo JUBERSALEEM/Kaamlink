@@ -237,7 +237,10 @@ check(not missing, "all StaticResource keys declared",
 
 section("Client: routes ↔ AppRoutes ↔ navigation calls")
 appshell = read("AppShell.xaml")
-shell_routes = set(re.findall(r'Route="([^"]+)"', appshell))
+# Parse the XAML instead of regexing one-line attributes; ShellContent declarations
+# are intentionally formatted across multiple lines.
+shell_root = ET.fromstring(appshell)
+shell_routes = {element.get("Route") for element in shell_root.iter() if element.get("Route")}
 app_routes_cs = read("Core/Navigation/AppRoutes.cs")
 route_consts = set(re.findall(r'public const string \w+ = "([^"]+)";', app_routes_cs))
 check(shell_routes == route_consts, "AppShell routes == AppRoutes constants",
@@ -283,6 +286,10 @@ for page, vm_file in page_vm_map.items():
     for fname in os.listdir(os.path.join(ROOT, sibling)):
         if fname.endswith("Models.cs") or fname.endswith("ViewModel.cs"):
             model_extras += read(os.path.join(sibling, fname))
+    # Compiled DataTemplates are typed to their item model, which can live outside
+    # the page/VM folder (the country picker uses Core.Text.CountryPhoneOption).
+    if "country:CountryPhoneOption" in page_src:
+        model_extras += read("Core/Text/CountryPhoneOption.cs")
     unknown = set()
     for match in re.finditer(r"\{Binding\s+([^}]+)\}", page_src):
         expr = match.group(1)

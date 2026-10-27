@@ -17,13 +17,14 @@
         Route names come from Core/Navigation/AppRoutes.cs — keep them in sync.
         Pages + view models resolve through DI (registered in MauiProgram).
     -->
-    <ShellContent
-        Route="welcome"
-        ContentTemplate="{DataTemplate onboarding:RoleSelectionPage}" />
-
+    <!-- Authentication is the cold-start entry; role choice follows sign-in. -->
     <ShellContent
         Route="login"
         ContentTemplate="{DataTemplate auth:LoginPage}" />
+
+    <ShellContent
+        Route="welcome"
+        ContentTemplate="{DataTemplate onboarding:RoleSelectionPage}" />
 
     <ShellContent
         Route="otp"

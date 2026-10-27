@@ -469,6 +469,43 @@ for required in ("android-arm64", "android-arm"):
 ok("AndroidSupportedAbis" not in PROJECT,
    "csproj: AndroidSupportedAbis is not supported since .NET 6 (use RuntimeIdentifiers)")
 
+# ------------------------------ N. login-first startup and post-login role choice
+print("\nClient: login-first startup contract")
+shell_root = ET.parse("AppShell.xaml").getroot()
+shell_contents = [element for element in shell_root.iter() if element.tag.endswith("ShellContent")]
+first_route = shell_contents[0].get("Route") if shell_contents else None
+ok(first_route == "login",
+   "AppShell: cold start must land on the professional sign-in screen before role selection")
+
+login_page = read("Features/Auth/LoginPage.xaml")
+login_vm = read("Features/Auth/LoginViewModel.cs")
+otp_vm = read("Features/Auth/OtpViewModel.cs")
+role_nav = read("Core/Navigation/RoleNavigator.cs")
+ok('Command="{Binding SendCodeCommand}"' in login_page,
+   "LoginPage: the phone/OTP action is not wired to the real request command")
+ok(re.search(r"private\s+string\s+_role\s*=\s*string\.Empty", login_vm) is not None
+   and re.search(r"private\s+string\s+_role\s*=\s*string\.Empty", otp_vm) is not None
+   and "_ => AppRoutes.Welcome" in role_nav,
+   "Auth flow: an unselected role must remain unselected through OTP, then reach role choice")
+ok('Text="{x:Static strings:AppStrings.LoginContinueGoogle}"' in login_page
+   and 'IsEnabled="False"' in login_page
+   and "LoginGoogleSetupNote" in login_page,
+   "LoginPage: Google must stay clearly unavailable until an OAuth backend is configured")
+
+role_page = read("Features/Onboarding/RoleSelectionPage.xaml")
+role_vm = read("Features/Onboarding/RoleSelectionViewModel.cs")
+ok('Style="{StaticResource ThemeToggleButton}"' in login_page
+   and 'Command="{Binding ToggleThemeCommand}"' in login_page
+   and 'Style="{StaticResource ThemeToggleButton}"' in role_page
+   and 'Command="{Binding ToggleThemeCommand}"' in role_page
+   and "ThemeToggleLabel" in login_vm and "ThemeToggleLabel" in role_vm,
+   "Theme affordance is a labelled native button on login and role choice")
+ok("var nextThemeId = _theme.Toggle();" in login_vm
+   and "var nextThemeId = _theme.Toggle();" in role_vm
+   and "SyncThemeAffordance(nextThemeId)" in login_vm
+   and "SyncThemeAffordance(nextThemeId)" in role_vm,
+   "Theme action label follows the palette returned by the runtime toggle")
+
 # ------------------------------------------------------------------------------ report
 print()
 if failures:

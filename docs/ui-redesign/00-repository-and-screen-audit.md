@@ -75,33 +75,33 @@ Legend for state columns: **L** = loading, **E** = empty, **X** = error, **S** =
 
 | Attribute | Finding |
 |---|---|
-| Role | Shared (unauthenticated entry) |
-| Reached by | App start (`ShellContent` route `welcome`); return from logout |
-| Purpose | Choose Worker vs Employer; restore stored session first |
-| Controls | Brand wordmark + tagline, two `Card` borders each with a **40px emoji** (`👷`, `🏭`) and one primary `Button` |
+| Role | Shared, post-auth account-type choice |
+| Reached by | Successful OTP without a preselected role (`ShellContent` route `welcome`); role switch |
+| Purpose | Choose the Worker or Employer experience after authentication |
+| Controls | Brand row/theme toggle, value proposition, separate Worker and Employer cards, trust strip and quiet legal footer |
 | VM / commands | `RoleSelectionViewModel.NavigateToWorkerCommand`, `NavigateToEmployerCommand`, `EnsureSessionRestoredAsync()` from code-behind |
-| API | None directly; session restore hits `/auth/token/refresh` + `/workers/me` |
-| States | L: `IsBusy` **not bound anywhere** → silent white screen while restoring. E/X/S: n/a |
-| Localization | All strings via `x:Static AppStrings` (EN/AR present) |
-| Visual problems | Emoji as production icons; two identical giant white cards; no trust signals; no product explanation; 24dp padding on 360dp screen wastes ~13% width; page is vertically centered so it shifts with keyboard; no feedback during session restore |
-| Required redesign | Brand-led welcome: wordmark + value proposition, two role cards with icon-tile + title + one-line benefit + CTA, a trust strip (free / UAE-wide / skill-based), legal-grade quiet footer; visible restoring state |
-| Verification | XAML parses; `StaticResource` keys resolve; `x:Static` keys exist in EN+AR resx; no emoji; commands unchanged |
+| API | None directly; session identity is supplied by the successful auth response; returning session restore is handled at login |
+| States | Existing cards route to onboarding/home according to the server identity; restore indicator remains available for unauthenticated role-switch entry |
+| Localization | All visible strings via `x:Static AppStrings` (EN/AR present) |
+| Visual problems | No app-start role prompt now; this page remains the post-login choice when no role was preselected |
+| Required redesign | Implemented in the existing claymorphism role-selection screen; do not duplicate auth on this page |
+| Verification | XAML, bindings, role routes, strings, accessibility and theme-resource gates pass; runtime appearance is not device-verified |
 
 ### 2. Phone sign-in — `Features/Auth/LoginPage.xaml`
 
 | Attribute | Finding |
 |---|---|
 | Role | Shared |
-| Reached by | Role card CTA → `//login?role=worker|employer` |
-| Purpose | Validate UAE mobile locally, request OTP |
-| Controls | Centered stack, one `Card`, `Entry` (Telephone), inline error label, primary button, spinner |
-| VM / commands | `LoginViewModel.Phone`, `IsBusy`, `HasError`, `ErrorMessage`, `SendCodeCommand` |
-| API | `POST /auth/otp/request` |
-| States | L: spinner below card (duplicate feedback) + card remains interactive-looking; E/X: single red 12sp line; S: navigate to OTP |
-| Localization | Complete; role is carried but **not shown** to the user (no context of which role they chose) |
-| Visual problems | Page vertically centered (soft-keyboard jump), no back affordance (NavBar hidden), no country code/prefixed field styling, error text 12sp, button disabled state has no visual treatment beyond default, no helper text about the +971 format beyond the placeholder |
-| Required redesign | App bar with back + step context ("Worker sign-in"), icon-led phone field with +971 prefix hint, inline validation, primary CTA with loading state, resend/privacy reassurance helper |
-| Verification | Bindings match VM; no new commands; resx parity; no raw hex; touch target ≥48dp |
+| Reached by | App cold start (`ShellContent` route `login`); session expiry; role switch when signed out |
+| Purpose | Google option (currently unavailable until OAuth is configured) or validate UAE mobile locally and request OTP; role choice follows verification |
+| Controls | Brand mark/wordmark, welcome message, separate SVG hero asset, unavailable Google button with status explanation, +971 phone field, OTP CTA, consent note |
+| VM / commands | `LoginViewModel.EnsureSessionRestoredAsync()`, `Phone`, `IsBusy`, `IsRestoringSession`, `HasError`, `SendCodeCommand` |
+| API | `POST /auth/otp/request`; Google OAuth is not present in the backend |
+| States | L: session/request activity indicators; X: localized error banner; S: navigate to OTP and then role choice when none was preselected |
+| Localization | EN/AR resx parity; Google limitation and consent copy are localized |
+| Visual problems | Google sign-in is intentionally disabled until OAuth client configuration and server-side token verification exist; runtime rendering has not been observed |
+| Required redesign | Implemented: app-start welcome/login, standalone mark and hero SVG assets, +971 field, functional OTP CTA, accessible validation, consent and explicit Google setup note |
+| Verification | Bindings, StaticResource keys, XAML/resx parity, app-start route, role-through-OTP contract and static design gates pass; no runtime/build claim |
 
 ### 3. OTP verification — `Features/Auth/OtpPage.xaml`
 

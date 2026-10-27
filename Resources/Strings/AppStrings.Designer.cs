@@ -526,5 +526,18 @@ namespace KaamLink.Resources.Strings
         public static string ErrorOfflineTitle => ResourceManager.GetString(nameof(ErrorOfflineTitle), Culture)!;
         public static string ThemeSwitchToDusk => ResourceManager.GetString(nameof(ThemeSwitchToDusk), Culture)!;
         public static string ThemeSwitchToLight => ResourceManager.GetString(nameof(ThemeSwitchToLight), Culture)!;
+        public static string LoginWelcomeHeadline => ResourceManager.GetString(nameof(LoginWelcomeHeadline), Culture)!;
+        public static string LoginWelcomeSubtitle => ResourceManager.GetString(nameof(LoginWelcomeSubtitle), Culture)!;
+        public static string LoginContinueGoogle => ResourceManager.GetString(nameof(LoginContinueGoogle), Culture)!;
+        public static string LoginGoogleSetupNote => ResourceManager.GetString(nameof(LoginGoogleSetupNote), Culture)!;
+        public static string LoginOrPhone => ResourceManager.GetString(nameof(LoginOrPhone), Culture)!;
+        public static string LoginPhoneContinue => ResourceManager.GetString(nameof(LoginPhoneContinue), Culture)!;
+        public static string LoginOtpHint => ResourceManager.GetString(nameof(LoginOtpHint), Culture)!;
+        public static string LoginHeroDescription => ResourceManager.GetString(nameof(LoginHeroDescription), Culture)!;
+        public static string PhoneCountryCodeDescription => ResourceManager.GetString(nameof(PhoneCountryCodeDescription), Culture)!;
+        public static string LoginSessionChecking => ResourceManager.GetString(nameof(LoginSessionChecking), Culture)!;
+        public static string CountryPickerTitle => ResourceManager.GetString(nameof(CountryPickerTitle), Culture)!;
+        public static string CountrySearchLabel => ResourceManager.GetString(nameof(CountrySearchLabel), Culture)!;
+        public static string CountryNoResults => ResourceManager.GetString(nameof(CountryNoResults), Culture)!;
     }
 }

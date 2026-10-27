@@ -13,8 +13,8 @@ namespace KaamLink.Core.Navigation
         public static bool IsExpiredSession(ApiException exception) =>
             exception.Status == 401;
 
-        /// <summary>Back to the role gate; the next tap goes through login.</summary>
-        public static Task RouteToWelcomeAsync() =>
-            Shell.Current.GoToAsync(AppRoutes.Absolute(AppRoutes.Welcome));
+        /// <summary>Expired sessions return directly to the app's sign-in entry.</summary>
+        public static Task RouteToLoginAsync() =>
+            Shell.Current.GoToAsync(AppRoutes.Absolute(AppRoutes.Login));
     }
 }

@@ -832,3 +832,32 @@ Notes that shaped the change:
 
 Gate rule M now fails the build if the sideload switch loses embedded assemblies, loses the
 universal ABI list, or can emit an `.aab`; the self-test injects a single-ABI APK and detects it.
+
+### 9.17 Login-first boot, branded sign-in, and post-auth role choice
+
+The app now starts on the professional login surface rather than asking for a role before
+sign-in. A successful OTP with no role context continues to the existing Worker / Employer
+chooser; if a switch-to-role flow supplied a role before OTP, its original destination is
+preserved. Returning sessions are restored from the login entry and go to that chooser, and
+expired sessions/logout return to sign-in. The existing OTP API and role/onboarding decisions
+remain authoritative.
+
+* `Features/Auth/LoginPage.xaml` now matches the approved sign-in concept: standalone linked-K
+  brand asset, welcome hierarchy, separately bundled worker/employer SVG, Google option, +971
+  phone field, SMS OTP action, accessible error state, and consent note. The new strings have
+  EN/AR parity (325 / 325 / 325).
+* `Resources/AppIcon/appiconfg.svg` and `Resources/Splash/splash.svg` use the matching linked-K
+  mark; `Resources/Images/kaamlink-mark.svg` and `login-hero.svg` stay as separate image assets,
+  not inline image data in code.
+* **Google/Gmail authentication is not active yet.** The current API only supports
+  `POST /auth/otp/request` and `POST /auth/otp/verify`; it has no Google token-verification or
+  OAuth endpoint, and no Google OAuth client configuration exists in this repository. The
+  Google button is therefore visibly disabled with an explanation rather than pretending to
+  authenticate. Making that button live requires a real Google client configuration and a
+  server-side token-verification/exchange flow; phone OTP remains functional.
+* Verification this pass: phase03 105/0, phase04 105/0, phase05 88/0, bindings 15 pages / 319
+  types / 357 compiled bindings, UI redesign 437/0, compile surface 330/0, theme contrast 55/0,
+  strings 325/325/325, self-test 35/35 injected defects detected. The XAML/SVG/resx documents
+  parsed and `git diff --check` passed.
+* **Build/device verification BLOCKED:** this environment has no .NET SDK, JDK, emulator or
+  Android device. Static checks are not a successful build or a visual/runtime test.

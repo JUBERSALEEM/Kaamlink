@@ -123,10 +123,10 @@
     <value>We'll text you a one-time verification code.</value>
   </data>
   <data name="PhoneLabel" xml:space="preserve">
-    <value>UAE mobile number</value>
+    <value>Mobile number</value>
   </data>
   <data name="PhonePlaceholder" xml:space="preserve">
-    <value>050 123 4567</value>
+    <value>Enter phone number</value>
     <comment>Digits only — do not translate.</comment>
   </data>
   <data name="SendCodeCta" xml:space="preserve">
@@ -153,7 +153,7 @@
   </data>
   <!-- Phase 03: shared errors + navigation -->
   <data name="ErrorInvalidPhone" xml:space="preserve">
-    <value>Enter a valid UAE mobile number (e.g. 0501234567).</value>
+    <value>Enter a valid phone number for the selected country or region.</value>
   </data>
   <data name="ErrorInvalidCode" xml:space="preserve">
     <value>The code doesn't match. Check it and try again.</value>
@@ -162,7 +162,7 @@
     <value>Something went wrong. Please try again.</value>
   </data>
   <data name="ErrorOffline" xml:space="preserve">
-    <value>No connection. Check your network and try again.</value>
+    <value>Cannot reach the KaamLink server. Check your connection or try again later.</value>
   </data>
   <data name="ErrorTooManyAttempts" xml:space="preserve">
     <value>Too many attempts. Please wait a moment and try again.</value>
@@ -1019,12 +1019,51 @@
     <value>No vacancies yet</value>
   </data>
   <data name="ErrorOfflineTitle" xml:space="preserve">
-    <value>No connection</value>
+    <value>Server unavailable</value>
   </data>
   <data name="ThemeSwitchToDusk" xml:space="preserve">
     <value>Dusk mode</value>
   </data>
   <data name="ThemeSwitchToLight" xml:space="preserve">
     <value>Day mode</value>
+  </data>
+  <data name="LoginWelcomeHeadline" xml:space="preserve">
+    <value>Welcome to KaamLink</value>
+  </data>
+  <data name="LoginWelcomeSubtitle" xml:space="preserve">
+    <value>Find work. Hire with confidence.</value>
+  </data>
+  <data name="LoginContinueGoogle" xml:space="preserve">
+    <value>Continue with Google</value>
+  </data>
+  <data name="LoginGoogleSetupNote" xml:space="preserve">
+    <value>Google sign-in is not available yet. Phone verification is still required; use your number to continue.</value>
+  </data>
+  <data name="LoginOrPhone" xml:space="preserve">
+    <value>OR CONTINUE WITH PHONE</value>
+  </data>
+  <data name="LoginPhoneContinue" xml:space="preserve">
+    <value>Continue with phone</value>
+  </data>
+  <data name="LoginOtpHint" xml:space="preserve">
+    <value>Choose your country, enter your number, and we’ll send a one-time code by SMS.</value>
+  </data>
+  <data name="LoginHeroDescription" xml:space="preserve">
+    <value>A worker and employer connecting through KaamLink.</value>
+  </data>
+  <data name="PhoneCountryCodeDescription" xml:space="preserve">
+    <value>Select your country or region and international dial code.</value>
+  </data>
+  <data name="LoginSessionChecking" xml:space="preserve">
+    <value>Checking your saved sign-in…</value>
+  </data>
+  <data name="CountryPickerTitle" xml:space="preserve">
+    <value>Choose country or region</value>
+  </data>
+  <data name="CountrySearchLabel" xml:space="preserve">
+    <value>Search name or dial code</value>
+  </data>
+  <data name="CountryNoResults" xml:space="preserve">
+    <value>No matching countries found.</value>
   </data>
 </root>

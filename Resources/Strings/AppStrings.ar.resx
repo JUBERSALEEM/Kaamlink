@@ -115,10 +115,10 @@
     <value>سنرسل لك رمز تحقق لمرة واحدة.</value>
   </data>
   <data name="PhoneLabel" xml:space="preserve">
-    <value>رقم الجوال الإماراتي</value>
+    <value>رقم الهاتف المحمول</value>
   </data>
   <data name="PhonePlaceholder" xml:space="preserve">
-    <value>050 123 4567</value>
+    <value>أدخل رقم الهاتف</value>
   </data>
   <data name="SendCodeCta" xml:space="preserve">
     <value>إرسال الرمز</value>
@@ -143,7 +143,7 @@
   </data>
   <!-- Phase 03: shared errors + navigation -->
   <data name="ErrorInvalidPhone" xml:space="preserve">
-    <value>أدخل رقم جوال إماراتيًا صحيحًا (مثال: 0501234567).</value>
+    <value>أدخل رقم هاتف صحيحًا للبلد أو المنطقة المحددة.</value>
   </data>
   <data name="ErrorInvalidCode" xml:space="preserve">
     <value>الرمز غير صحيح. تحقق منه وحاول مرة أخرى.</value>
@@ -152,7 +152,7 @@
     <value>حدث خطأ ما. حاول مرة أخرى.</value>
   </data>
   <data name="ErrorOffline" xml:space="preserve">
-    <value>لا يوجد اتصال. تحقق من الشبكة وحاول مجددًا.</value>
+    <value>تعذر الاتصال بخادم كاملينك. تحقق من اتصالك أو أعد المحاولة لاحقًا.</value>
   </data>
   <data name="ErrorTooManyAttempts" xml:space="preserve">
     <value>محاولات كثيرة جدًا. انتظر قليلًا ثم حاول مجددًا.</value>
@@ -1007,12 +1007,51 @@
     <value>لا توجد وظائف بعد</value>
   </data>
   <data name="ErrorOfflineTitle" xml:space="preserve">
-    <value>لا يوجد اتصال</value>
+    <value>تعذر الوصول إلى الخادم</value>
   </data>
   <data name="ThemeSwitchToDusk" xml:space="preserve">
     <value>الوضع الليلي</value>
   </data>
   <data name="ThemeSwitchToLight" xml:space="preserve">
     <value>الوضع النهاري</value>
+  </data>
+  <data name="LoginWelcomeHeadline" xml:space="preserve">
+    <value>مرحبًا بك في كاملينك</value>
+  </data>
+  <data name="LoginWelcomeSubtitle" xml:space="preserve">
+    <value>اعثر على عمل. ووظّف بثقة.</value>
+  </data>
+  <data name="LoginContinueGoogle" xml:space="preserve">
+    <value>المتابعة باستخدام Google</value>
+  </data>
+  <data name="LoginGoogleSetupNote" xml:space="preserve">
+    <value>تسجيل الدخول عبر Google غير متاح بعد. يجب التحقق من رقم الهاتف؛ استخدم رقمك للمتابعة.</value>
+  </data>
+  <data name="LoginOrPhone" xml:space="preserve">
+    <value>أو تابع باستخدام الهاتف</value>
+  </data>
+  <data name="LoginPhoneContinue" xml:space="preserve">
+    <value>المتابعة باستخدام الهاتف</value>
+  </data>
+  <data name="LoginOtpHint" xml:space="preserve">
+    <value>اختر بلدك وأدخل رقمك وسنرسل رمزًا لمرة واحدة عبر رسالة نصية.</value>
+  </data>
+  <data name="LoginHeroDescription" xml:space="preserve">
+    <value>عامل وصاحب عمل يتواصلان عبر كاملينك.</value>
+  </data>
+  <data name="PhoneCountryCodeDescription" xml:space="preserve">
+    <value>اختر بلدك أو منطقتك ورمز الاتصال الدولي.</value>
+  </data>
+  <data name="LoginSessionChecking" xml:space="preserve">
+    <value>جارٍ التحقق من تسجيل الدخول المحفوظ…</value>
+  </data>
+  <data name="CountryPickerTitle" xml:space="preserve">
+    <value>اختر البلد أو المنطقة</value>
+  </data>
+  <data name="CountrySearchLabel" xml:space="preserve">
+    <value>ابحث بالاسم أو رمز الاتصال</value>
+  </data>
+  <data name="CountryNoResults" xml:space="preserve">
+    <value>لم يتم العثور على بلد مطابق.</value>
   </data>
 </root>

@@ -54,17 +54,17 @@ namespace KaamLink.Core.Presentation.Clay
 
             // Wide and low-opacity reads as soft material; a tight dark shadow
             // would read as a drop-shadowed card, which is the opposite of clay.
-            var (offsetY, radius, opacity) = elevation switch
+            var (offsetX, offsetY, radius, opacity) = elevation switch
             {
-                ClayElevation.Pill => (4f, 10f, 0.22f),
-                ClayElevation.Card => (10f, 26f, 0.30f),
-                _ => (14f, 34f, 0.34f)
+                ClayElevation.Pill => (3f, 4f, 12f, 0.18f),
+                ClayElevation.Card => (5f, 7f, 20f, 0.22f),
+                _ => (7f, 10f, 26f, 0.26f)
             };
 
             element.Shadow = new Shadow
             {
                 Brush = ResolveBrush("ClayShadowBrush"),
-                Offset = new Point(0, offsetY),
+                Offset = new Point(offsetX, offsetY),
                 Radius = radius,
                 Opacity = opacity
             };
