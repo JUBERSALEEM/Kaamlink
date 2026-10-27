@@ -16,7 +16,7 @@
                 <!-- Logo and theme switch are separate, accessible native controls. -->
                 <Grid ColumnDefinitions="48,*,Auto" ColumnSpacing="10">
                     <Image Grid.Column="0"
-                           Source="kaamlink-mark.svg"
+                           Source="kaamlink_mark.svg"
                            HeightRequest="44"
                            WidthRequest="44"
                            Aspect="AspectFit"
@@ -52,7 +52,7 @@
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="20" />
                     </Border.StrokeShape>
-                    <Image Source="login-hero.svg"
+                    <Image Source="login_hero.svg"
                            Aspect="AspectFit"
                            SemanticProperties.Description="{x:Static strings:AppStrings.LoginHeroDescription}" />
                 </Border>

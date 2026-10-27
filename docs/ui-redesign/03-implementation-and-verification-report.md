@@ -847,7 +847,7 @@ remain authoritative.
   phone field, SMS OTP action, accessible error state, and consent note. The new strings have
   EN/AR parity (325 / 325 / 325).
 * `Resources/AppIcon/appiconfg.svg` and `Resources/Splash/splash.svg` use the matching linked-K
-  mark; `Resources/Images/kaamlink-mark.svg` and `login-hero.svg` stay as separate image assets,
+  mark; `Resources/Images/kaamlink_mark.svg` and `login_hero.svg` stay as separate image assets,
   not inline image data in code.
 * **Google/Gmail authentication is not active yet.** The current API only supports
   `POST /auth/otp/request` and `POST /auth/otp/verify`; it has no Google token-verification or
